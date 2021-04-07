@@ -388,12 +388,15 @@ namespace Api.Library.User
 
             if (userSession.User.Type.TypeId == (int)UserType.Stocktwits)
             {
-                var userSessionEntity = await _repository.GetUserSessionAsync(userSession.UserSessionId);
+                //There is only one token per multiple devices, no need to revoke it
+                return;
 
-                if (userSessionEntity is not null)
-                    await _repository.RemoveAsync(userSessionEntity);
+                //var userSessionEntity = await _repository.GetUserSessionAsync(userSession.UserSessionId);
 
-                UserMemoryCache.UserSessions.TryRemove(userSession.UserSessionId, out _);
+                //if (userSessionEntity is not null)
+                //    await _repository.RemoveAsync(userSessionEntity);
+
+                //UserMemoryCache.UserSessions.TryRemove(userSession.UserSessionId, out _);
             }
         }
 

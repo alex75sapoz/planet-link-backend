@@ -24,13 +24,8 @@ namespace Api.Controller
 
         [HttpPost("Revoke"), ProducesResponseType((int)HttpStatusCode.NoContent)]
         [Authorization]
-        public async Task RemoveSessionAsync()
-        {
-            if (UserTypeId == (int)UserType.Stocktwits)
-                return; //There is only one token per multiple devices, no need to revoke it
-
+        public async Task RemoveSessionAsync() =>
             await _service.RevokeSessionAsync(UserSessionId.Value);
-        }
 
         [HttpGet("ConsentUrl"), ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
         [ResponseCache(Duration = 299, VaryByHeader = ApiHeader.UserTypeId + "," + ApiHeader.Token)]
