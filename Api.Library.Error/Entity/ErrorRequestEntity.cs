@@ -22,7 +22,7 @@ namespace Api.Library.Error.Entity
 
 namespace Api.Library.Error.Entity.Configuration
 {
-    public class ErrorRequestEntityConfiguration : IEntityTypeConfiguration<ErrorRequestEntity>
+    internal class ErrorRequestEntityConfiguration : IEntityTypeConfiguration<ErrorRequestEntity>
     {
         public void Configure(EntityTypeBuilder<ErrorRequestEntity> entity)
         {

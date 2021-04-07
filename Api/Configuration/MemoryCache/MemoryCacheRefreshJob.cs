@@ -1,6 +1,7 @@
 ﻿using Api.Library;
 using Api.Library.Error;
 using Api.Library.Error.Contract;
+using Api.Library.Location;
 using Api.Library.User;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -29,10 +30,12 @@ namespace Api.Configuration.MemoryCache
 
             using var scope = _serviceProvider.CreateScope();
             var userRepository = scope.ServiceProvider.GetRequiredService<IUserRepository>();
+            var locationRepository = scope.ServiceProvider.GetRequiredService<ILocationRepository>();
 
             //Order must match project build order
 
             await IUserStartup.RefreshMemoryCacheAsync(userRepository);
+            await ILocationStartup.RefreshMemoryCacheAsync(locationRepository);
 
             IsReady = true;
 

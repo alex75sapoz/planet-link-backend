@@ -18,7 +18,7 @@ namespace Api.Library.Error.Entity
 
 namespace Api.Library.Error.Entity.Configuration
 {
-    public class ErrorProcessingEntityConfiguration : IEntityTypeConfiguration<ErrorProcessingEntity>
+    internal class ErrorProcessingEntityConfiguration : IEntityTypeConfiguration<ErrorProcessingEntity>
     {
         public void Configure(EntityTypeBuilder<ErrorProcessingEntity> entity)
         {

@@ -44,7 +44,7 @@ namespace Api.Library
                 {
                     await StartAsync();
                 }
-                catch (System.Exception exception)
+                catch (Exception exception)
                 {
                     await ErrorAsync(exception);
                 }

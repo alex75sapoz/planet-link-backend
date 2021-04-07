@@ -1,5 +1,6 @@
 ﻿using Api.Configuration.Database;
 using Api.Library.Error;
+using Api.Library.Location;
 using Api.Library.User;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +15,7 @@ namespace Api.Configuration.Library
 
             IErrorStartup.Startup(services, databaseConfiguration.Connection);
             IUserStartup.Startup(services, (type) => configuration.GetSection(type.Name).Get(type), databaseConfiguration.Connection);
+            ILocationStartup.Startup(services, (type) => configuration.GetSection(type.Name).Get(type), databaseConfiguration.Connection);
         }
     }
 }

@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Api.Library.Error\Api.Library.Error.csproj" />
+    <ProjectReference Include="..\Api.Library.Location\Api.Library.Location.csproj" />
     <ProjectReference Include="..\Api.Library.User\Api.Library.User.csproj" />
   </ItemGroup>
 

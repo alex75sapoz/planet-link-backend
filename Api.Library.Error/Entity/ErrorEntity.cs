@@ -18,7 +18,7 @@ namespace Api.Library.Error.Entity
 
 namespace Api.Library.Error.Entity.Configuration
 {
-    public class ErrorEntityConfiguration : IEntityTypeConfiguration<ErrorEntity>
+    internal class ErrorEntityConfiguration : IEntityTypeConfiguration<ErrorEntity>
     {
         public void Configure(EntityTypeBuilder<ErrorEntity> entity)
         {

@@ -16,7 +16,7 @@ namespace Api.Configuration.Exception
         {
             var exception = context.Features.Get<IExceptionHandlerPathFeature>()?.Error ?? new InternalServerException("Unknown Error");
 
-            var exceptionMessage = string.Empty;
+            string exceptionMessage;
             int statusCodeId;
 
             if (exception is LibraryException libraryException)
