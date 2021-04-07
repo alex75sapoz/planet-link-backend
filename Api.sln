@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api.Library.User", "Api.Lib
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api.Library", "Api.Library\Api.Library.csproj", "{439E8191-C3EE-446C-B8E8-C682E766D2E2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api.Library.Error", "Api.Library.Error\Api.Library.Error.csproj", "{DF923287-0630-4D0F-BBE8-76C1964AE6B8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{439E8191-C3EE-446C-B8E8-C682E766D2E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{439E8191-C3EE-446C-B8E8-C682E766D2E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{439E8191-C3EE-446C-B8E8-C682E766D2E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF923287-0630-4D0F-BBE8-76C1964AE6B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF923287-0630-4D0F-BBE8-76C1964AE6B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF923287-0630-4D0F-BBE8-76C1964AE6B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF923287-0630-4D0F-BBE8-76C1964AE6B8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

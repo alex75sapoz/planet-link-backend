@@ -7,6 +7,11 @@ namespace Api.Library.User.Entity
 {
     public class UserEntity
     {
+        public UserEntity()
+        {
+            Sessions = new HashSet<UserSessionEntity>();
+        }
+
         public int UserId { get; internal set; }
         public int UserTypeId { get; internal set; }
         public string ExternalUserId { get; internal set; }

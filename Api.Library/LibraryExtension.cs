@@ -7,6 +7,23 @@ namespace Api.Library
 {
     public static class LibraryExtension
     {
+        #region Exception
+
+        public static string GetFullMessage(this Exception input)
+        {
+            var message = input.Message;
+
+            while (input.InnerException is not null)
+            {
+                message += $", {input.InnerException}";
+                input = input.InnerException;
+            }
+
+            return message;
+        }
+
+        #endregion
+
         #region Noda Time
 
         public static readonly DateTimeZone EasternTimezone = GetTimezone("America/New_York");

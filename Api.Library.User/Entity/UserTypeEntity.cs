@@ -6,6 +6,11 @@ namespace Api.Library.User.Entity
 {
     public class UserTypeEntity
     {
+        public UserTypeEntity()
+        {
+            Users = new HashSet<UserEntity>();
+        }
+
         public int UserTypeId { get; internal set; }
         public string Name { get; internal set; }
 

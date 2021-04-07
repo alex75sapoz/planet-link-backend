@@ -28,8 +28,8 @@ namespace Api.Library
 
     public class InternalServerException : LibraryException
     {
-        public InternalServerException(string message) : base(HttpStatusCode.BadRequest, message) { }
+        public InternalServerException(string message) : base(HttpStatusCode.InternalServerError, message) { }
 
-        public InternalServerException(string message, string internalMessage) : base(HttpStatusCode.BadRequest, message, internalMessage) { }
+        public InternalServerException(string message, string internalMessage) : base(HttpStatusCode.InternalServerError, message, internalMessage) { }
     }
 }

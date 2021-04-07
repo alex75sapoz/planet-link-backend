@@ -5,7 +5,7 @@ namespace Api.Library.User
 {
     internal class UserContext : LibraryContext
     {
-        public UserContext(DbContextOptions options) : base(options) { }
+        public UserContext(DbContextOptions<UserContext> options) : base(options) { }
 
         public DbSet<UserTypeEntity> UserTypes { get; set; }
         public DbSet<UserEntity> Users { get; set; }

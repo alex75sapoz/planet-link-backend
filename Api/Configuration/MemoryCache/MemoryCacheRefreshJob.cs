@@ -1,4 +1,6 @@
 ﻿using Api.Library;
+using Api.Library.Error;
+using Api.Library.Error.Contract;
 using Api.Library.User;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -26,11 +28,9 @@ namespace Api.Configuration.MemoryCache
             IsReady = false;
 
             using var scope = _serviceProvider.CreateScope();
-
             var userRepository = scope.ServiceProvider.GetRequiredService<IUserRepository>();
 
-            //Order is very important
-            //Must match project build order
+            //Order must match project build order
 
             await IUserStartup.RefreshMemoryCacheAsync(userRepository);
 
@@ -39,7 +39,18 @@ namespace Api.Configuration.MemoryCache
             await Task.WhenAll(ILibraryMemoryCache.Jobs.Where(job => job.Value.IsDependentOnCache).Select(job => job.Value.ResumeAsync()));
         }
 
-        protected override Task ErrorAsync(System.Exception exception) =>
-            Task.CompletedTask;
+        protected override async Task ErrorAsync(System.Exception exception)
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var errorService = scope.ServiceProvider.GetRequiredService<IErrorService>();
+
+            await errorService.CreateErrorProcessingAsync(new ErrorProcessingContract()
+            {
+                ClassName = nameof(MemoryCacheRefreshJob),
+                ClassMethodName = nameof(MemoryCacheRefreshJob.StartAsync),
+                ExceptionType = exception.GetType().Name,
+                ExceptionMessage = exception.GetFullMessage()
+            });
+        }
     }
 }

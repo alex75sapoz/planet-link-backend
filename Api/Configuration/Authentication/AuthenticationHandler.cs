@@ -100,35 +100,27 @@ namespace Api.Configuration.Authentication
             }
         }
 
-        private AuthenticateResult GetSwaggerAuthenticateResult()
-        {
-            return AuthenticateResult.Success(new AuthenticationTicket(new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
+        private AuthenticateResult GetSwaggerAuthenticateResult() =>
+            AuthenticateResult.Success(new AuthenticationTicket(new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
             {
                 new Claim(nameof(AuthenticationResult.IsAuthenticated), bool.TrueString)
             })), Scheme.Name));
-        }
 
-        private AuthenticateResult GetGuestAuthenticateResult(DateTimeZone timezone)
-        {
-            Request.HttpContext.Items.TryAdd(nameof(DateTimeZone), timezone);
-
-            return AuthenticateResult.Success(new AuthenticationTicket(new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
+        private AuthenticateResult GetGuestAuthenticateResult(DateTimeZone timezone) =>
+            AuthenticateResult.Success(new AuthenticationTicket(new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
             {
-                new Claim(nameof(AuthenticationResult.IsAuthenticated), bool.TrueString)
+                new Claim(nameof(AuthenticationResult.IsAuthenticated), bool.TrueString),
+                new Claim(nameof(AuthenticationResult.Timezone), timezone.Id)
             })), Scheme.Name));
-        }
 
-        private AuthenticateResult GetUserSessionAuthenticateResult(UserSessionContract userSession, DateTimeZone timezone)
-        {
-            Request.HttpContext.Items.TryAdd(nameof(DateTimeZone), timezone);
-
-            return AuthenticateResult.Success(new AuthenticationTicket(new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
+        private AuthenticateResult GetUserSessionAuthenticateResult(UserSessionContract userSession, DateTimeZone timezone) =>
+            AuthenticateResult.Success(new AuthenticationTicket(new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
             {
                 new Claim(nameof(AuthenticationResult.IsAuthenticated), bool.TrueString),
                 new Claim(nameof(AuthenticationResult.UserSessionId), userSession.UserSessionId.ToString()),
                 new Claim(nameof(AuthenticationResult.UserId), userSession.User.UserId.ToString()),
-                new Claim(nameof(AuthenticationResult.UserTypeId), userSession.User.Type.TypeId.ToString())
+                new Claim(nameof(AuthenticationResult.UserTypeId), userSession.User.Type.TypeId.ToString()),
+                new Claim(nameof(AuthenticationResult.Timezone), timezone.Id)
             })), Scheme.Name));
-        }
     }
 }

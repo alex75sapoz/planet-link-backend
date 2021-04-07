@@ -1,25 +1,22 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Api.Configuration.Authentication;
+using Microsoft.AspNetCore.Mvc;
 using NodaTime;
-using System.Security.Claims;
 
 namespace Api.Controller
 {
     [Route("[controller]"), Produces("application/json"), ApiController]
     public abstract class ApiController : ControllerBase
     {
-        protected int? UserSessionId => int.TryParse(User.FindFirstValue(nameof(UserSessionId)), out int userSessionId)
-            ? userSessionId
-            : null;
+        private AuthenticationResult _authenticationResult;
 
-        protected int? UserId => int.TryParse(User.FindFirstValue(nameof(UserId)), out int userId)
-            ? userId
-            : null;
-
-        protected int? UserTypeId => int.TryParse(User.FindFirstValue(nameof(UserTypeId)), out int userTypeId)
-            ? userTypeId
-            : null;
-
-        protected DateTimeZone Timezone => (DateTimeZone)HttpContext.Items[nameof(DateTimeZone)];
+        protected AuthenticationResult AuthenticationResult =>
+            _authenticationResult is null
+                ? (_authenticationResult = new AuthenticationResult(User))
+                : _authenticationResult;
+        protected int? UserSessionId => AuthenticationResult.UserSessionId;
+        protected int? UserId => AuthenticationResult.UserId;
+        protected int? UserTypeId => AuthenticationResult.UserTypeId;
+        protected DateTimeZone Timezone => AuthenticationResult.Timezone;
     }
 
     public abstract class ApiController<TService> : ApiController
