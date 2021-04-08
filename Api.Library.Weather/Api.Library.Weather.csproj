@@ -2,13 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Folder Include="Contract\" />
-    <Folder Include="Entity\" />
-    <Folder Include="Response\" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Api.Library.Location\Api.Library.Location.csproj" />
