@@ -14,8 +14,8 @@ namespace Api.Library.Location
         public static void Startup(IServiceCollection services, Func<Type, object> configuration, string databaseConnection) =>
             LocationStartup.Startup(services, (LocationConfiguration)configuration(typeof(LocationConfiguration)), databaseConnection);
 
-        public static async Task RefreshMemoryCacheAsync(ILocationRepository repository) =>
-            await LocationStartup.RefreshMemoryCacheAsync(repository);
+        public static async Task RefreshMemoryCacheAsync(IServiceProvider serviceProvider) =>
+            await LocationStartup.RefreshMemoryCacheAsync(serviceProvider.GetRequiredService<LocationRepository>());
     }
 
     internal static class LocationStartup
@@ -30,7 +30,7 @@ namespace Api.Library.Location
                 .AddTransient<ILocationService, LocationService>()
                 .AddSingleton(configuration);
 
-        public static async Task RefreshMemoryCacheAsync(ILocationRepository repository)
+        public static async Task RefreshMemoryCacheAsync(LocationRepository repository)
         {
             IsMemoryCacheReady = false;
 

@@ -3,6 +3,7 @@ using Api.Library.Error;
 using Api.Library.Error.Contract;
 using Api.Library.Location;
 using Api.Library.User;
+using Api.Library.Weather;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
@@ -29,13 +30,12 @@ namespace Api.Configuration.MemoryCache
             IsReady = false;
 
             using var scope = _serviceProvider.CreateScope();
-            var userRepository = scope.ServiceProvider.GetRequiredService<IUserRepository>();
-            var locationRepository = scope.ServiceProvider.GetRequiredService<ILocationRepository>();
 
             //Order must match project build order
 
-            await IUserStartup.RefreshMemoryCacheAsync(userRepository);
-            await ILocationStartup.RefreshMemoryCacheAsync(locationRepository);
+            await IUserStartup.RefreshMemoryCacheAsync(scope.ServiceProvider);
+            await ILocationStartup.RefreshMemoryCacheAsync(scope.ServiceProvider);
+            await IWeatherStartup.RefreshMemoryCacheAsync(scope.ServiceProvider);
 
             IsReady = true;
 

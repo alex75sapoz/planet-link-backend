@@ -14,8 +14,8 @@ namespace Api.Library.User
         public static void Startup(IServiceCollection services, Func<Type, object> configuration, string databaseConnection) =>
             UserStartup.Startup(services, (UserConfiguration)configuration(typeof(UserConfiguration)), databaseConnection);
 
-        public static async Task RefreshMemoryCacheAsync(IUserRepository repository) =>
-            await UserStartup.RefreshMemoryCacheAsync(repository);
+        public static async Task RefreshMemoryCacheAsync(IServiceProvider serviceProvider) =>
+            await UserStartup.RefreshMemoryCacheAsync(serviceProvider.GetRequiredService<UserRepository>());
     }
 
     internal static class UserStartup
@@ -30,7 +30,7 @@ namespace Api.Library.User
                 .AddTransient<IUserService, UserService>()
                 .AddSingleton(configuration);
 
-        public static async Task RefreshMemoryCacheAsync(IUserRepository repository)
+        public static async Task RefreshMemoryCacheAsync(UserRepository repository)
         {
             IsMemoryCacheReady = false;
 
