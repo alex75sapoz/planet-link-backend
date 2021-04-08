@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Api.Library.StockMarket.Job;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
@@ -28,7 +29,9 @@ namespace Api.Library.StockMarket
                 .AddTransient<StockMarketRepository>()
                 .AddTransient<IStockMarketRepository, StockMarketRepository>()
                 .AddTransient<IStockMarketService, StockMarketService>()
-                .AddSingleton(configuration);
+                .AddSingleton(configuration)
+                .AddHostedService<StockMarketProcessQuotesJob>()
+                .AddHostedService<StockMarketProcessQuoteUserAlertsInProgressJob>();
 
         public static async Task RefreshMemoryCacheAsync(StockMarketRepository repository)
         {
