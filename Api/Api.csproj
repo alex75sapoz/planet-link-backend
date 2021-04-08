@@ -12,6 +12,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Api.Library.Error\Api.Library.Error.csproj" />
     <ProjectReference Include="..\Api.Library.Location\Api.Library.Location.csproj" />
+    <ProjectReference Include="..\Api.Library.StockMarket\Api.Library.StockMarket.csproj" />
     <ProjectReference Include="..\Api.Library.User\Api.Library.User.csproj" />
     <ProjectReference Include="..\Api.Library.Weather\Api.Library.Weather.csproj" />
   </ItemGroup>
