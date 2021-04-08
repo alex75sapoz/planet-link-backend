@@ -5,6 +5,7 @@ using Api.Library.StockMarket.Entity;
 using Api.Library.StockMarket.Enum;
 using Api.Library.StockMarket.Response;
 using Api.Library.User;
+using Api.Library.User.Enum;
 using Microsoft.Extensions.Caching.Memory;
 using NodaTime;
 using RestSharp;
@@ -59,8 +60,12 @@ namespace Api.Library.StockMarket
                 .Select(quote => quote.Value)
                 .ToList();
 
-        public List<StockMarketQuoteUserAlertContract> SearchQuoteUserAlerts(int alertTypeId, int? userId, int? quoteId) =>
-            StockMarketMemoryCache.StockMarketQuoteUserAlerts
+        public List<StockMarketQuoteUserAlertContract> SearchQuoteUserAlerts(int alertTypeId, int? userId, int? quoteId)
+        {
+            if (userId.HasValue && _userService.GetUser(userId.Value).Type.TypeId != (int)UserType.Stocktwits)
+                throw new BadRequestException($"{nameof(userId)} is not of stocktwits type");
+
+            return StockMarketMemoryCache.StockMarketQuoteUserAlerts
                 .Where(quoteUserAlert =>
                     (quoteUserAlert.Value.AlertType.AlertTypeId == alertTypeId) &&
                     (!userId.HasValue || quoteUserAlert.Value.User.UserId == userId) &&
@@ -70,6 +75,7 @@ namespace Api.Library.StockMarket
                 .OrderByDescending(quoteUserAlert => quoteUserAlert.CreatedOn)
                 .Take(_configuration.Limit.SearchQuoteUserAlertsLimit)
                 .ToList();
+        }
 
         #endregion
 
@@ -355,6 +361,9 @@ namespace Api.Library.StockMarket
         public StockMarketUserContract GetUser(int userId)
         {
             var user = _userService.GetUser(userId);
+
+            if (user.Type.TypeId != (int)UserType.Stocktwits)
+                throw new BadRequestException($"{nameof(userId)} is not of stocktwits type");
 
             return new StockMarketUserContract()
             {

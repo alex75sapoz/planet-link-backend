@@ -28,7 +28,7 @@ namespace Api.Controller
 
         [HttpGet("City/Emotion/Counts"), ProducesResponseType(typeof(List<WeatherCityEmotionCountContract>), (int)HttpStatusCode.OK)]
         [ResponseCache(Duration = 4)]
-        public async Task<IActionResult> GetCityUserEmotionCountsAsync([Required, Range(1, int.MaxValue)] int cityId) =>
+        public async Task<IActionResult> GetCityEmotionCountsAsync([Required, Range(1, int.MaxValue)] int cityId) =>
             Ok(await Task.FromResult(_service.GetCityEmotionCounts(cityId, Timezone)));
 
         [HttpPost("City/UserEmotion"), ProducesResponseType(typeof(WeatherCityUserEmotionContract), (int)HttpStatusCode.OK)]
