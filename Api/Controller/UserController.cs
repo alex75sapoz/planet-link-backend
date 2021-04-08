@@ -1,8 +1,8 @@
 ﻿using Api.Configuration.Authentication;
 using Api.Configuration.Authorization;
-using Api.Library.User;
-using Api.Library.User.Contract;
-using Api.Library.User.Enum;
+using Library.User;
+using Library.User.Contract;
+using Library.User.Enum;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

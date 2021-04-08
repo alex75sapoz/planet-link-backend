@@ -1,4 +1,4 @@
-﻿using Api.Library.User.Enum;
+﻿using Library.User.Enum;
 using Microsoft.AspNetCore.Authorization;
 using System;
 

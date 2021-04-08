@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
@@ -10,11 +10,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Api.Library.Error\Api.Library.Error.csproj" />
-    <ProjectReference Include="..\Api.Library.Location\Api.Library.Location.csproj" />
-    <ProjectReference Include="..\Api.Library.StockMarket\Api.Library.StockMarket.csproj" />
-    <ProjectReference Include="..\Api.Library.User\Api.Library.User.csproj" />
-    <ProjectReference Include="..\Api.Library.Weather\Api.Library.Weather.csproj" />
+    <ProjectReference Include="..\Library\StockMarket\Library.StockMarket.csproj" />
+    <ProjectReference Include="..\Library\User\Library.User.csproj" />
+    <ProjectReference Include="..\Library\Weather\Library.Weather.csproj" />
   </ItemGroup>
 
 </Project>

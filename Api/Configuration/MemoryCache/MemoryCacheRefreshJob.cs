@@ -1,10 +1,10 @@
-﻿using Api.Library;
-using Api.Library.Error;
-using Api.Library.Error.Contract;
-using Api.Library.Location;
-using Api.Library.StockMarket;
-using Api.Library.User;
-using Api.Library.Weather;
+﻿using Library.Base;
+using Library.Error;
+using Library.Error.Contract;
+using Library.Location;
+using Library.StockMarket;
+using Library.User;
+using Library.Weather;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Api.Configuration.MemoryCache
 {
-    internal class MemoryCacheRefreshJob : LibraryJob
+    internal class MemoryCacheRefreshJob : BaseJob
     {
         public MemoryCacheRefreshJob(IServiceProvider serviceProvider) : base(serviceProvider,
             (

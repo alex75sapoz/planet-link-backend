@@ -1,8 +1,8 @@
 ﻿using Api.Configuration.Authorization;
-using Api.Library.StockMarket;
-using Api.Library.StockMarket.Contract;
-using Api.Library.StockMarket.Enum;
-using Api.Library.User.Enum;
+using Library.StockMarket;
+using Library.StockMarket.Contract;
+using Library.StockMarket.Enum;
+using Library.User.Enum;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;

@@ -1,8 +1,8 @@
 ﻿using Api.Configuration.Authorization;
-using Api.Library.User.Enum;
-using Api.Library.Weather;
-using Api.Library.Weather.Contract;
-using Api.Library.Weather.Enum;
+using Library.User.Enum;
+using Library.Weather;
+using Library.Weather.Contract;
+using Library.Weather.Enum;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;

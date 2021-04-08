@@ -1,9 +1,9 @@
 ﻿using Api.Configuration.Database;
-using Api.Library.Error;
-using Api.Library.Location;
-using Api.Library.StockMarket;
-using Api.Library.User;
-using Api.Library.Weather;
+using Library.Error;
+using Library.Location;
+using Library.StockMarket;
+using Library.User;
+using Library.Weather;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

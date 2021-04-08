@@ -1,7 +1,7 @@
 ﻿using Api.Configuration.MemoryCache;
 using Api.Controller;
-using Api.Library.User;
-using Api.Library.User.Contract;
+using Library.User;
+using Library.User.Contract;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

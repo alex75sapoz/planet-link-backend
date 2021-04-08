@@ -1,5 +1,5 @@
 ﻿using Api.Configuration.Authentication;
-using Api.Library.User.Enum;
+using Library.User.Enum;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using System.Threading.Tasks;
