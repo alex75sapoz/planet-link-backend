@@ -62,8 +62,8 @@ namespace Api.Configuration.Authentication
             if (userTypeId == (int)AuthenticationUserType.Guest)
                 return GetGuestAuthenticateResult(timezone);
 
-            //Step 5 - Token or Code/Page
-            if (!Request.Headers.TryGetValue(ApiHeader.Token, out StringValues token) & (!Request.Headers.TryGetValue(ApiHeader.Code, out StringValues code) | !Request.Headers.TryGetValue(ApiHeader.Page, out StringValues page)))
+            //Step 5 - Token or Code/Subdomain/Page
+            if (!Request.Headers.TryGetValue(ApiHeader.Token, out StringValues token) & (!Request.Headers.TryGetValue(ApiHeader.Code, out StringValues code) | !Request.Headers.TryGetValue(ApiHeader.Subdomain, out StringValues subdomain) | !Request.Headers.TryGetValue(ApiHeader.Page, out StringValues page)))
                 return AuthenticateResult.Fail($"{ApiHeader.Token} or {ApiHeader.Code}/{ApiHeader.Page} is required");
             else if (token != StringValues.Empty && code != StringValues.Empty)
                 return AuthenticateResult.Fail($"{ApiHeader.Token} and {ApiHeader.Code} both cannot have a value");
@@ -77,7 +77,7 @@ namespace Api.Configuration.Authentication
                         return GetUserSessionAuthenticateResult(await _userService.AuthenticateTokenAsync(userTypeId.Value, token, timezone), timezone);
 
                     if (code != StringValues.Empty)
-                        return GetUserSessionAuthenticateResult(await _userService.AuthenticateCodeAsync(userTypeId.Value, code, page, timezone), timezone);
+                        return GetUserSessionAuthenticateResult(await _userService.AuthenticateCodeAsync(userTypeId.Value, code, subdomain, page, timezone), timezone);
                 }
                 catch (System.Exception exception)
                 {

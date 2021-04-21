@@ -16,12 +16,12 @@ namespace Library.User
 {
     public interface IUserService
     {
-        Task<UserSessionContract> AuthenticateCodeAsync(int userTypeId, string code, string page, DateTimeZone timezone);
+        Task<UserSessionContract> AuthenticateCodeAsync(int userTypeId, string code, string subdomain, string page, DateTimeZone timezone);
         Task<UserSessionContract> AuthenticateTokenAsync(int userTypeId, string token, DateTimeZone timezone);
         UserSessionContract GetSession(int userSessionId, bool isExpiredSessionValid = false);
         UserSessionContract GetSession(int userTypeId, string token, bool isExpiredSessionValid = false);
         UserContract GetUser(int userId);
-        string GetUserConsentUrl(int userTypeId, string page);
+        string GetUserConsentUrl(int userTypeId, string subdomain, string page);
         Task RevokeSessionAsync(int userSessionId);
         List<UserContract> SearchUsers(string keyword, int userTypeId);
     }
@@ -61,10 +61,10 @@ namespace Library.User
 
         #region Get
 
-        public string GetUserConsentUrl(int userTypeId, string page) => userTypeId switch
+        public string GetUserConsentUrl(int userTypeId, string subdomain, string page) => userTypeId switch
         {
-            (int)UserType.Google => GetGoogleConsentUrlResponse(page),
-            (int)UserType.Stocktwits => GetStocktwitsConsentUrlResponse(page),
+            (int)UserType.Google => GetGoogleConsentUrlResponse(subdomain, page),
+            (int)UserType.Stocktwits => GetStocktwitsConsentUrlResponse(subdomain, page),
             _ => throw new BadRequestException($"{nameof(userTypeId)} is invalid")
         };
 
@@ -190,11 +190,11 @@ namespace Library.User
             throw new BadRequestException($"{nameof(userTypeId)} is invalid");
         }
 
-        public async Task<UserSessionContract> AuthenticateCodeAsync(int userTypeId, string code, string page, DateTimeZone timezone)
+        public async Task<UserSessionContract> AuthenticateCodeAsync(int userTypeId, string code, string subdomain, string page, DateTimeZone timezone)
         {
             if (userTypeId == (int)UserType.Google)
             {
-                var googleTokenResponse = await GetGoogleTokenResponseAsync(code, page);
+                var googleTokenResponse = await GetGoogleTokenResponseAsync(code, subdomain, page);
                 var googleJsonWebToken = new JwtSecurityTokenHandler().ReadJwtToken(googleTokenResponse.UserJsonWebToken);
                 var userEntity = await _repository.GetUserAsync((int)UserType.Google, googleJsonWebToken.Subject);
 
@@ -272,7 +272,7 @@ namespace Library.User
 
             if (userTypeId == (int)UserType.Stocktwits)
             {
-                var stocktwitsTokenResponse = await GetStocktwitsTokenResponseAsync(code, page);
+                var stocktwitsTokenResponse = await GetStocktwitsTokenResponseAsync(code, subdomain, page);
                 var userEntity = await _repository.GetUserAsync((int)UserType.Stocktwits, stocktwitsTokenResponse.UserId.ToString());
                 var currentTime = DateTimeOffset.Now.AtTimezone(timezone);
 
@@ -405,7 +405,7 @@ namespace Library.User
 
         #region Google Api
 
-        private string GetGoogleConsentUrlResponse(string page) =>
+        private string GetGoogleConsentUrlResponse(string subdomain, string page) =>
             _googleAuthenticationApi.BuildUri(
                 new RestRequest("o/oauth2/v2/auth")
                     .AddQueryParameter("client_id", _configuration.GoogleApi.AuthenticationKey)
@@ -413,16 +413,16 @@ namespace Library.User
                     .AddQueryParameter("scope", "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid")
                     .AddQueryParameter("access_type", "offline")
                     .AddQueryParameter("prompt", "consent")
-                    .AddQueryParameter("redirect_uri", $"{_configuration.Default.RedirectUrl}?userTypeId={(int)UserType.Google}&page={page}")
+                    .AddQueryParameter("redirect_uri", $"{_configuration.Default.RedirectUrl}?userTypeId={(int)UserType.Google}&subdomain={subdomain}&page={page}")
             ).AbsoluteUri;
 
-        private async Task<UserGoogleTokenResponse> GetGoogleTokenResponseAsync(string code, string page) =>
+        private async Task<UserGoogleTokenResponse> GetGoogleTokenResponseAsync(string code, string subdomain, string page) =>
             (await _googleTokenApi.ExecutePostAsync<UserGoogleTokenResponse>(
                 new RestRequest("token")
                     .AddQueryParameter("client_id", _configuration.GoogleApi.AuthenticationKey)
                     .AddQueryParameter("client_secret", _configuration.GoogleApi.AuthenticationSecretKey)
                     .AddQueryParameter("grant_type", "authorization_code")
-                    .AddQueryParameter("redirect_uri", $"{_configuration.Default.RedirectUrl}?userTypeId={(int)UserType.Google}&page={page}")
+                    .AddQueryParameter("redirect_uri", $"{_configuration.Default.RedirectUrl}?userTypeId={(int)UserType.Google}&subdomain={subdomain}&page={page}")
                     .AddQueryParameter("code", code)
             )).GetData(isSuccess: (response) => !string.IsNullOrWhiteSpace(response?.Token));
 
@@ -445,23 +445,23 @@ namespace Library.User
 
         #region Stocktwits Api
 
-        private string GetStocktwitsConsentUrlResponse(string page) =>
+        private string GetStocktwitsConsentUrlResponse(string subdomain, string page) =>
             _stocktwitsApi.BuildUri(
                 new RestRequest("oauth/authorize")
                     .AddQueryParameter("client_id", _configuration.StocktwitsApi.AuthenticationKey)
                     .AddQueryParameter("response_type", "code")
                     .AddQueryParameter("scope", "read,watch_lists")
                     .AddQueryParameter("prompt", "1")
-                    .AddQueryParameter("redirect_uri", $"{_configuration.Default.RedirectUrl}?userTypeId={(int)UserType.Stocktwits}&page={page}")
+                    .AddQueryParameter("redirect_uri", $"{_configuration.Default.RedirectUrl}?userTypeId={(int)UserType.Stocktwits}&subdomain={subdomain}&page={page}")
             ).AbsoluteUri;
 
-        private async Task<UserStocktwitsTokenResponse> GetStocktwitsTokenResponseAsync(string code, string page) =>
+        private async Task<UserStocktwitsTokenResponse> GetStocktwitsTokenResponseAsync(string code, string subdomain, string page) =>
             (await _stocktwitsApi.ExecutePostAsync<UserStocktwitsTokenResponse>(
                 new RestRequest("oauth/token")
                     .AddQueryParameter("client_id", _configuration.StocktwitsApi.AuthenticationKey)
                     .AddQueryParameter("client_secret", _configuration.StocktwitsApi.AuthenticationSecretKey)
                     .AddQueryParameter("grant_type", "authorization_code")
-                    .AddQueryParameter("redirect_uri", $"{_configuration.Default.RedirectUrl}?userTypeId={(int)UserType.Stocktwits}&page={page}")
+                    .AddQueryParameter("redirect_uri", $"{_configuration.Default.RedirectUrl}?userTypeId={(int)UserType.Stocktwits}&subdomain={subdomain}&page={page}")
                     .AddQueryParameter("code", code)
             )).GetData(isSuccess: (response) => !string.IsNullOrWhiteSpace(response?.Token));
 

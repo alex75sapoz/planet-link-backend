@@ -35,6 +35,8 @@ namespace Api.Controller
 
         public const string UserTypeId = "api-userTypeId";
 
+        public const string Subdomain = "api-subdomain";
+
         public const string Page = "api-page";
 
         public const string TimezoneId = "api-timezoneId";

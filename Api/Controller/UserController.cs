@@ -29,8 +29,8 @@ namespace Api.Controller
 
         [HttpGet("ConsentUrl"), ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
         [ResponseCache(Duration = 299, VaryByHeader = ApiHeader.UserTypeId + "," + ApiHeader.Token)]
-        public async Task<IActionResult> GetConsentUrlAsync([Required] UserType userTypeId, [Required] string page) =>
-            Ok(await Task.FromResult(_service.GetUserConsentUrl((int)userTypeId, page)));
+        public async Task<IActionResult> GetConsentUrlAsync([Required] UserType userTypeId, [Required] string subdomain, [Required] string page) =>
+            Ok(await Task.FromResult(_service.GetUserConsentUrl((int)userTypeId, subdomain, page)));
 
         [HttpGet("Stocktwits/Search"), ProducesResponseType(typeof(List<UserContract>), (int)HttpStatusCode.OK)]
         [ResponseCache(Duration = 59, VaryByHeader = ApiHeader.UserTypeId + "," + ApiHeader.Token)]
