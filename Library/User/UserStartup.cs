@@ -24,11 +24,14 @@ namespace Library.User
 
         public static void Startup(IServiceCollection services, UserConfiguration configuration, string databaseConnection) =>
             services
+                //Internal
                 .AddDbContext<UserContext>(options => options.UseSqlServer(databaseConnection))
                 .AddTransient<UserRepository>()
+                .AddTransient<UserService>()
+                .AddSingleton(configuration)
+                //Public
                 .AddTransient<IUserRepository, UserRepository>()
-                .AddTransient<IUserService, UserService>()
-                .AddSingleton(configuration);
+                .AddTransient<IUserService, UserService>();
 
         public static async Task RefreshMemoryCacheAsync(UserRepository repository)
         {

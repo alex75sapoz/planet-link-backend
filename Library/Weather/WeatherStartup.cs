@@ -24,11 +24,14 @@ namespace Library.Weather
 
         public static void Startup(IServiceCollection services, WeatherConfiguration configuration, string databaseConnection) =>
             services
+                //Internal
                 .AddDbContext<WeatherContext>(options => options.UseSqlServer(databaseConnection))
                 .AddTransient<WeatherRepository>()
+                .AddTransient<WeatherService>()
+                .AddSingleton(configuration)
+                //Public
                 .AddTransient<IWeatherRepository, WeatherRepository>()
-                .AddTransient<IWeatherService, WeatherService>()
-                .AddSingleton(configuration);
+                .AddTransient<IWeatherService, WeatherService>();
 
         public static async Task RefreshMemoryCacheAsync(WeatherRepository repository)
         {

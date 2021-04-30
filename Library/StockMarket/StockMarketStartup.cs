@@ -25,11 +25,15 @@ namespace Library.StockMarket
 
         public static void Startup(IServiceCollection services, StockMarketConfiguration configuration, string databaseConnection) =>
             services
+                //Internal
                 .AddDbContext<StockMarketContext>(options => options.UseSqlServer(databaseConnection))
                 .AddTransient<StockMarketRepository>()
+                .AddTransient<StockMarketService>()
+                .AddSingleton(configuration)
+                //Public
                 .AddTransient<IStockMarketRepository, StockMarketRepository>()
                 .AddTransient<IStockMarketService, StockMarketService>()
-                .AddSingleton(configuration)
+                //Job
                 .AddHostedService<StockMarketProcessQuotesJob>()
                 .AddHostedService<StockMarketProcessQuoteUserAlertsInProgressJob>();
 

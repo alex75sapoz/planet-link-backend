@@ -24,11 +24,14 @@ namespace Library.Location
 
         public static void Startup(IServiceCollection services, LocationConfiguration configuration, string databaseConnection) =>
             services
+                //Internal
                 .AddDbContext<LocationContext>(options => options.UseSqlServer(databaseConnection, sqlServerOptions => sqlServerOptions.UseNetTopologySuite()))
                 .AddTransient<LocationRepository>()
+                .AddTransient<LocationService>()
+                .AddSingleton(configuration)
+                //Public
                 .AddTransient<ILocationRepository, LocationRepository>()
-                .AddTransient<ILocationService, LocationService>()
-                .AddSingleton(configuration);
+                .AddTransient<ILocationService, LocationService>();
 
         public static async Task RefreshMemoryCacheAsync(LocationRepository repository)
         {
