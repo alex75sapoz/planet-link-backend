@@ -10,6 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Library\Library.Programming\Library.Programming.csproj" />
     <ProjectReference Include="..\Library\StockMarket\Library.StockMarket.csproj" />
     <ProjectReference Include="..\Library\User\Library.User.csproj" />
     <ProjectReference Include="..\Library\Weather\Library.Weather.csproj" />

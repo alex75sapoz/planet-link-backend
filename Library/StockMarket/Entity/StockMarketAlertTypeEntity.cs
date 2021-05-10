@@ -6,6 +6,11 @@ namespace Library.StockMarket.Entity
 {
     public class StockMarketAlertTypeEntity
     {
+        public StockMarketAlertTypeEntity()
+        {
+            QuoteUserAlerts = new HashSet<StockMarketQuoteUserAlertEntity>();
+        }
+
         public int AlertTypeId { get; internal set; }
         public string Name { get; internal set; }
 

@@ -6,6 +6,11 @@ namespace Library.StockMarket.Entity
 {
     public class StockMarketExchangeEntity
     {
+        public StockMarketExchangeEntity()
+        {
+            Quotes = new HashSet<StockMarketQuoteEntity>();
+        }
+
         public int ExchangeId { get; internal set; }
         public string FinancialModelingPrepId { get; internal set; }
         public string Name { get; internal set; }

@@ -1,6 +1,7 @@
 ﻿using Api.Configuration.Database;
 using Library.Error;
 using Library.Location;
+using Library.Programming;
 using Library.StockMarket;
 using Library.User;
 using Library.Weather;
@@ -22,6 +23,7 @@ namespace Api.Configuration.Library
             ILocationStartup.Startup(services, (type) => configuration.GetSection(type.Name).Get(type), databaseConfiguration.Connection);
             IWeatherStartup.Startup(services, (type) => configuration.GetSection(type.Name).Get(type), databaseConfiguration.Connection);
             IStockMarketStartup.Startup(services, (type) => configuration.GetSection(type.Name).Get(type), databaseConfiguration.Connection);
+            IProgrammingStartup.Startup(services, databaseConfiguration.Connection);
         }
     }
 }

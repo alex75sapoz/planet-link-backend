@@ -6,6 +6,11 @@ namespace Library.StockMarket.Entity
 {
     public class StockMarketEmotionEntity
     {
+        public StockMarketEmotionEntity()
+        {
+            QuoteUserEmotions = new HashSet<StockMarketQuoteUserEmotionEntity>();
+        }
+
         public int EmotionId { get; internal set; }
         public string Name { get; internal set; }
         public string Emoji { get; internal set; }
