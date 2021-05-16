@@ -2,6 +2,7 @@
 using Library.Error;
 using Library.Error.Contract;
 using Library.Location;
+using Library.Programming;
 using Library.StockMarket;
 using Library.User;
 using Library.Weather;
@@ -38,6 +39,7 @@ namespace Api.Configuration.MemoryCache
             await ILocationStartup.RefreshMemoryCacheAsync(scope.ServiceProvider);
             await IWeatherStartup.RefreshMemoryCacheAsync(scope.ServiceProvider);
             await IStockMarketStartup.RefreshMemoryCacheAsync(scope.ServiceProvider);
+            await IProgrammingStartup.RefreshMemoryCacheAsync(scope.ServiceProvider);
 
             IsReady = true;
 

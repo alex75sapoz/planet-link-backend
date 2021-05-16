@@ -12,7 +12,7 @@ namespace Library.Error.Entity
         public string ExceptionMessage { get; internal set; }
         public string Input { get; internal set; }
 
-        public virtual ErrorEntity Error { get; set; }
+        public virtual ErrorEntity Error { get; internal set; }
     }
 }
 

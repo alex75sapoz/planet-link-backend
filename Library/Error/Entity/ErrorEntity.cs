@@ -10,7 +10,7 @@ namespace Library.Error.Entity
         public int ErrorTypeId { get; internal set; }
         public DateTimeOffset CreatedOn { get; internal set; }
 
-        public virtual ErrorTypeEntity Type { get; set; }
+        public virtual ErrorTypeEntity Type { get; internal set; }
         public virtual ErrorProcessingEntity Processing { get; internal set; }
         public virtual ErrorRequestEntity Request { get; internal set; }
     }

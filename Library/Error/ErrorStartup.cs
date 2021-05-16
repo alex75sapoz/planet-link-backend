@@ -6,18 +6,18 @@ namespace Library.Error
     public interface IErrorStartup
     {
         public static void Startup(IServiceCollection services, string databaseConnection) =>
-            ErrorStartup.Startup(services, databaseConnection);
+            ErrorStartup.Startup(services, new ErrorConfiguration(), databaseConnection);
     }
 
     internal static class ErrorStartup
     {
-        public static void Startup(IServiceCollection services, string databaseConnection) =>
+        public static void Startup(IServiceCollection services, ErrorConfiguration configuration, string databaseConnection) =>
             services
                 //Internal
                 .AddDbContext<ErrorContext>(options => options.UseSqlServer(databaseConnection))
                 .AddTransient<ErrorRepository>()
                 .AddTransient<ErrorService>()
-                .AddSingleton(new ErrorConfiguration())
+                .AddSingleton(configuration)
                 //Public
                 .AddTransient<IErrorRepository, ErrorRepository>()
                 .AddTransient<IErrorService, ErrorService>();
