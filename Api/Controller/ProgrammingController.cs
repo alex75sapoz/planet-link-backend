@@ -2,6 +2,7 @@
 using Library.Programming.Contract;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -18,7 +19,7 @@ namespace Api.Controller
 
         [HttpGet("Project/Search"), ProducesResponseType(typeof(List<ProgrammingProjectContract>), (int)HttpStatusCode.OK)]
         [ResponseCache(Duration = 59)]
-        public async Task<IActionResult> SearchProjectsAsync([FromQuery] List<int> projectTypeIds, [FromQuery] List<int> languageIds, [FromQuery] List<int> jobIds, [FromQuery] List<int> technologyStackIds) =>
-            Ok(await Task.FromResult(_service.SearchProjects(projectTypeIds, languageIds, jobIds, technologyStackIds)));
+        public async Task<IActionResult> SearchProjectsAsync([Range(1, int.MaxValue)] int? projectTypeId, [Range(1, int.MaxValue)] int? languageId, [Range(1, int.MaxValue)] int? jobId, [Range(1, int.MaxValue)] int? technologyStackId) =>
+            Ok(await Task.FromResult(_service.SearchProjects(projectTypeId, languageId, jobId, technologyStackId)));
     }
 }

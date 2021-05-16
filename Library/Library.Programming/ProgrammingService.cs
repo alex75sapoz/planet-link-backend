@@ -9,7 +9,7 @@ namespace Library.Programming
     public interface IProgrammingService
     {
         ProgrammingConfigurationContract GetConfiguration();
-        List<ProgrammingProjectContract> SearchProjects(List<int> projectTypeIds, List<int> languageIds, List<int> jobIds, List<int> technologyStackIds);
+        List<ProgrammingProjectContract> SearchProjects(int? projectTypeId, int? languageId, int? jobId, int? technologyStackId);
     }
 
     internal class ProgrammingService : BaseService<ProgrammingConfiguration, ProgrammingRepository>, IProgrammingService
@@ -18,29 +18,15 @@ namespace Library.Programming
 
         #region Search
 
-        public List<ProgrammingProjectContract> SearchProjects(List<int> projectTypeIds, List<int> languageIds, List<int> jobIds, List<int> technologyStackIds)
-        {
-            if (projectTypeIds is not null && !projectTypeIds.Any())
-                projectTypeIds = null;
-
-            if (languageIds is not null && !languageIds.Any())
-                languageIds = null;
-
-            if (jobIds is not null && !jobIds.Any())
-                jobIds = null;
-
-            if (technologyStackIds is not null && !technologyStackIds.Any())
-                technologyStackIds = null;
-
-            return ProgrammingMemoryCache.ProgrammingProjects.Where(project =>
-                (projectTypeIds is null || projectTypeIds.Contains(project.Value.Type.TypeId)) &&
-                (languageIds is null || project.Value.Languages.Any(language => languageIds.Contains(language.LanguageId))) &&
-                (jobIds is null || jobIds.Contains(project.Value.Job.JobId)) &&
-                (technologyStackIds is null || technologyStackIds.Contains(project.Value.TechnologyStack.TechnologyStackId))
+        public List<ProgrammingProjectContract> SearchProjects(int? projectTypeId, int? languageId, int? jobId, int? technologyStackId) =>
+            ProgrammingMemoryCache.ProgrammingProjects.Where(project =>
+                (!projectTypeId.HasValue || project.Value.Type.TypeId == projectTypeId) &&
+                (!languageId.HasValue || project.Value.Languages.Any(language => language.LanguageId == languageId)) &&
+                (!jobId.HasValue || project.Value.Job.JobId == jobId) &&
+                (!technologyStackId.HasValue || project.Value.TechnologyStack.TechnologyStackId == technologyStackId)
             )
             .Select(project => project.Value)
             .ToList();
-        }
 
         #endregion
 

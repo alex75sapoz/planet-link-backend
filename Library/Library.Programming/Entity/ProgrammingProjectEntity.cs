@@ -17,6 +17,7 @@ namespace Library.Programming.Entity
         public int JobId { get; internal set; }
         public int TechnologyStackId { get; internal set; }
         public string Name { get; internal set; }
+        public string Tag { get; internal set; }
         public string Description { get; internal set; }
         public DateTimeOffset CreatedOn { get; internal set; }
 

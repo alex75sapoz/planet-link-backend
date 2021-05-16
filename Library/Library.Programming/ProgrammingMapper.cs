@@ -38,6 +38,7 @@ namespace Library.Programming
         {
             ProjectId = src.ProjectId,
             Name = src.Name,
+            Tag = src.Tag,
             Description = src.Description,
             CreatedOn = src.CreatedOn,
             Type = ProgrammingMemoryCache.ProgrammingProjectTypes[src.ProjectTypeId],
