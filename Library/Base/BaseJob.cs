@@ -54,7 +54,7 @@ namespace Library.Base
             State = JobState.Paused;
             NextStartOn = DateTime.Now + Delay;
 
-            BaseMemoryCache.Jobs.TryAdd(GetType().FullName, this);
+            BaseMemoryCache.Jobs.TryAdd(GetType().Name, this);
 
             if (!IsDependentOnCache)
                 await ResumeAsync();

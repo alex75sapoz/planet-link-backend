@@ -16,13 +16,20 @@ namespace Library.Weather
 
         public static async Task RefreshMemoryCacheAsync(IServiceProvider serviceProvider) =>
             await WeatherStartup.RefreshMemoryCacheAsync(serviceProvider.GetRequiredService<WeatherRepository>());
+
+        public static object GetStatus() =>
+            WeatherStartup.GetStatus();
     }
 
     internal static class WeatherStartup
     {
+        public static bool IsStarted { get; set; }
         public static bool IsMemoryCacheReady { get; set; }
 
-        public static void Startup(IServiceCollection services, WeatherConfiguration configuration, string databaseConnection) =>
+        public static void Startup(IServiceCollection services, WeatherConfiguration configuration, string databaseConnection)
+        {
+            IsStarted = false;
+
             services
                 //Internal
                 .AddDbContext<WeatherContext>(options => options.UseSqlServer(databaseConnection))
@@ -32,6 +39,9 @@ namespace Library.Weather
                 //Public
                 .AddTransient<IWeatherRepository, WeatherRepository>()
                 .AddTransient<IWeatherService, WeatherService>();
+
+            IsStarted = true;
+        }
 
         public static async Task RefreshMemoryCacheAsync(WeatherRepository repository)
         {
@@ -50,5 +60,31 @@ namespace Library.Weather
 
             IsMemoryCacheReady = true;
         }
+
+        public static object GetStatus() => new
+        {
+            IsStarted,
+            IsMemoryCacheReady,
+            RegisteredTypes = new
+            {
+                Internal = new[]
+                {
+                    nameof(WeatherContext),
+                    nameof(WeatherRepository),
+                    nameof(WeatherService),
+                    nameof(WeatherConfiguration)
+                },
+                Public = new[]
+                {
+                    nameof(IWeatherRepository),
+                    nameof(IWeatherService)
+                }
+            },
+            MemoryCache = new
+            {
+                TotalEmotions = WeatherMemoryCache.WeatherEmotions.Count,
+                TotalCityUserEmotions = WeatherMemoryCache.WeatherCityUserEmotions.Count
+            }
+        };
     }
 }

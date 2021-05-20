@@ -16,13 +16,20 @@ namespace Library.User
 
         public static async Task RefreshMemoryCacheAsync(IServiceProvider serviceProvider) =>
             await UserStartup.RefreshMemoryCacheAsync(serviceProvider.GetRequiredService<UserRepository>());
+
+        public static object GetStatus() =>
+            UserStartup.GetStatus();
     }
 
     internal static class UserStartup
     {
+        public static bool IsStarted { get; set; }
         public static bool IsMemoryCacheReady { get; set; }
 
-        public static void Startup(IServiceCollection services, UserConfiguration configuration, string databaseConnection) =>
+        public static void Startup(IServiceCollection services, UserConfiguration configuration, string databaseConnection)
+        {
+            IsStarted = false;
+
             services
                 //Internal
                 .AddDbContext<UserContext>(options => options.UseSqlServer(databaseConnection))
@@ -32,6 +39,9 @@ namespace Library.User
                 //Public
                 .AddTransient<IUserRepository, UserRepository>()
                 .AddTransient<IUserService, UserService>();
+
+            IsStarted = true;
+        }
 
         public static async Task RefreshMemoryCacheAsync(UserRepository repository)
         {
@@ -55,5 +65,32 @@ namespace Library.User
 
             IsMemoryCacheReady = true;
         }
+
+        public static object GetStatus() => new
+        {
+            IsStarted,
+            IsMemoryCacheReady,
+            RegisteredType = new
+            {
+                Internal = new[]
+                {
+                    nameof(UserContext),
+                    nameof(UserRepository),
+                    nameof(UserService),
+                    nameof(UserConfiguration)
+                },
+                Public = new[]
+                {
+                    nameof(IUserRepository),
+                    nameof(IUserService)
+                }
+            },
+            MemoryCache = new
+            {
+                TotalUserTypes = UserMemoryCache.UserTypes.Count,
+                TotalSessions = UserMemoryCache.UserSessions.Count,
+                TotalUsers = UserMemoryCache.Users.Count,
+            }
+        };
     }
 }

@@ -16,13 +16,20 @@ namespace Library.Programming
 
         public static async Task RefreshMemoryCacheAsync(IServiceProvider serviceProvider) =>
             await ProgrammingStartup.RefreshMemoryCacheAsync(serviceProvider.GetRequiredService<ProgrammingRepository>());
+
+        public static object GetStatus() =>
+            ProgrammingStartup.GetStatus();
     }
 
     internal static class ProgrammingStartup
     {
+        public static bool IsStarted { get; set; }
         public static bool IsMemoryCacheReady { get; set; }
 
-        public static void Startup(IServiceCollection services, ProgrammingConfiguration configuration, string databaseConnection) =>
+        public static void Startup(IServiceCollection services, ProgrammingConfiguration configuration, string databaseConnection)
+        {
+            IsStarted = false;
+
             services
                 //Internal
                 .AddDbContext<ProgrammingContext>(options => options.UseSqlServer(databaseConnection))
@@ -32,6 +39,9 @@ namespace Library.Programming
                 //Public
                 .AddTransient<IProgrammingRepository, ProgrammingRepository>()
                 .AddTransient<IProgrammingService, ProgrammingService>();
+
+            IsStarted = true;
+        }
 
         public static async Task RefreshMemoryCacheAsync(ProgrammingRepository repository)
         {
@@ -65,5 +75,34 @@ namespace Library.Programming
 
             IsMemoryCacheReady = true;
         }
+
+        public static object GetStatus() => new
+        {
+            IsStarted,
+            IsMemoryCacheReady,
+            RegisteredTypes = new
+            {
+                Internal = new[]
+                {
+                    nameof(ProgrammingContext),
+                    nameof(ProgrammingRepository),
+                    nameof(ProgrammingService),
+                    nameof(ProgrammingConfiguration)
+                },
+                Public = new[]
+                {
+                    nameof(IProgrammingRepository),
+                    nameof(IProgrammingService)
+                }
+            },
+            MemoryCache = new
+            {
+                TotalJobs = ProgrammingMemoryCache.ProgrammingJobs.Count,
+                TotalLanguages = ProgrammingMemoryCache.ProgrammingLanguages.Count,
+                TotalProjects = ProgrammingMemoryCache.ProgrammingProjects.Count,
+                TotalProjectTypes = ProgrammingMemoryCache.ProgrammingProjectTypes.Count,
+                TotalTechnologyStacks = ProgrammingMemoryCache.ProgrammingTechnologyStacks.Count,
+            }
+        };
     }
 }

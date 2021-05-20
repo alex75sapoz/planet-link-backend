@@ -16,13 +16,20 @@ namespace Library.Location
 
         public static async Task RefreshMemoryCacheAsync(IServiceProvider serviceProvider) =>
             await LocationStartup.RefreshMemoryCacheAsync(serviceProvider.GetRequiredService<LocationRepository>());
+
+        public static object GetStatus() =>
+            LocationStartup.GetStatus();
     }
 
     internal static class LocationStartup
     {
+        public static bool IsStarted { get; set; }
         public static bool IsMemoryCacheReady { get; set; }
 
-        public static void Startup(IServiceCollection services, LocationConfiguration configuration, string databaseConnection) =>
+        public static void Startup(IServiceCollection services, LocationConfiguration configuration, string databaseConnection)
+        {
+            IsStarted = false;
+
             services
                 //Internal
                 .AddDbContext<LocationContext>(options => options.UseSqlServer(databaseConnection, sqlServerOptions => sqlServerOptions.UseNetTopologySuite()))
@@ -32,6 +39,9 @@ namespace Library.Location
                 //Public
                 .AddTransient<ILocationRepository, LocationRepository>()
                 .AddTransient<ILocationService, LocationService>();
+
+            IsStarted = true;
+        }
 
         public static async Task RefreshMemoryCacheAsync(LocationRepository repository)
         {
@@ -55,5 +65,32 @@ namespace Library.Location
 
             IsMemoryCacheReady = true;
         }
+
+        public static object GetStatus() => new
+        {
+            IsStarted,
+            IsMemoryCacheReady,
+            RegisteredTypes = new
+            {
+                Internal = new[]
+                {
+                    nameof(LocationContext),
+                    nameof(LocationRepository),
+                    nameof(LocationService),
+                    nameof(LocationConfiguration)
+                },
+                Public = new[]
+                {
+                    nameof(ILocationRepository),
+                    nameof(ILocationService)
+                }
+            },
+            MemoryCache = new
+            {
+                TotalCountries = LocationMemoryCache.LocationCountries.Count,
+                TotalStates = LocationMemoryCache.LocationStates.Count,
+                TotalCities = LocationMemoryCache.LocationCities.Count
+            }
+        };
     }
 }
