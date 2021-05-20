@@ -12,7 +12,7 @@ namespace Library.StockMarket.Job
     {
         public StockMarketProcessQuoteUserAlertsInProgressJob(IServiceProvider serviceProvider) : base(serviceProvider, (
             delay: TimeSpan.FromMinutes(30),
-            interval: TimeSpan.FromDays(1),
+            interval: TimeSpan.FromHours(1),
             isDependentOnCache: true
         ))
         { }

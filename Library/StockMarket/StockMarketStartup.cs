@@ -17,13 +17,20 @@ namespace Library.StockMarket
 
         public static async Task RefreshMemoryCacheAsync(IServiceProvider serviceProvider) =>
             await StockMarketStartup.RefreshMemoryCacheAsync(serviceProvider.GetRequiredService<StockMarketRepository>());
+
+        public static object GetStatus() =>
+            StockMarketStartup.GetStatus();
     }
 
     internal static class StockMarketStartup
     {
+        public static bool IsStarted { get; set; }
         public static bool IsMemoryCacheReady { get; set; }
 
-        public static void Startup(IServiceCollection services, StockMarketConfiguration configuration, string databaseConnection) =>
+        public static void Startup(IServiceCollection services, StockMarketConfiguration configuration, string databaseConnection)
+        {
+            IsStarted = false;
+
             services
                 //Internal
                 .AddDbContext<StockMarketContext>(options => options.UseSqlServer(databaseConnection))
@@ -36,6 +43,9 @@ namespace Library.StockMarket
                 //Job
                 .AddHostedService<StockMarketProcessQuotesJob>()
                 .AddHostedService<StockMarketProcessQuoteUserAlertsInProgressJob>();
+
+            IsStarted = true;
+        }
 
         public static async Task RefreshMemoryCacheAsync(StockMarketRepository repository)
         {
@@ -84,5 +94,42 @@ namespace Library.StockMarket
 
             IsMemoryCacheReady = true;
         }
+
+        public static object GetStatus() => new
+        {
+            IsStarted,
+            IsMemoryCacheReady,
+            RegisteredType = new
+            {
+                Internal = new[]
+                {
+                    nameof(StockMarketContext),
+                    nameof(StockMarketRepository),
+                    nameof(StockMarketService),
+                    nameof(StockMarketConfiguration)
+                },
+                Public = new[]
+                {
+                    nameof(IStockMarketRepository),
+                    nameof(IStockMarketService)
+                },
+                Job = new[]
+                {
+                    nameof(StockMarketProcessQuotesJob),
+                    nameof(StockMarketProcessQuoteUserAlertsInProgressJob)
+                }
+            },
+            MemoryCache = new
+            {
+                TotalAlertCompletedTypes = StockMarketMemoryCache.StockMarketAlertCompletedTypes.Count,
+                TotalAlertTypes = StockMarketMemoryCache.StockMarketAlertTypes.Count,
+                TotalEmotions = StockMarketMemoryCache.StockMarketEmotions.Count,
+                TotalExchanges = StockMarketMemoryCache.StockMarketExchanges.Count,
+                TotalQuotes = StockMarketMemoryCache.StockMarketQuotes.Count,
+                TotalQuoteUserAlerts = StockMarketMemoryCache.StockMarketQuoteUserAlerts.Count,
+                TotalQuoteUserEmotions = StockMarketMemoryCache.StockMarketQuoteUserEmotions.Count,
+                TotalTimeframes = StockMarketMemoryCache.StockMarketTimeframes.Count
+            }
+        };
     }
 }
