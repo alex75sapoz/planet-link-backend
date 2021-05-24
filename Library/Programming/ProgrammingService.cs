@@ -26,6 +26,7 @@ namespace Library.Programming
                 (!technologyStackId.HasValue || project.Value.TechnologyStack.TechnologyStackId == technologyStackId)
             )
             .Select(project => project.Value)
+            .OrderByDescending(project => project.CreatedOn)
             .ToList();
 
         #endregion

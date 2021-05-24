@@ -36,6 +36,7 @@ namespace Library.Programming
             Name = src.Name,
             Tag = src.Tag,
             Description = src.Description,
+            IsImportant = src.IsImportant,
             CreatedOn = src.CreatedOn,
             Type = ProgrammingMemoryCache.ProgrammingProjectTypes[src.ProjectTypeId],
             Job = ProgrammingMemoryCache.ProgrammingJobs[src.JobId],

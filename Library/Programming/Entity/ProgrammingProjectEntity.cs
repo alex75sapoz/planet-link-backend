@@ -19,6 +19,7 @@ namespace Library.Programming.Entity
         public string Name { get; internal set; }
         public string Tag { get; internal set; }
         public string Description { get; internal set; }
+        public bool IsImportant { get; internal set; }
         public DateTimeOffset CreatedOn { get; internal set; }
 
         public virtual ProgrammingProjectTypeEntity Type { get; internal set; }
