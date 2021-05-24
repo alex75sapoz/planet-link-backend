@@ -1,3 +1,6 @@
+## Application Status
+https://api.planet-link.com/Application/Status
+
 ## Project Structure
 
 > Api
