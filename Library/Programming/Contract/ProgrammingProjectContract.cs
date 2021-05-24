@@ -9,6 +9,7 @@ namespace Library.Programming.Contract
         public string Name { get; internal set; }
         public string Tag { get; internal set; }
         public string Description { get; internal set; }
+        public bool IsImportant { get; internal set; }
         public DateTimeOffset CreatedOn { get; internal set; }
 
         public ProgrammingProjectTypeContract Type { get; internal set; }
