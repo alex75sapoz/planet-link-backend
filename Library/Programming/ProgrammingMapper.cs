@@ -32,16 +32,16 @@ namespace Library.Programming
 
         public static ProgrammingProjectContract MapToProjectContract(this ProgrammingProjectEntity src) => new()
         {
+            TypeId = src.ProjectTypeId,
+            JobId = src.JobId,
+            TechnologyStackId = src.TechnologyStackId,
+            LanguageIds = src.ProjectLanguages.Select(projectLanguage => projectLanguage.LanguageId).ToList(),
             ProjectId = src.ProjectId,
             Name = src.Name,
             Tag = src.Tag,
             Description = src.Description,
             IsImportant = src.IsImportant,
-            CreatedOn = src.CreatedOn,
-            Type = ProgrammingMemoryCache.ProgrammingProjectTypes[src.ProjectTypeId],
-            Job = ProgrammingMemoryCache.ProgrammingJobs[src.JobId],
-            TechnologyStack = ProgrammingMemoryCache.ProgrammingTechnologyStacks[src.TechnologyStackId],
-            Languages = src.ProjectLanguages.Select(projectLanguage => ProgrammingMemoryCache.ProgrammingLanguages[projectLanguage.LanguageId]).ToList()
+            CreatedOn = src.CreatedOn
         };
     }
 }

@@ -1,10 +1,21 @@
-﻿using Library.User.Contract;
+﻿using Library.User;
+using Library.User.Contract;
 using System;
+using System.Text.Json.Serialization;
 
 namespace Library.StockMarket.Contract
 {
     public class StockMarketQuoteUserAlertContract
     {
+        [JsonIgnore]
+        public int QuoteId { get; internal set; }
+        [JsonIgnore]
+        public int UserId { get; internal set; }
+        [JsonIgnore]
+        public int AlertTypeId { get; internal set; }
+        [JsonIgnore]
+        public int? AlertCompletedTypeId { get; internal set; }
+
         public int QuoteUserAlertId { get; internal set; }
         public decimal Buy { get; internal set; }
         public decimal Sell { get; internal set; }
@@ -13,14 +24,12 @@ namespace Library.StockMarket.Contract
         public decimal StopLossPoints => StockMarketExtension.GetChangePercent(from: Buy, to: StopLoss);
         public DateTimeOffset CreatedOn { get; internal set; }
         public decimal? CompletedSell { get; internal set; }
-        public decimal? CompletedSellPoints => CompletedSell.HasValue
-            ? StockMarketExtension.GetChangePercent(from: Buy, CompletedSell.Value)
-            : CompletedSell;
+        public decimal? CompletedSellPoints => CompletedSell.HasValue ? StockMarketExtension.GetChangePercent(from: Buy, CompletedSell.Value) : CompletedSell;
         public DateTimeOffset? CompletedOn { get; internal set; }
 
-        public StockMarketQuoteContract Quote { get; internal set; }
-        public UserContract User { get; internal set; }
-        public StockMarketAlertTypeContract AlertType { get; internal set; }
-        public StockMarketAlertCompletedTypeContract AlertCompletedType { get; internal set; }
+        public StockMarketQuoteContract Quote => IStockMarketMemoryCache.StockMarketQuotes[QuoteId];
+        public UserContract User => IUserMemoryCache.Users[UserId];
+        public StockMarketAlertTypeContract AlertType => IStockMarketMemoryCache.StockMarketAlertTypes[AlertTypeId];
+        public StockMarketAlertCompletedTypeContract AlertCompletedType => AlertCompletedTypeId.HasValue ? IStockMarketMemoryCache.StockMarketAlertCompletedTypes[AlertCompletedTypeId.Value] : null;
     }
 }

@@ -38,10 +38,10 @@ namespace Library.StockMarket
 
         public static StockMarketQuoteContract MapToQuoteContract(this StockMarketQuoteEntity src) => new()
         {
+            ExchangeId = src.ExchangeId,
             QuoteId = src.QuoteId,
             Symbol = src.Symbol,
-            Name = src.Name,
-            Exchange = StockMarketMemoryCache.StockMarketExchanges[src.ExchangeId]
+            Name = src.Name
         };
 
         public static StockMarketGlobalContract MapToGlobalContract(this StockMarketGlobalResponse src) => new()
@@ -116,28 +116,26 @@ namespace Library.StockMarket
 
         public static StockMarketQuoteUserAlertContract MapToQuoteUserAlertContract(this StockMarketQuoteUserAlertEntity src) => new()
         {
+            QuoteId = src.QuoteId,
+            UserId = src.UserId,
+            AlertTypeId = src.AlertTypeId,
+            AlertCompletedTypeId = src.AlertCompletedTypeId,
             QuoteUserAlertId = src.QuoteUserAlertId,
             Buy = src.Buy,
             Sell = src.Sell,
             StopLoss = src.StopLoss,
             CreatedOn = src.CreatedOn,
             CompletedSell = src.CompletedSell,
-            CompletedOn = src.CompletedOn,
-            Quote = StockMarketMemoryCache.StockMarketQuotes[src.QuoteId],
-            User = IUserMemoryCache.Users[src.UserId],
-            AlertType = StockMarketMemoryCache.StockMarketAlertTypes[src.AlertTypeId],
-            AlertCompletedType = src.AlertCompletedTypeId.HasValue
-                ? StockMarketMemoryCache.StockMarketAlertCompletedTypes[src.AlertCompletedTypeId.Value]
-                : null
+            CompletedOn = src.CompletedOn
         };
 
         public static StockMarketQuoteUserEmotionContract MapToQuoteUserEmotionContract(this StockMarketQuoteUserEmotionEntity src) => new()
         {
+            QuoteId = src.QuoteId,
+            UserId = src.UserId,
+            EmotionId = src.EmotionId,
             QuoteUserEmotionId = src.QuoteUserEmotionId,
-            CreatedOn = src.CreatedOn,
-            Quote = StockMarketMemoryCache.StockMarketQuotes[src.QuoteId],
-            User = IUserMemoryCache.Users[src.UserId],
-            Emotion = StockMarketMemoryCache.StockMarketEmotions[src.EmotionId]
+            CreatedOn = src.CreatedOn
         };
 
         public static StockMarketEmotionContract MapToEmotionContract(this StockMarketEmotionEntity src) => new()

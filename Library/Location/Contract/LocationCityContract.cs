@@ -10,6 +10,10 @@ namespace Library.Location.Contract
         public bool IsCapital { get; internal set; }
         [JsonIgnore]
         public string CoordinatesLookup { get; internal set; }
+        [JsonIgnore]
+        public int CountryId { get; internal set; }
+        [JsonIgnore]
+        public int? StateId { get; internal set; }
 
         public int CityId { get; internal set; }
         public string Name { get; internal set; }
@@ -18,7 +22,7 @@ namespace Library.Location.Contract
         public decimal Latitude { get; internal set; }
         public decimal Longitude { get; internal set; }
 
-        public LocationCountryContract Country { get; internal set; }
-        public LocationStateContract State { get; internal set; }
+        public LocationCountryContract Country => ILocationMemoryCache.LocationCountries[CountryId];
+        public LocationStateContract State => StateId.HasValue ? ILocationMemoryCache.LocationStates[StateId.Value] : null;
     }
 }

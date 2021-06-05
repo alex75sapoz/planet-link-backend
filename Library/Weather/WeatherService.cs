@@ -84,11 +84,11 @@ namespace Library.Weather
             var city = _locationService.GetCity(cityId);
 
             return WeatherMemoryCache.WeatherCityUserEmotions.GetCityUserEmotionsAtTimezoneToday(timezone)
-                .GroupBy(cityUserEmotion => cityUserEmotion.Emotion)
+                .GroupBy(cityUserEmotion => cityUserEmotion.EmotionId)
                 .Select(cityUserEmotionGroup => new WeatherCityEmotionCountContract()
                 {
-                    Emotion = cityUserEmotionGroup.Key,
-                    CityCount = cityUserEmotionGroup.Where(cityUserEmotion => cityUserEmotion.City.CityId == city.CityId).Count(),
+                    EmotionId = cityUserEmotionGroup.Key,
+                    CityCount = cityUserEmotionGroup.Where(cityUserEmotion => cityUserEmotion.CityId == city.CityId).Count(),
                     GlobalCount = cityUserEmotionGroup.Count()
                 })
                 .ToList();
@@ -103,7 +103,7 @@ namespace Library.Weather
 
             return new WeatherCityUserConfigurationContract()
             {
-                Emotion = cityUserEmotions.SingleOrDefault(cityUserEmotion => cityUserEmotion.City.CityId == city.CityId)?.Emotion,
+                EmotionId = cityUserEmotions.SingleOrDefault(cityUserEmotion => cityUserEmotion.CityId == city.CityId)?.EmotionId,
                 SelectionsToday = cityUserEmotions.Count,
                 LimitToday = _configuration.Limit.CreateCityUserEmotionLimit
             };
@@ -126,7 +126,7 @@ namespace Library.Weather
 
             var cityUserEmotions = WeatherMemoryCache.WeatherCityUserEmotions.GetCityUserEmotionsAtTimezoneToday(timezone, userId);
 
-            if (cityUserEmotions.Any(cityUserEmotion => cityUserEmotion.City.CityId == city.CityId))
+            if (cityUserEmotions.Any(cityUserEmotion => cityUserEmotion.CityId == city.CityId))
                 throw new BadRequestException("You already selected an emotion");
 
             if (cityUserEmotions.Count >= _configuration.Limit.CreateCityUserEmotionLimit)

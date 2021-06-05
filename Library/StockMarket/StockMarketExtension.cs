@@ -37,7 +37,7 @@ namespace Library.StockMarket
 
             return quoteUserEmotions
                 .Where(quoteUserEmotion =>
-                    (userId is null || quoteUserEmotion.Value.User.UserId == userId) &&
+                    (!userId.HasValue || quoteUserEmotion.Value.UserId == userId) &&
                     quoteUserEmotion.Value.CreatedOn.AtTimezone(timezone).Date == datetimeOffsetAtTimezone.Date
                 )
                 .Select(quoteUserEmotion => quoteUserEmotion.Value)
