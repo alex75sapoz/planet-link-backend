@@ -11,8 +11,8 @@ namespace Library.Location
         public static bool IsMemoryCacheReady =>
             LocationStartup.IsMemoryCacheReady;
 
-        public static void Startup(IServiceCollection services, Func<Type, object> configuration, string databaseConnection) =>
-            LocationStartup.Startup(services, (LocationConfiguration)configuration(typeof(LocationConfiguration)), databaseConnection);
+        public static void Startup(IServiceCollection services, LocationConfiguration configuration, string databaseConnection) =>
+            LocationStartup.Startup(services, configuration, databaseConnection);
 
         public static async Task RefreshMemoryCacheAsync(IServiceProvider serviceProvider) =>
             await LocationStartup.RefreshMemoryCacheAsync(serviceProvider.GetRequiredService<LocationRepository>());
@@ -49,7 +49,7 @@ namespace Library.Location
 
             var countryEntities = await repository.GetCountriesAsync();
             var stateEntities = await repository.GetStatesAsync();
-            var citiesEntities = await repository.GetCitiesAsync();
+            var cityEntities = await repository.GetCitiesAsync();
 
             LocationMemoryCache.LocationCountries.Clear();
             foreach (var country in countryEntities.Select(countryEntity => countryEntity.MapToCountryContract()))
@@ -60,7 +60,7 @@ namespace Library.Location
                 LocationMemoryCache.LocationStates.TryAdd(state.StateId, state);
 
             LocationMemoryCache.LocationCities.Clear();
-            foreach (var city in citiesEntities.Select(cityEntity => cityEntity.MapToCityContract()))
+            foreach (var city in cityEntities.Select(cityEntity => cityEntity.MapToCityContract()))
                 LocationMemoryCache.LocationCities.TryAdd(city.CityId, city);
 
             IsMemoryCacheReady = true;

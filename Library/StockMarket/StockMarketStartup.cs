@@ -12,8 +12,8 @@ namespace Library.StockMarket
         public static bool IsMemoryCacheReady =>
             StockMarketStartup.IsMemoryCacheReady;
 
-        public static void Startup(IServiceCollection services, Func<Type, object> configuration, string databaseConnection) =>
-            StockMarketStartup.Startup(services, (StockMarketConfiguration)configuration(typeof(StockMarketConfiguration)), databaseConnection);
+        public static void Startup(IServiceCollection services, StockMarketConfiguration configuration, string databaseConnection) =>
+            StockMarketStartup.Startup(services, configuration, databaseConnection);
 
         public static async Task RefreshMemoryCacheAsync(IServiceProvider serviceProvider) =>
             await StockMarketStartup.RefreshMemoryCacheAsync(serviceProvider.GetRequiredService<StockMarketRepository>());

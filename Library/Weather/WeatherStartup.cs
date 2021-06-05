@@ -11,8 +11,8 @@ namespace Library.Weather
         public static bool IsMemoryCacheReady =>
             WeatherStartup.IsMemoryCacheReady;
 
-        public static void Startup(IServiceCollection services, Func<Type, object> configuration, string databaseConnection) =>
-            WeatherStartup.Startup(services, (WeatherConfiguration)configuration(typeof(WeatherConfiguration)), databaseConnection);
+        public static void Startup(IServiceCollection services, WeatherConfiguration configuration, string databaseConnection) =>
+            WeatherStartup.Startup(services, configuration, databaseConnection);
 
         public static async Task RefreshMemoryCacheAsync(IServiceProvider serviceProvider) =>
             await WeatherStartup.RefreshMemoryCacheAsync(serviceProvider.GetRequiredService<WeatherRepository>());

@@ -1,6 +1,6 @@
 ﻿namespace Library.Weather
 {
-    internal class WeatherConfiguration
+    public class WeatherConfiguration
     {
         public WeatherLimit Limit { get; set; }
         public WeatherDuration Duration { get; set; }

@@ -11,8 +11,8 @@ namespace Library.Programming
         public static bool IsMemoryCacheReady =>
             ProgrammingStartup.IsMemoryCacheReady;
 
-        public static void Startup(IServiceCollection services, string databaseConnection) =>
-            ProgrammingStartup.Startup(services, new ProgrammingConfiguration(), databaseConnection);
+        public static void Startup(IServiceCollection services, ProgrammingConfiguration configuration, string databaseConnection) =>
+            ProgrammingStartup.Startup(services, configuration, databaseConnection);
 
         public static async Task RefreshMemoryCacheAsync(IServiceProvider serviceProvider) =>
             await ProgrammingStartup.RefreshMemoryCacheAsync(serviceProvider.GetRequiredService<ProgrammingRepository>());

@@ -1,6 +1,6 @@
 ﻿namespace Library.Programming
 {
-    internal class ProgrammingConfiguration
+    public class ProgrammingConfiguration
     {
     }
 }
