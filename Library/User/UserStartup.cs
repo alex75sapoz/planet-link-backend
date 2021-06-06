@@ -11,8 +11,8 @@ namespace Library.User
         public static bool IsMemoryCacheReady =>
             UserStartup.IsMemoryCacheReady;
 
-        public static void Startup(IServiceCollection services, Func<Type, object> configuration, string databaseConnection) =>
-            UserStartup.Startup(services, (UserConfiguration)configuration(typeof(UserConfiguration)), databaseConnection);
+        public static void Startup(IServiceCollection services, UserConfiguration configuration, string databaseConnection) =>
+            UserStartup.Startup(services, configuration, databaseConnection);
 
         public static async Task RefreshMemoryCacheAsync(IServiceProvider serviceProvider) =>
             await UserStartup.RefreshMemoryCacheAsync(serviceProvider.GetRequiredService<UserRepository>());

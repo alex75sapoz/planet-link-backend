@@ -1,6 +1,6 @@
 ﻿namespace Library.User
 {
-    internal class UserConfiguration
+    public class UserConfiguration
     {
         public UserLimit Limit { get; set; }
         public UserDuration Duration { get; set; }

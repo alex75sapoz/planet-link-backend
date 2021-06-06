@@ -1,18 +1,21 @@
-﻿using Library.User.Enum;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using System;
 
 namespace Api.Configuration.Authorization
 {
-    [AttributeUsage(AttributeTargets.Method)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = true)]
     internal class AuthorizationAttribute : AuthorizeAttribute
     {
-        public AuthorizationAttribute() : base(nameof(AuthorizationAnyRequirement)) { }
-        public AuthorizationAttribute(int userTypeId) : base(userTypeId switch
+        public AuthorizationAttribute(Requirement requirement) : base(requirement switch
         {
-            (int)UserType.Google => nameof(AuthorizationGoogleRequirement),
-            (int)UserType.Stocktwits => nameof(AuthorizationStocktwitsRequirement),
-            _ => throw new System.Exception($"{nameof(userTypeId)} is invalid in {nameof(AuthorizationAttribute)}")
+            Requirement.LocationMemoryCache => nameof(AuthorizationLocationMemoryCacheRequirement),
+            Requirement.ProgrammingMemoryCache => nameof(AuthorizationProgrammingMemoryCacheRequirement),
+            Requirement.StockMarketMemoryCache => nameof(AuthorizationStockMarketMemoryCacheRequirement),
+            Requirement.UserTypeGoogle => nameof(AuthorizationUserTypeGoogleRequirement),
+            Requirement.UserTypeStocktwits => nameof(AuthorizationUserTypeStocktwitsRequirement),
+            Requirement.UserMemoryCache => nameof(AuthorizationUserMemoryCacheRequirement),
+            Requirement.WeatherMemoryCache => nameof(AuthorizationWeatherMemoryCacheRequirement),
+            _ => throw new System.Exception($"{requirement} is invalid in {nameof(AuthorizationAttribute)}")
         })
         { }
     }

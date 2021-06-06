@@ -13,10 +13,10 @@ namespace Library.User
 
         public static UserContract MapToUserContract(this UserEntity src) => new()
         {
+            TypeId = src.UserTypeId,
             UserId = src.UserId,
             Google = src.Google?.MapToGoogleContract(),
-            Stocktwits = src.Stocktwits?.MapToStocktwitsContract(),
-            Type = UserMemoryCache.UserTypes[src.UserTypeId]
+            Stocktwits = src.Stocktwits?.MapToStocktwitsContract()
         };
 
         public static UserGoogleContract MapToGoogleContract(this UserGoogleEntity src) => new()
@@ -39,11 +39,11 @@ namespace Library.User
 
         public static UserSessionContract MapToSessionContract(this UserSessionEntity src) => new()
         {
+            UserId = src.UserId,
             UserSessionId = src.UserSessionId,
             Token = src.Token,
             RefreshToken = src.RefreshToken,
-            TokenExpiresOn = src.TokenExpiresOn,
-            User = UserMemoryCache.Users[src.UserId]
+            TokenExpiresOn = src.TokenExpiresOn
         };
     }
 }

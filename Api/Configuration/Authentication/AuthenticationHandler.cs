@@ -1,5 +1,4 @@
-﻿using Api.Configuration.MemoryCache;
-using Api.Controller;
+﻿using Api.Controller;
 using Library.User;
 using Library.User.Contract;
 using Microsoft.AspNetCore.Authentication;
@@ -27,11 +26,7 @@ namespace Api.Configuration.Authentication
             if (Options.IsDevelopment && Request.Path.StartsWithSegments(Options.SwaggerUrlSegment))
                 return GetSwaggerAuthenticateResult();
 
-            //Step 1 - Memory Cache
-            if (!MemoryCacheRefreshJob.IsReady)
-                return AuthenticateResult.Fail($"{nameof(MemoryCacheRefreshJob)} is not ready");
-
-            //Step 2 - TimezoneId
+            //Step 1 - TimezoneId
             if (!Request.Headers.TryGetValue(ApiHeader.TimezoneId, out StringValues headerTimezoneId))
                 return AuthenticateResult.Fail($"{ApiHeader.TimezoneId} is required");
 
@@ -40,7 +35,7 @@ namespace Api.Configuration.Authentication
             if (timezone is null)
                 return AuthenticateResult.Fail($"{ApiHeader.TimezoneId} is invalid");
 
-            //Step 3 - UserTypeId
+            //Step 2 - UserTypeId
             if (!Request.Headers.TryGetValue(ApiHeader.UserTypeId, out StringValues headerUserTypeId))
                 return AuthenticateResult.Fail($"{ApiHeader.UserTypeId} is required");
 
@@ -58,9 +53,13 @@ namespace Api.Configuration.Authentication
             if (userTypeId is null)
                 return AuthenticateResult.Fail($"{ApiHeader.UserTypeId} is invalid");
 
-            //Step 4 - Check if Guest
+            //Step 3 - Check if Guest
             if (userTypeId == (int)AuthenticationUserType.Guest)
                 return GetGuestAuthenticateResult(timezone);
+
+            //Step 4 - Memory Cache
+            if (!IUserStartup.IsMemoryCacheReady)
+                return AuthenticateResult.Fail($"MemoryCache is not ready");
 
             //Step 5 - Token or Code/Subdomain/Page
             if (!Request.Headers.TryGetValue(ApiHeader.Token, out StringValues token) & (!Request.Headers.TryGetValue(ApiHeader.Code, out StringValues code) | !Request.Headers.TryGetValue(ApiHeader.Subdomain, out StringValues subdomain) | !Request.Headers.TryGetValue(ApiHeader.Page, out StringValues page)))

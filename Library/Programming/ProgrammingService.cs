@@ -20,10 +20,10 @@ namespace Library.Programming
 
         public List<ProgrammingProjectContract> SearchProjects(int? projectTypeId, int? languageId, int? jobId, int? technologyStackId) =>
             ProgrammingMemoryCache.ProgrammingProjects.Where(project =>
-                (!projectTypeId.HasValue || project.Value.Type.TypeId == projectTypeId) &&
-                (!languageId.HasValue || project.Value.Languages.Any(language => language.LanguageId == languageId)) &&
-                (!jobId.HasValue || project.Value.Job.JobId == jobId) &&
-                (!technologyStackId.HasValue || project.Value.TechnologyStack.TechnologyStackId == technologyStackId)
+                (!projectTypeId.HasValue || project.Value.TypeId == projectTypeId) &&
+                (!languageId.HasValue || project.Value.LanguageIds.Contains(languageId.Value)) &&
+                (!jobId.HasValue || project.Value.JobId == jobId) &&
+                (!technologyStackId.HasValue || project.Value.TechnologyStackId == technologyStackId)
             )
             .Select(project => project.Value)
             .OrderByDescending(project => project.CreatedOn)

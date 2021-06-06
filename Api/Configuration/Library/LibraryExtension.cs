@@ -16,14 +16,12 @@ namespace Api.Configuration.Library
         {
             configuration = configuration.GetSection($"{nameof(Api)}.{nameof(Library)}");
 
-            //Order must match project build order
-
-            IErrorStartup.Startup(services, databaseConfiguration.Connection);
-            IUserStartup.Startup(services, (type) => configuration.GetSection(type.Name).Get(type), databaseConfiguration.Connection);
-            ILocationStartup.Startup(services, (type) => configuration.GetSection(type.Name).Get(type), databaseConfiguration.Connection);
-            IWeatherStartup.Startup(services, (type) => configuration.GetSection(type.Name).Get(type), databaseConfiguration.Connection);
-            IStockMarketStartup.Startup(services, (type) => configuration.GetSection(type.Name).Get(type), databaseConfiguration.Connection);
-            IProgrammingStartup.Startup(services, databaseConfiguration.Connection);
+            IErrorStartup.Startup(services, new ErrorConfiguration(), databaseConfiguration.Connection);
+            IUserStartup.Startup(services, configuration.GetSection(nameof(UserConfiguration)).Get<UserConfiguration>(), databaseConfiguration.Connection);
+            ILocationStartup.Startup(services, configuration.GetSection(nameof(LocationConfiguration)).Get<LocationConfiguration>(), databaseConfiguration.Connection);
+            IWeatherStartup.Startup(services, configuration.GetSection(nameof(WeatherConfiguration)).Get<WeatherConfiguration>(), databaseConfiguration.Connection);
+            IStockMarketStartup.Startup(services, configuration.GetSection(nameof(StockMarketConfiguration)).Get<StockMarketConfiguration>(), databaseConfiguration.Connection);
+            IProgrammingStartup.Startup(services, new ProgrammingConfiguration(), databaseConfiguration.Connection);
         }
     }
 }

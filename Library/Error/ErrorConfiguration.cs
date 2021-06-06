@@ -1,6 +1,6 @@
 ﻿namespace Library.Error
 {
-    internal class ErrorConfiguration
+    public class ErrorConfiguration
     {
     }
 }

@@ -5,8 +5,8 @@ namespace Library.Error
 {
     public interface IErrorStartup
     {
-        public static void Startup(IServiceCollection services, string databaseConnection) =>
-            ErrorStartup.Startup(services, new ErrorConfiguration(), databaseConnection);
+        public static void Startup(IServiceCollection services, ErrorConfiguration configuration, string databaseConnection) =>
+            ErrorStartup.Startup(services, configuration, databaseConnection);
 
         public static object GetStatus() =>
             ErrorStartup.GetStatus();

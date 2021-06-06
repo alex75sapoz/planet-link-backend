@@ -25,16 +25,14 @@ namespace Library.Location
             OpenWeatherId = src.OpenWeatherId,
             IsCapital = src.CityId == src.Country.CapitalCityId,
             CoordinatesLookup = LocationExtension.GetCoordinatesLookup((src.Latitude, src.Longitude)),
+            CountryId = src.CountryId,
+            StateId = src.StateId,
             CityId = src.CityId,
             Name = src.Name,
             County = src.County,
             Zipcode = src.Zipcode,
             Latitude = src.Latitude,
-            Longitude = src.Longitude,
-            Country = LocationMemoryCache.LocationCountries[src.CountryId],
-            State = src.StateId.HasValue
-                ? LocationMemoryCache.LocationStates[src.StateId.Value]
-                : null
+            Longitude = src.Longitude
         };
     }
 }

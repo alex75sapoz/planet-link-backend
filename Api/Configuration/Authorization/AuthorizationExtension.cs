@@ -10,17 +10,28 @@ namespace Api.Configuration.Authorization
                 options.AddPolicy(nameof(AuthorizationDefaultRequirement), policy => policy.AddRequirements(
                     new AuthorizationDefaultRequirement()
                 ));
-                options.AddPolicy(nameof(AuthorizationAnyRequirement), policy => policy.AddRequirements(
+                options.AddPolicy(nameof(AuthorizationUserTypeGoogleRequirement), policy => policy.AddRequirements(
                     new AuthorizationDefaultRequirement(),
-                    new AuthorizationAnyRequirement()
+                    new AuthorizationUserTypeGoogleRequirement()
                 ));
-                options.AddPolicy(nameof(AuthorizationGoogleRequirement), policy => policy.AddRequirements(
+                options.AddPolicy(nameof(AuthorizationUserTypeStocktwitsRequirement), policy => policy.AddRequirements(
                     new AuthorizationDefaultRequirement(),
-                    new AuthorizationGoogleRequirement()
+                    new AuthorizationUserTypeStocktwitsRequirement()
                 ));
-                options.AddPolicy(nameof(AuthorizationStocktwitsRequirement), policy => policy.AddRequirements(
-                    new AuthorizationDefaultRequirement(),
-                    new AuthorizationStocktwitsRequirement()
+                options.AddPolicy(nameof(AuthorizationLocationMemoryCacheRequirement), policy => policy.AddRequirements(
+                    new AuthorizationLocationMemoryCacheRequirement()
+                ));
+                options.AddPolicy(nameof(AuthorizationProgrammingMemoryCacheRequirement), policy => policy.AddRequirements(
+                    new AuthorizationProgrammingMemoryCacheRequirement()
+                ));
+                options.AddPolicy(nameof(AuthorizationStockMarketMemoryCacheRequirement), policy => policy.AddRequirements(
+                    new AuthorizationStockMarketMemoryCacheRequirement()
+                ));
+                options.AddPolicy(nameof(AuthorizationUserMemoryCacheRequirement), policy => policy.AddRequirements(
+                    new AuthorizationUserMemoryCacheRequirement()
+                ));
+                options.AddPolicy(nameof(AuthorizationWeatherMemoryCacheRequirement), policy => policy.AddRequirements(
+                    new AuthorizationWeatherMemoryCacheRequirement()
                 ));
 
                 options.FallbackPolicy = options.GetPolicy(nameof(AuthorizationDefaultRequirement));

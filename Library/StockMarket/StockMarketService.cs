@@ -63,14 +63,14 @@ namespace Library.StockMarket
 
         public List<StockMarketQuoteUserAlertContract> SearchQuoteUserAlerts(int alertTypeId, int? userId, int? quoteId)
         {
-            if (userId.HasValue && _userService.GetUser(userId.Value).Type.TypeId != (int)UserType.Stocktwits)
-                throw new BadRequestException($"{nameof(userId)} is not of stocktwits type");
+            if (userId.HasValue && _userService.GetUser(userId.Value).TypeId != (int)UserType.Stocktwits)
+                throw new BadRequestException($"{nameof(userId)} is not of {nameof(UserType.Stocktwits)} type");
 
             return StockMarketMemoryCache.StockMarketQuoteUserAlerts
                 .Where(quoteUserAlert =>
-                    (quoteUserAlert.Value.AlertType.AlertTypeId == alertTypeId) &&
-                    (!userId.HasValue || quoteUserAlert.Value.User.UserId == userId) &&
-                    (!quoteId.HasValue || quoteUserAlert.Value.Quote.QuoteId == quoteId)
+                    (quoteUserAlert.Value.AlertTypeId == alertTypeId) &&
+                    (!userId.HasValue || quoteUserAlert.Value.UserId == userId) &&
+                    (!quoteId.HasValue || quoteUserAlert.Value.QuoteId == quoteId)
                 )
                 .Select(quoteUserAlert => quoteUserAlert.Value)
                 .OrderByDescending(quoteUserAlert => quoteUserAlert.CreatedOn)
@@ -222,7 +222,7 @@ namespace Library.StockMarket
             //Everything under here is dynamic, no matter the timeframe
             var quoteUserAlerts = StockMarketMemoryCache.StockMarketQuoteUserAlerts
                                            .Where(quoteUserAlert =>
-                                               quoteUserAlert.Value.Quote.QuoteId == quote.QuoteId &&
+                                               quoteUserAlert.Value.QuoteId == quote.QuoteId &&
                                                quoteUserAlert.Value.CreatedOn >= quoteCandlesResponse[^1].CreatedOn &&
                                                quoteUserAlert.Value.CreatedOn <= quoteCandlesResponse[0].CreatedOn
                                            )
@@ -315,11 +315,11 @@ namespace Library.StockMarket
             var quote = GetQuote(quoteId);
 
             return StockMarketMemoryCache.StockMarketQuoteUserEmotions.GetQuoteUserEmotionsAtTimezoneToday(timezone)
-                .GroupBy(quoteUserEmotion => quoteUserEmotion.Emotion)
+                .GroupBy(quoteUserEmotion => quoteUserEmotion.EmotionId)
                 .Select(quoteUserEmotionGroup => new StockMarketQuoteEmotionCountContract()
                 {
-                    Emotion = quoteUserEmotionGroup.Key,
-                    QuoteCount = quoteUserEmotionGroup.Where(quoteUserEmotion => quoteUserEmotion.Quote.QuoteId == quote.QuoteId).Count(),
+                    EmotionId = quoteUserEmotionGroup.Key,
+                    QuoteCount = quoteUserEmotionGroup.Where(quoteUserEmotion => quoteUserEmotion.QuoteId == quote.QuoteId).Count(),
                     GlobalCount = quoteUserEmotionGroup.Count()
                 })
                 .ToList();
@@ -334,7 +334,7 @@ namespace Library.StockMarket
 
             return new StockMarketQuoteUserConfigurationContract()
             {
-                Emotion = quoteUserEmotions.SingleOrDefault(quoteUserEmotion => quoteUserEmotion.Quote.QuoteId == quote.QuoteId)?.Emotion,
+                EmotionId = quoteUserEmotions.SingleOrDefault(quoteUserEmotion => quoteUserEmotion.QuoteId == quote.QuoteId)?.EmotionId,
                 SelectionsToday = quoteUserEmotions.Count,
                 LimitToday = _configuration.Limit.CreateQuoteUserEmotionLimit
             };
@@ -363,19 +363,19 @@ namespace Library.StockMarket
         {
             var user = _userService.GetUser(userId);
 
-            if (user.Type.TypeId != (int)UserType.Stocktwits)
-                throw new BadRequestException($"{nameof(userId)} is not of stocktwits type");
+            if (user.TypeId != (int)UserType.Stocktwits)
+                throw new BadRequestException($"{nameof(userId)} is not of {nameof(UserType.Stocktwits)} type");
 
             return new StockMarketUserContract()
             {
                 AlertTypeCounts = StockMarketMemoryCache.StockMarketQuoteUserAlerts
-                    .Where(quoteUserAlert => quoteUserAlert.Value.User.UserId == user.UserId)
-                    .GroupBy(quoteUserAlert => quoteUserAlert.Value.AlertType)
+                    .Where(quoteUserAlert => quoteUserAlert.Value.UserId == user.UserId)
+                    .GroupBy(quoteUserAlert => quoteUserAlert.Value.AlertTypeId)
                     .Select(alertTypeGroup => new StockMarketUserAlertTypeCountContract()
                     {
-                        AlertType = alertTypeGroup.Key,
+                        AlertTypeId = alertTypeGroup.Key,
                         Count = alertTypeGroup.Count(),
-                        Points = alertTypeGroup.Key.AlertTypeId switch
+                        Points = alertTypeGroup.Key switch
                         {
                             (int)AlertType.InProgress => 0,
                             (int)AlertType.Successful => alertTypeGroup.Select(quoteUserAlert => quoteUserAlert.Value.CompletedSellPoints.Value)
@@ -387,7 +387,7 @@ namespace Library.StockMarket
                             _ => 0
                         }
                     }).ToList(),
-                User = user
+                UserId = user.UserId
             };
         }
 
@@ -420,13 +420,13 @@ namespace Library.StockMarket
 
             var quoteUserAlerts = StockMarketMemoryCache.StockMarketQuoteUserAlerts
                 .Where(quoteUserAlert =>
-                    quoteUserAlert.Value.User.UserId == user.UserId &&
-                    quoteUserAlert.Value.AlertCompletedType is null
+                    quoteUserAlert.Value.UserId == user.UserId &&
+                    !quoteUserAlert.Value.AlertCompletedTypeId.HasValue
                 )
                 .Select(quoteUserAlert => quoteUserAlert.Value)
                 .ToList();
 
-            if (quoteUserAlerts.Any(quoteUserAlert => quoteUserAlert.Quote.QuoteId == quote.QuoteId))
+            if (quoteUserAlerts.Any(quoteUserAlert => quoteUserAlert.QuoteId == quote.QuoteId))
                 throw new BadRequestException("You already created an alert for this quote");
 
             if (quoteUserAlerts.Count >= _configuration.Limit.CreateQuoteUserAlertLimit)
@@ -475,7 +475,7 @@ namespace Library.StockMarket
 
             var quoteUserEmotions = StockMarketMemoryCache.StockMarketQuoteUserEmotions.GetQuoteUserEmotionsAtTimezoneToday(timezone, userId);
 
-            if (quoteUserEmotions.Any(userEmotion => userEmotion.Quote.QuoteId == quote.QuoteId))
+            if (quoteUserEmotions.Any(userEmotion => userEmotion.QuoteId == quote.QuoteId))
                 throw new BadRequestException("You already selected an emotion");
 
             if (quoteUserEmotions.Count >= _configuration.Limit.CreateQuoteUserEmotionLimit)
@@ -505,10 +505,10 @@ namespace Library.StockMarket
             if (!StockMarketMemoryCache.StockMarketQuoteUserAlerts.TryGetValue(quoteUserAlertId, out StockMarketQuoteUserAlertContract quoteUserAlert))
                 throw new BadRequestException($"{nameof(quoteUserAlertId)} is invalid");
 
-            if (quoteUserAlert.User.UserId != user.UserId)
+            if (quoteUserAlert.UserId != user.UserId)
                 throw new BadRequestException($"{nameof(quoteUserAlertId)} is not owned by you");
 
-            if (quoteUserAlert.AlertCompletedType is not null)
+            if (quoteUserAlert.AlertCompletedTypeId.HasValue)
                 throw new BadRequestException($"{nameof(quoteUserAlertId)} is already completed");
 
             await ProcessQuoteUserAlertsReverseSplitsAsync(new List<int> { quoteUserAlert.QuoteUserAlertId });
@@ -707,8 +707,8 @@ namespace Library.StockMarket
                             if (!StockMarketMemoryCache.StockMarketQuoteUserAlerts.TryGetValue(quoteUserAlertEntity.QuoteUserAlertId, out StockMarketQuoteUserAlertContract quoteUserAlert))
                                 return;
 
-                            quoteUserAlert.AlertType = StockMarketMemoryCache.StockMarketAlertTypes[quoteUserAlertEntity.AlertTypeId];
-                            quoteUserAlert.AlertCompletedType = StockMarketMemoryCache.StockMarketAlertCompletedTypes[quoteUserAlertEntity.AlertCompletedTypeId.Value];
+                            quoteUserAlert.AlertTypeId = quoteUserAlertEntity.AlertTypeId;
+                            quoteUserAlert.AlertCompletedTypeId = quoteUserAlertEntity.AlertCompletedTypeId;
                             quoteUserAlert.CompletedSell = quoteUserAlertEntity.CompletedSell;
                             quoteUserAlert.CompletedOn = quoteUserAlertEntity.CompletedOn;
                         });

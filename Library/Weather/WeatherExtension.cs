@@ -22,7 +22,7 @@ namespace Library.Weather
 
             return cityUserEmotions
                 .Where(cityUserEmotion =>
-                    (userId is null || cityUserEmotion.Value.User.UserId == userId) &&
+                    (!userId.HasValue || cityUserEmotion.Value.UserId == userId) &&
                     cityUserEmotion.Value.CreatedOn.AtTimezone(timezone).Date == datetimeOffsetAtTimezone.Date
                 )
                 .Select(cityUserEmotion => cityUserEmotion.Value)

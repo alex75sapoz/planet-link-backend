@@ -1,6 +1,6 @@
 ﻿namespace Library.StockMarket
 {
-    internal class StockMarketConfiguration
+    public class StockMarketConfiguration
     {
         public StockMarketLimit Limit { get; set; }
         public StockMarketDuration Duration { get; set; }

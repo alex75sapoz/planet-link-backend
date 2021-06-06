@@ -44,11 +44,11 @@ namespace Library.User
         public List<UserContract> SearchUsers(string keyword, int userTypeId) => (userTypeId switch
         {
             (int)UserType.Google => UserMemoryCache.Users.Where(user =>
-                user.Value.Type.TypeId == userTypeId &&
+                user.Value.TypeId == userTypeId &&
                 user.Value.Google.Username.StartsWith(keyword, StringComparison.OrdinalIgnoreCase)
             ),
             (int)UserType.Stocktwits => UserMemoryCache.Users.Where(user =>
-                user.Value.Type.TypeId == userTypeId &&
+                user.Value.TypeId == userTypeId &&
                 user.Value.Stocktwits.Username.StartsWith(keyword, StringComparison.OrdinalIgnoreCase)
             ),
             _ => throw new BadRequestException($"{nameof(userTypeId)} is invalid")
@@ -84,7 +84,7 @@ namespace Library.User
         {
             var userSession = UserMemoryCache.UserSessions.SingleOrDefault(userSession =>
                 userSession.Value.Token == token &&
-                userSession.Value.User.Type.TypeId == userTypeId
+                userSession.Value.User.TypeId == userTypeId
             ).Value ?? throw new BadRequestException($"{nameof(userTypeId)}/{nameof(token)} is invalid");
 
             if (!isExpiredSessionValid && userSession.IsExpired)
@@ -375,7 +375,7 @@ namespace Library.User
         {
             var userSession = GetSession(userSessionId, isExpiredSessionValid: true);
 
-            if (userSession.User.Type.TypeId == (int)UserType.Google)
+            if (userSession.User.TypeId == (int)UserType.Google)
             {
                 await RevokeGoogleTokenResponseAsync(userSession.Token);
 

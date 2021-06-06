@@ -1,6 +1,6 @@
 ﻿namespace Library.Location
 {
-    internal class LocationConfiguration
+    public class LocationConfiguration
     {
         public LocationLimit Limit { get; set; }
         public LocationDefault Default { get; set; }

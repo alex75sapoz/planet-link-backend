@@ -12,18 +12,19 @@ using System.Threading.Tasks;
 #pragma warning disable IDE0060 // Remove unused parameter
 namespace Api.Controller
 {
+    [Authorization(Requirement.UserMemoryCache)]
     public class UserController : ApiController<IUserService>
     {
         public UserController(IUserService service) : base(service) { }
 
         [HttpGet("Authenticate"), ProducesResponseType(typeof(UserSessionContract), (int)HttpStatusCode.OK)]
         [ResponseCache(Duration = 299, VaryByHeader = ApiHeader.UserTypeId + "," + ApiHeader.Token)]
-        [Authorization]
+        [Authorization(Requirement.UserTypeGoogle), Authorization(Requirement.UserTypeStocktwits)]
         public async Task<IActionResult> AuthenticateSessionAsync([Required, FromHeader(Name = ApiHeader.UserTypeId)] AuthenticationUserType userTypeId) =>
             Ok(await Task.FromResult(_service.GetSession(UserSessionId.Value)));
 
         [HttpPost("Revoke"), ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [Authorization]
+        [Authorization(Requirement.UserTypeGoogle), Authorization(Requirement.UserTypeStocktwits)]
         public async Task RemoveSessionAsync() =>
             await _service.RevokeSessionAsync(UserSessionId.Value);
 

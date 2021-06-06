@@ -1,6 +1,4 @@
-﻿using Library.Location;
-using Library.User;
-using Library.Weather.Contract;
+﻿using Library.Weather.Contract;
 using Library.Weather.Entity;
 using Library.Weather.Response;
 using System.Collections.Generic;
@@ -63,11 +61,11 @@ namespace Library.Weather
 
         public static WeatherCityUserEmotionContract MapToCityUserEmotionContract(this WeatherCityUserEmotionEntity src) => new()
         {
+            CityId = src.CityId,
+            UserId = src.UserId,
+            EmotionId = src.EmotionId,
             CityUserEmotionId = src.CityUserEmotionId,
-            CreatedOn = src.CreatedOn,
-            City = ILocationMemoryCache.LocationCities[src.CityId],
-            User = IUserMemoryCache.Users[src.UserId],
-            Emotion = WeatherMemoryCache.WeatherEmotions[src.EmotionId]
+            CreatedOn = src.CreatedOn
         };
 
         public static WeatherEmotionContract MapToEmotionContract(this WeatherEmotionEntity src) => new()
