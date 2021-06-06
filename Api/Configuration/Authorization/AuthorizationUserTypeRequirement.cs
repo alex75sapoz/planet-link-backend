@@ -6,6 +6,19 @@ using System.Threading.Tasks;
 
 namespace Api.Configuration.Authorization
 {
+    internal class AuthorizationUserTypeAnyRequirement : AuthorizationHandler<AuthorizationUserTypeAnyRequirement>, IAuthorizationRequirement
+    {
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AuthorizationUserTypeAnyRequirement requirement)
+        {
+            if (context.User.FindFirstValue($"{nameof(AuthenticationResult.UserSessionId)}") is not null)
+                context.Succeed(requirement);
+            else
+                context.Fail();
+
+            return Task.CompletedTask;
+        }
+    }
+
     internal class AuthorizationUserTypeGoogleRequirement : AuthorizationHandler<AuthorizationUserTypeGoogleRequirement>, IAuthorizationRequirement
     {
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AuthorizationUserTypeGoogleRequirement requirement)

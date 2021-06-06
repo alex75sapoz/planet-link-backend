@@ -11,6 +11,7 @@ namespace Api.Configuration.Authorization
             Requirement.LocationMemoryCache => nameof(AuthorizationLocationMemoryCacheRequirement),
             Requirement.ProgrammingMemoryCache => nameof(AuthorizationProgrammingMemoryCacheRequirement),
             Requirement.StockMarketMemoryCache => nameof(AuthorizationStockMarketMemoryCacheRequirement),
+            Requirement.UserTypeAny => nameof(AuthorizationUserTypeAnyRequirement),
             Requirement.UserTypeGoogle => nameof(AuthorizationUserTypeGoogleRequirement),
             Requirement.UserTypeStocktwits => nameof(AuthorizationUserTypeStocktwitsRequirement),
             Requirement.UserMemoryCache => nameof(AuthorizationUserMemoryCacheRequirement),

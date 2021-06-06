@@ -12,6 +12,7 @@
         StockMarketMemoryCache,
 
         //User
+        UserTypeAny,
         UserTypeGoogle,
         UserTypeStocktwits,
         UserMemoryCache,

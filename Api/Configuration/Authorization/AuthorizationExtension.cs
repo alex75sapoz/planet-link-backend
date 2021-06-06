@@ -10,6 +10,10 @@ namespace Api.Configuration.Authorization
                 options.AddPolicy(nameof(AuthorizationDefaultRequirement), policy => policy.AddRequirements(
                     new AuthorizationDefaultRequirement()
                 ));
+                options.AddPolicy(nameof(AuthorizationUserTypeAnyRequirement), policy => policy.AddRequirements(
+                    new AuthorizationDefaultRequirement(),
+                    new AuthorizationUserTypeAnyRequirement()
+                ));
                 options.AddPolicy(nameof(AuthorizationUserTypeGoogleRequirement), policy => policy.AddRequirements(
                     new AuthorizationDefaultRequirement(),
                     new AuthorizationUserTypeGoogleRequirement()
