@@ -23,13 +23,9 @@ namespace Api.Configuration.MemoryCache
             ))
         { }
 
-        public static bool IsReady { get; set; }
-
         protected override async Task StartAsync()
         {
             await Task.WhenAll(ILibraryMemoryCache.Jobs.Where(job => job.Value.IsDependentOnCache).Select(job => job.Value.PauseAsync()));
-
-            IsReady = false;
 
             using var scope = _serviceProvider.CreateScope();
 
@@ -38,8 +34,6 @@ namespace Api.Configuration.MemoryCache
             await IWeatherStartup.RefreshMemoryCacheAsync(scope.ServiceProvider);
             await IStockMarketStartup.RefreshMemoryCacheAsync(scope.ServiceProvider);
             await IProgrammingStartup.RefreshMemoryCacheAsync(scope.ServiceProvider);
-
-            IsReady = true;
 
             await Task.WhenAll(ILibraryMemoryCache.Jobs.Where(job => job.Value.IsDependentOnCache).Select(job => job.Value.ResumeAsync()));
         }
