@@ -1,7 +1,6 @@
 ﻿using Library.StockMarket.Contract;
 using Library.StockMarket.Entity;
 using Library.StockMarket.Response;
-using Library.User;
 using System.Collections.Generic;
 
 namespace Library.StockMarket

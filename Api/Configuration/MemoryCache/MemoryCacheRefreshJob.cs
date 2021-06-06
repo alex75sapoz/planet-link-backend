@@ -33,8 +33,6 @@ namespace Api.Configuration.MemoryCache
 
             using var scope = _serviceProvider.CreateScope();
 
-            //Order must match project build order
-
             await IUserStartup.RefreshMemoryCacheAsync(scope.ServiceProvider);
             await ILocationStartup.RefreshMemoryCacheAsync(scope.ServiceProvider);
             await IWeatherStartup.RefreshMemoryCacheAsync(scope.ServiceProvider);

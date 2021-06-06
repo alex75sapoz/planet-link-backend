@@ -2,7 +2,6 @@
 using Library.StockMarket;
 using Library.StockMarket.Contract;
 using Library.StockMarket.Enum;
-using Library.User.Enum;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -12,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace Api.Controller
 {
+    [Authorization(Requirement.MemoryCacheStockMarket)]
     public class StockMarketController : ApiController<IStockMarketService>
     {
         public StockMarketController(IStockMarketService service) : base(service) { }
@@ -52,7 +52,7 @@ namespace Api.Controller
             Ok(await Task.FromResult(_service.GetQuoteEmotionCounts(quoteId, Timezone)));
 
         [HttpPost("Quote/UserEmotion"), ProducesResponseType(typeof(StockMarketQuoteUserEmotionContract), (int)HttpStatusCode.OK)]
-        [Authorization((int)UserType.Stocktwits)]
+        [Authorization(Requirement.UserTypeStocktwits)]
         public async Task<IActionResult> CreateQuoteUserEmotionAsync([Required, Range(1, int.MaxValue)] int quoteId, [Required, Range(1, int.MaxValue)] Emotion emotionId) =>
             Ok(await _service.CreateQuoteUserEmotionAsync(UserId.Value, quoteId, (int)emotionId, Timezone));
 
@@ -62,17 +62,17 @@ namespace Api.Controller
             Ok(await Task.FromResult(_service.SearchQuoteUserAlerts((int)alertTypeId, userId, quoteId)));
 
         [HttpPost("Quote/UserAlert"), ProducesResponseType(typeof(StockMarketQuoteUserAlertContract), (int)HttpStatusCode.OK)]
-        [Authorization((int)UserType.Stocktwits)]
+        [Authorization(Requirement.UserTypeStocktwits)]
         public async Task<IActionResult> CreateQuoteUserAlertAsync([Required, Range(1, int.MaxValue)] int quoteId, [Required, Range(0.000001, int.MaxValue)] decimal sell, [Required, Range(0.000001, int.MaxValue)] decimal stopLoss) =>
             Ok(await _service.CreateQuoteUserAlertAsync(UserId.Value, quoteId, (sell, stopLoss), Timezone));
 
         [HttpPut("Quote/UserAlert"), ProducesResponseType(typeof(StockMarketQuoteUserAlertContract), (int)HttpStatusCode.OK)]
-        [Authorization((int)UserType.Stocktwits)]
+        [Authorization(Requirement.UserTypeStocktwits)]
         public async Task<IActionResult> CompleteQuoteUserAlertAsync([Required, Range(1, int.MaxValue)] int quoteUserAlertId) =>
             Ok(await _service.CompleteQuoteUserAlertAsync(UserId.Value, quoteUserAlertId));
 
         [HttpGet("Quote/UserConfiguration"), ProducesResponseType(typeof(StockMarketQuoteUserConfigurationContract), (int)HttpStatusCode.OK)]
-        [Authorization((int)UserType.Stocktwits)]
+        [Authorization(Requirement.UserTypeStocktwits)]
         public async Task<IActionResult> GetQuoteUserConfigurationAsync([Required, Range(1, int.MaxValue)] int quoteId) =>
             Ok(await Task.FromResult(_service.GetQuoteUserConfiguration(UserId.Value, quoteId, Timezone)));
 

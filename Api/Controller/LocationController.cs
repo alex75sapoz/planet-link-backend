@@ -1,4 +1,5 @@
-﻿using Library.Base;
+﻿using Api.Configuration.Authorization;
+using Library.Base;
 using Library.Location;
 using Library.Location.Contract;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace Api.Controller
 {
+    [Authorization(Requirement.MemoryCacheLocation)]
     public class LocationController : ApiController<ILocationService>
     {
         public LocationController(ILocationService service) : base(service) { }

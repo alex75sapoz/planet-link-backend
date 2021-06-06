@@ -1,6 +1,4 @@
-﻿using Library.Location;
-using Library.User;
-using Library.Weather.Contract;
+﻿using Library.Weather.Contract;
 using Library.Weather.Entity;
 using Library.Weather.Response;
 using System.Collections.Generic;

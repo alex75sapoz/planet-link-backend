@@ -16,8 +16,6 @@ namespace Api.Configuration.Library
         {
             configuration = configuration.GetSection($"{nameof(Api)}.{nameof(Library)}");
 
-            //Order must match project build order
-
             IErrorStartup.Startup(services, new ErrorConfiguration(), databaseConfiguration.Connection);
             IUserStartup.Startup(services, configuration.GetSection(nameof(UserConfiguration)).Get<UserConfiguration>(), databaseConfiguration.Connection);
             ILocationStartup.Startup(services, configuration.GetSection(nameof(LocationConfiguration)).Get<LocationConfiguration>(), databaseConfiguration.Connection);

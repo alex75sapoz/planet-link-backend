@@ -18,4 +18,17 @@ namespace Api.Configuration.Authorization
             return Task.CompletedTask;
         }
     }
+
+    internal class AuthorizationStocktwitsRequirement : AuthorizationHandler<AuthorizationStocktwitsRequirement>, IAuthorizationRequirement
+    {
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AuthorizationStocktwitsRequirement requirement)
+        {
+            if (context.User.FindFirstValue($"{nameof(AuthenticationResult.UserTypeId)}") == $"{(int)UserType.Stocktwits}")
+                context.Succeed(requirement);
+            else
+                context.Fail();
+
+            return Task.CompletedTask;
+        }
+    }
 }
