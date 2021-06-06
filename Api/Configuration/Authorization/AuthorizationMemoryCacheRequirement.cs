@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Api.Configuration.Authorization
 {
-    internal class AuthorizationMemoryCacheLocationRequirement : AuthorizationHandler<AuthorizationMemoryCacheLocationRequirement>, IAuthorizationRequirement
+    internal class AuthorizationLocationMemoryCacheRequirement : AuthorizationHandler<AuthorizationLocationMemoryCacheRequirement>, IAuthorizationRequirement
     {
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AuthorizationMemoryCacheLocationRequirement requirement)
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AuthorizationLocationMemoryCacheRequirement requirement)
         {
             if (ILocationStartup.IsMemoryCacheReady)
                 context.Succeed(requirement);
@@ -21,9 +21,9 @@ namespace Api.Configuration.Authorization
         }
     }
 
-    internal class AuthorizationMemoryCacheProgrammingRequirement : AuthorizationHandler<AuthorizationMemoryCacheProgrammingRequirement>, IAuthorizationRequirement
+    internal class AuthorizationProgrammingMemoryCacheRequirement : AuthorizationHandler<AuthorizationProgrammingMemoryCacheRequirement>, IAuthorizationRequirement
     {
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AuthorizationMemoryCacheProgrammingRequirement requirement)
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AuthorizationProgrammingMemoryCacheRequirement requirement)
         {
             if (IProgrammingStartup.IsMemoryCacheReady)
                 context.Succeed(requirement);
@@ -34,9 +34,9 @@ namespace Api.Configuration.Authorization
         }
     }
 
-    internal class AuthorizationMemoryCacheStockMarketRequirement : AuthorizationHandler<AuthorizationMemoryCacheStockMarketRequirement>, IAuthorizationRequirement
+    internal class AuthorizationStockMarketMemoryCacheRequirement : AuthorizationHandler<AuthorizationStockMarketMemoryCacheRequirement>, IAuthorizationRequirement
     {
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AuthorizationMemoryCacheStockMarketRequirement requirement)
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AuthorizationStockMarketMemoryCacheRequirement requirement)
         {
             if (IStockMarketStartup.IsMemoryCacheReady)
                 context.Succeed(requirement);
@@ -47,9 +47,9 @@ namespace Api.Configuration.Authorization
         }
     }
 
-    internal class AuthorizationMemoryCacheUserRequirement : AuthorizationHandler<AuthorizationMemoryCacheUserRequirement>, IAuthorizationRequirement
+    internal class AuthorizationUserMemoryCacheRequirement : AuthorizationHandler<AuthorizationUserMemoryCacheRequirement>, IAuthorizationRequirement
     {
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AuthorizationMemoryCacheUserRequirement requirement)
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AuthorizationUserMemoryCacheRequirement requirement)
         {
             if (IUserStartup.IsMemoryCacheReady)
                 context.Succeed(requirement);
@@ -60,9 +60,9 @@ namespace Api.Configuration.Authorization
         }
     }
 
-    internal class AuthorizationMemoryCacheWeatherRequirement : AuthorizationHandler<AuthorizationMemoryCacheWeatherRequirement>, IAuthorizationRequirement
+    internal class AuthorizationWeatherMemoryCacheRequirement : AuthorizationHandler<AuthorizationWeatherMemoryCacheRequirement>, IAuthorizationRequirement
     {
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AuthorizationMemoryCacheWeatherRequirement requirement)
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AuthorizationWeatherMemoryCacheRequirement requirement)
         {
             if (IWeatherStartup.IsMemoryCacheReady)
                 context.Succeed(requirement);

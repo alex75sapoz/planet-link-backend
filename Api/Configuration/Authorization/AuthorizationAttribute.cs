@@ -8,13 +8,13 @@ namespace Api.Configuration.Authorization
     {
         public AuthorizationAttribute(Requirement requirement) : base(requirement switch
         {
-            Requirement.UserTypeGoogle => nameof(AuthorizationGoogleRequirement),
-            Requirement.UserTypeStocktwits => nameof(AuthorizationStocktwitsRequirement),
-            Requirement.MemoryCacheLocation => nameof(AuthorizationMemoryCacheLocationRequirement),
-            Requirement.MemoryCacheProgramming => nameof(AuthorizationMemoryCacheProgrammingRequirement),
-            Requirement.MemoryCacheStockMarket => nameof(AuthorizationMemoryCacheStockMarketRequirement),
-            Requirement.MemoryCacheUser => nameof(AuthorizationMemoryCacheUserRequirement),
-            Requirement.MemoryCacheWeather => nameof(AuthorizationMemoryCacheWeatherRequirement),
+            Requirement.LocationMemoryCache => nameof(AuthorizationLocationMemoryCacheRequirement),
+            Requirement.ProgrammingMemoryCache => nameof(AuthorizationProgrammingMemoryCacheRequirement),
+            Requirement.StockMarketMemoryCache => nameof(AuthorizationStockMarketMemoryCacheRequirement),
+            Requirement.UserTypeGoogle => nameof(AuthorizationUserTypeGoogleRequirement),
+            Requirement.UserTypeStocktwits => nameof(AuthorizationUserTypeStocktwitsRequirement),
+            Requirement.UserMemoryCache => nameof(AuthorizationUserMemoryCacheRequirement),
+            Requirement.WeatherMemoryCache => nameof(AuthorizationWeatherMemoryCacheRequirement),
             _ => throw new System.Exception($"{requirement} is invalid in {nameof(AuthorizationAttribute)}")
         })
         { }

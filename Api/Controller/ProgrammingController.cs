@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Api.Controller
 {
-    [Authorization(Requirement.MemoryCacheProgramming)]
+    [Authorization(Requirement.ProgrammingMemoryCache)]
     public class ProgrammingController : ApiController<IProgrammingService>
     {
         public ProgrammingController(IProgrammingService service) : base(service) { }

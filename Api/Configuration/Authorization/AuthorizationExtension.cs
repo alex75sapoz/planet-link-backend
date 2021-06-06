@@ -10,33 +10,28 @@ namespace Api.Configuration.Authorization
                 options.AddPolicy(nameof(AuthorizationDefaultRequirement), policy => policy.AddRequirements(
                     new AuthorizationDefaultRequirement()
                 ));
-                options.AddPolicy(nameof(AuthorizationGoogleRequirement), policy => policy.AddRequirements(
+                options.AddPolicy(nameof(AuthorizationUserTypeGoogleRequirement), policy => policy.AddRequirements(
                     new AuthorizationDefaultRequirement(),
-                    new AuthorizationGoogleRequirement()
+                    new AuthorizationUserTypeGoogleRequirement()
                 ));
-                options.AddPolicy(nameof(AuthorizationStocktwitsRequirement), policy => policy.AddRequirements(
+                options.AddPolicy(nameof(AuthorizationUserTypeStocktwitsRequirement), policy => policy.AddRequirements(
                     new AuthorizationDefaultRequirement(),
-                    new AuthorizationStocktwitsRequirement()
+                    new AuthorizationUserTypeStocktwitsRequirement()
                 ));
-                options.AddPolicy(nameof(AuthorizationMemoryCacheLocationRequirement), policy => policy.AddRequirements(
-                    new AuthorizationDefaultRequirement(),
-                    new AuthorizationMemoryCacheLocationRequirement()
+                options.AddPolicy(nameof(AuthorizationLocationMemoryCacheRequirement), policy => policy.AddRequirements(
+                    new AuthorizationLocationMemoryCacheRequirement()
                 ));
-                options.AddPolicy(nameof(AuthorizationMemoryCacheProgrammingRequirement), policy => policy.AddRequirements(
-                    new AuthorizationDefaultRequirement(),
-                    new AuthorizationMemoryCacheProgrammingRequirement()
+                options.AddPolicy(nameof(AuthorizationProgrammingMemoryCacheRequirement), policy => policy.AddRequirements(
+                    new AuthorizationProgrammingMemoryCacheRequirement()
                 ));
-                options.AddPolicy(nameof(AuthorizationMemoryCacheStockMarketRequirement), policy => policy.AddRequirements(
-                    new AuthorizationDefaultRequirement(),
-                    new AuthorizationMemoryCacheStockMarketRequirement()
+                options.AddPolicy(nameof(AuthorizationStockMarketMemoryCacheRequirement), policy => policy.AddRequirements(
+                    new AuthorizationStockMarketMemoryCacheRequirement()
                 ));
-                options.AddPolicy(nameof(AuthorizationMemoryCacheUserRequirement), policy => policy.AddRequirements(
-                    new AuthorizationDefaultRequirement(),
-                    new AuthorizationMemoryCacheUserRequirement()
+                options.AddPolicy(nameof(AuthorizationUserMemoryCacheRequirement), policy => policy.AddRequirements(
+                    new AuthorizationUserMemoryCacheRequirement()
                 ));
-                options.AddPolicy(nameof(AuthorizationMemoryCacheWeatherRequirement), policy => policy.AddRequirements(
-                    new AuthorizationDefaultRequirement(),
-                    new AuthorizationMemoryCacheWeatherRequirement()
+                options.AddPolicy(nameof(AuthorizationWeatherMemoryCacheRequirement), policy => policy.AddRequirements(
+                    new AuthorizationWeatherMemoryCacheRequirement()
                 ));
 
                 options.FallbackPolicy = options.GetPolicy(nameof(AuthorizationDefaultRequirement));

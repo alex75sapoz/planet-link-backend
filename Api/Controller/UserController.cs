@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 #pragma warning disable IDE0060 // Remove unused parameter
 namespace Api.Controller
 {
-    [Authorization(Requirement.MemoryCacheUser)]
+    [Authorization(Requirement.UserMemoryCache)]
     public class UserController : ApiController<IUserService>
     {
         public UserController(IUserService service) : base(service) { }

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Api.Controller
 {
-    [Authorization(Requirement.MemoryCacheWeather)]
+    [Authorization(Requirement.WeatherMemoryCache), Authorization(Requirement.LocationMemoryCache), Authorization(Requirement.UserMemoryCache)]
     public class WeatherController : ApiController<IWeatherService>
     {
         public WeatherController(IWeatherService service) : base(service) { }

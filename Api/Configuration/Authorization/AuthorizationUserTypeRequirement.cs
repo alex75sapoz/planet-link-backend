@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Api.Configuration.Authorization
 {
-    internal class AuthorizationGoogleRequirement : AuthorizationHandler<AuthorizationGoogleRequirement>, IAuthorizationRequirement
+    internal class AuthorizationUserTypeGoogleRequirement : AuthorizationHandler<AuthorizationUserTypeGoogleRequirement>, IAuthorizationRequirement
     {
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AuthorizationGoogleRequirement requirement)
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AuthorizationUserTypeGoogleRequirement requirement)
         {
             if (context.User.FindFirstValue($"{nameof(AuthenticationResult.UserTypeId)}") == $"{(int)UserType.Google}")
                 context.Succeed(requirement);
@@ -19,9 +19,9 @@ namespace Api.Configuration.Authorization
         }
     }
 
-    internal class AuthorizationStocktwitsRequirement : AuthorizationHandler<AuthorizationStocktwitsRequirement>, IAuthorizationRequirement
+    internal class AuthorizationUserTypeStocktwitsRequirement : AuthorizationHandler<AuthorizationUserTypeStocktwitsRequirement>, IAuthorizationRequirement
     {
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AuthorizationStocktwitsRequirement requirement)
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AuthorizationUserTypeStocktwitsRequirement requirement)
         {
             if (context.User.FindFirstValue($"{nameof(AuthenticationResult.UserTypeId)}") == $"{(int)UserType.Stocktwits}")
                 context.Succeed(requirement);
