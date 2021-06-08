@@ -13,7 +13,7 @@ namespace Library.Programming.Contract
         }
 
         [JsonIgnore]
-        public int TypeId { get; internal set; }
+        public int ProjectTypeId { get; internal set; }
         [JsonIgnore]
         public int JobId { get; internal set; }
         [JsonIgnore]
@@ -28,7 +28,7 @@ namespace Library.Programming.Contract
         public bool IsImportant { get; internal set; }
         public DateTimeOffset CreatedOn { get; internal set; }
 
-        public ProgrammingProjectTypeContract Type => IProgrammingMemoryCache.ProgrammingProjectTypes[TypeId];
+        public ProgrammingProjectTypeContract Type => IProgrammingMemoryCache.ProgrammingProjectTypes[ProjectTypeId];
         public ProgrammingJobContract Job => IProgrammingMemoryCache.ProgrammingJobs[JobId];
         public ProgrammingTechnologyStackContract TechnologyStack => IProgrammingMemoryCache.ProgrammingTechnologyStacks[TechnologyStackId];
         public List<ProgrammingLanguageContract> Languages => LanguageIds.Select(languageId => IProgrammingMemoryCache.ProgrammingLanguages[languageId]).ToList();

@@ -63,12 +63,12 @@ namespace Library.StockMarket
 
         public List<StockMarketQuoteUserAlertContract> SearchQuoteUserAlerts(int alertTypeId, int? userId, int? quoteId)
         {
-            if (userId.HasValue && _userService.GetUser(userId.Value).TypeId != (int)UserType.Stocktwits)
+            if (userId.HasValue && _userService.GetUser(userId.Value).UserTypeId != (int)UserType.Stocktwits)
                 throw new BadRequestException($"{nameof(userId)} is not of {nameof(UserType.Stocktwits)} type");
 
             return StockMarketMemoryCache.StockMarketQuoteUserAlerts
                 .Where(quoteUserAlert =>
-                    (quoteUserAlert.Value.TypeId == alertTypeId) &&
+                    (quoteUserAlert.Value.AlertTypeId == alertTypeId) &&
                     (!userId.HasValue || quoteUserAlert.Value.UserId == userId) &&
                     (!quoteId.HasValue || quoteUserAlert.Value.QuoteId == quoteId)
                 )
@@ -363,17 +363,17 @@ namespace Library.StockMarket
         {
             var user = _userService.GetUser(userId);
 
-            if (user.TypeId != (int)UserType.Stocktwits)
+            if (user.UserTypeId != (int)UserType.Stocktwits)
                 throw new BadRequestException($"{nameof(userId)} is not of {nameof(UserType.Stocktwits)} type");
 
             return new StockMarketUserContract()
             {
                 AlertTypeCounts = StockMarketMemoryCache.StockMarketQuoteUserAlerts
                     .Where(quoteUserAlert => quoteUserAlert.Value.UserId == user.UserId)
-                    .GroupBy(quoteUserAlert => quoteUserAlert.Value.TypeId)
+                    .GroupBy(quoteUserAlert => quoteUserAlert.Value.AlertTypeId)
                     .Select(alertTypeGroup => new StockMarketUserAlertTypeCountContract()
                     {
-                        TypeId = alertTypeGroup.Key,
+                        AlertTypeId = alertTypeGroup.Key,
                         Count = alertTypeGroup.Count(),
                         Points = alertTypeGroup.Key switch
                         {
@@ -421,7 +421,7 @@ namespace Library.StockMarket
             var quoteUserAlerts = StockMarketMemoryCache.StockMarketQuoteUserAlerts
                 .Where(quoteUserAlert =>
                     quoteUserAlert.Value.UserId == user.UserId &&
-                    !quoteUserAlert.Value.CompletedTypeId.HasValue
+                    !quoteUserAlert.Value.AlertCompletedTypeId.HasValue
                 )
                 .Select(quoteUserAlert => quoteUserAlert.Value)
                 .ToList();
@@ -508,7 +508,7 @@ namespace Library.StockMarket
             if (quoteUserAlert.UserId != user.UserId)
                 throw new BadRequestException($"{nameof(quoteUserAlertId)} is not owned by you");
 
-            if (quoteUserAlert.CompletedTypeId.HasValue)
+            if (quoteUserAlert.AlertCompletedTypeId.HasValue)
                 throw new BadRequestException($"{nameof(quoteUserAlertId)} is already completed");
 
             await ProcessQuoteUserAlertsReverseSplitsAsync(new List<int> { quoteUserAlert.QuoteUserAlertId });
@@ -707,8 +707,8 @@ namespace Library.StockMarket
                             if (!StockMarketMemoryCache.StockMarketQuoteUserAlerts.TryGetValue(quoteUserAlertEntity.QuoteUserAlertId, out StockMarketQuoteUserAlertContract quoteUserAlert))
                                 return;
 
-                            quoteUserAlert.TypeId = quoteUserAlertEntity.AlertTypeId;
-                            quoteUserAlert.CompletedTypeId = quoteUserAlertEntity.AlertCompletedTypeId;
+                            quoteUserAlert.AlertTypeId = quoteUserAlertEntity.AlertTypeId;
+                            quoteUserAlert.AlertCompletedTypeId = quoteUserAlertEntity.AlertCompletedTypeId;
                             quoteUserAlert.CompletedSell = quoteUserAlertEntity.CompletedSell;
                             quoteUserAlert.CompletedOn = quoteUserAlertEntity.CompletedOn;
                         });

@@ -25,13 +25,13 @@ namespace Library.StockMarket
 
         public static StockMarketAlertTypeContract MaptToAlertTypeContract(this StockMarketAlertTypeEntity src) => new()
         {
-            TypeId = src.AlertTypeId,
+            AlertTypeId = src.AlertTypeId,
             Name = src.Name
         };
 
         public static StockMarketAlertCompletedTypeContract MaptToAlertCompletedTypeContract(this StockMarketAlertCompletedTypeEntity src) => new()
         {
-            CompletedTypeId = src.AlertCompletedTypeId,
+            AlertCompletedTypeId = src.AlertCompletedTypeId,
             Name = src.Name
         };
 
@@ -117,8 +117,8 @@ namespace Library.StockMarket
         {
             QuoteId = src.QuoteId,
             UserId = src.UserId,
-            TypeId = src.AlertTypeId,
-            CompletedTypeId = src.AlertCompletedTypeId,
+            AlertTypeId = src.AlertTypeId,
+            AlertCompletedTypeId = src.AlertCompletedTypeId,
             QuoteUserAlertId = src.QuoteUserAlertId,
             Buy = src.Buy,
             Sell = src.Sell,

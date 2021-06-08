@@ -2,7 +2,7 @@
 {
     public class StockMarketAlertTypeContract
     {
-        public int TypeId { get; internal set; }
+        public int AlertTypeId { get; internal set; }
         public string Name { get; internal set; }
     }
 }

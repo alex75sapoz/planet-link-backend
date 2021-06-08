@@ -12,9 +12,9 @@ namespace Library.StockMarket.Contract
         [JsonIgnore]
         public int UserId { get; internal set; }
         [JsonIgnore]
-        public int TypeId { get; internal set; }
+        public int AlertTypeId { get; internal set; }
         [JsonIgnore]
-        public int? CompletedTypeId { get; internal set; }
+        public int? AlertCompletedTypeId { get; internal set; }
 
         public int QuoteUserAlertId { get; internal set; }
         public decimal Buy { get; internal set; }
@@ -29,7 +29,7 @@ namespace Library.StockMarket.Contract
 
         public StockMarketQuoteContract Quote => IStockMarketMemoryCache.StockMarketQuotes[QuoteId];
         public UserContract User => IUserMemoryCache.Users[UserId];
-        public StockMarketAlertTypeContract Type => IStockMarketMemoryCache.StockMarketAlertTypes[TypeId];
-        public StockMarketAlertCompletedTypeContract CompletedType => CompletedTypeId.HasValue ? IStockMarketMemoryCache.StockMarketAlertCompletedTypes[CompletedTypeId.Value] : null;
+        public StockMarketAlertTypeContract Type => IStockMarketMemoryCache.StockMarketAlertTypes[AlertTypeId];
+        public StockMarketAlertCompletedTypeContract CompletedType => AlertCompletedTypeId.HasValue ? IStockMarketMemoryCache.StockMarketAlertCompletedTypes[AlertCompletedTypeId.Value] : null;
     }
 }

@@ -26,13 +26,13 @@ namespace Library.Programming
 
         public static ProgrammingProjectTypeContract MapToProjectTypeContract(this ProgrammingProjectTypeEntity src) => new()
         {
-            TypeId = src.ProjectTypeId,
+            ProjectTypeId = src.ProjectTypeId,
             Name = src.Name
         };
 
         public static ProgrammingProjectContract MapToProjectContract(this ProgrammingProjectEntity src) => new()
         {
-            TypeId = src.ProjectTypeId,
+            ProjectTypeId = src.ProjectTypeId,
             JobId = src.JobId,
             TechnologyStackId = src.TechnologyStackId,
             LanguageIds = src.ProjectLanguages.Select(projectLanguage => projectLanguage.LanguageId).ToList(),

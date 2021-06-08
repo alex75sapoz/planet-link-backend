@@ -67,7 +67,7 @@ namespace Library.Programming
 
             ProgrammingMemoryCache.ProgrammingProjectTypes.Clear();
             foreach (var projectType in projectTypeEntities.Select(projectTypeEntity => projectTypeEntity.MapToProjectTypeContract()))
-                ProgrammingMemoryCache.ProgrammingProjectTypes.TryAdd(projectType.TypeId, projectType);
+                ProgrammingMemoryCache.ProgrammingProjectTypes.TryAdd(projectType.ProjectTypeId, projectType);
 
             ProgrammingMemoryCache.ProgrammingProjects.Clear();
             foreach (var project in projectEntities.Select(projectEntity => projectEntity.MapToProjectContract()))
