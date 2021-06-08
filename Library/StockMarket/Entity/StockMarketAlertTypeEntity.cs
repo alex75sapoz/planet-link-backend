@@ -25,9 +25,9 @@ namespace Library.StockMarket.Entity.Configuration
         public void Configure(EntityTypeBuilder<StockMarketAlertTypeEntity> entity)
         {
             entity.ToTable(nameof(StockMarketContext.StockMarketAlertTypes));
-            entity.HasKey(alertType => alertType.AlertTypeId);
+            entity.HasKey(type => type.AlertTypeId);
 
-            entity.HasMany(alertType => alertType.QuoteUserAlerts).WithOne(quoteUserAlert => quoteUserAlert.AlertType);
+            entity.HasMany(type => type.QuoteUserAlerts).WithOne(quoteUserAlert => quoteUserAlert.Type).HasForeignKey(quoteUserAlert => quoteUserAlert.AlertTypeId);
         }
     }
 }

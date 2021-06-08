@@ -20,7 +20,7 @@ namespace Library.Programming
 
         public List<ProgrammingProjectContract> SearchProjects(int? projectTypeId, int? languageId, int? jobId, int? technologyStackId) =>
             ProgrammingMemoryCache.ProgrammingProjects.Where(project =>
-                (!projectTypeId.HasValue || project.Value.TypeId == projectTypeId) &&
+                (!projectTypeId.HasValue || project.Value.ProjectTypeId == projectTypeId) &&
                 (!languageId.HasValue || project.Value.LanguageIds.Contains(languageId.Value)) &&
                 (!jobId.HasValue || project.Value.JobId == jobId) &&
                 (!technologyStackId.HasValue || project.Value.TechnologyStackId == technologyStackId)

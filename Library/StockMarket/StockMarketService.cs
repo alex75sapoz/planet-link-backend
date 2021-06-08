@@ -63,7 +63,7 @@ namespace Library.StockMarket
 
         public List<StockMarketQuoteUserAlertContract> SearchQuoteUserAlerts(int alertTypeId, int? userId, int? quoteId)
         {
-            if (userId.HasValue && _userService.GetUser(userId.Value).TypeId != (int)UserType.Stocktwits)
+            if (userId.HasValue && _userService.GetUser(userId.Value).UserTypeId != (int)UserType.Stocktwits)
                 throw new BadRequestException($"{nameof(userId)} is not of {nameof(UserType.Stocktwits)} type");
 
             return StockMarketMemoryCache.StockMarketQuoteUserAlerts
@@ -363,7 +363,7 @@ namespace Library.StockMarket
         {
             var user = _userService.GetUser(userId);
 
-            if (user.TypeId != (int)UserType.Stocktwits)
+            if (user.UserTypeId != (int)UserType.Stocktwits)
                 throw new BadRequestException($"{nameof(userId)} is not of {nameof(UserType.Stocktwits)} type");
 
             return new StockMarketUserContract()

@@ -7,13 +7,13 @@ namespace Library.User
     {
         public static UserTypeContract MapToTypeContract(this UserTypeEntity src) => new()
         {
-            TypeId = src.UserTypeId,
+            UserTypeId = src.UserTypeId,
             Name = src.Name
         };
 
         public static UserContract MapToUserContract(this UserEntity src) => new()
         {
-            TypeId = src.UserTypeId,
+            UserTypeId = src.UserTypeId,
             UserId = src.UserId,
             Google = src.Google?.MapToGoogleContract(),
             Stocktwits = src.Stocktwits?.MapToStocktwitsContract()

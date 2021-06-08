@@ -53,7 +53,7 @@ namespace Library.User
 
             UserMemoryCache.UserTypes.Clear();
             foreach (var userType in userTypeEntities.Select(userTypeEntity => userTypeEntity.MapToTypeContract()))
-                UserMemoryCache.UserTypes.TryAdd(userType.TypeId, userType);
+                UserMemoryCache.UserTypes.TryAdd(userType.UserTypeId, userType);
 
             UserMemoryCache.Users.Clear();
             foreach (var user in userEntities.Select(userEntity => userEntity.MapToUserContract()))

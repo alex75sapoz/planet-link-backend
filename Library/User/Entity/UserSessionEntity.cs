@@ -15,8 +15,6 @@ namespace Library.User.Entity
         public DateTimeOffset LastUpdatedOn { get; internal set; }
 
         public virtual UserEntity User { get; internal set; }
-
-        public bool IsExpired => TokenExpiresOn <= DateTimeOffset.Now;
     }
 }
 
@@ -29,9 +27,7 @@ namespace Library.User.Entity.Configuration
             entity.ToTable(nameof(UserContext.UserSessions));
             entity.HasKey(userSession => userSession.UserSessionId);
 
-            entity.HasOne(session => session.User).WithMany(user => user.Sessions).IsRequired(true);
-
-            entity.Ignore(session => session.IsExpired);
+            entity.HasOne(session => session.User).WithMany(user => user.Sessions).HasForeignKey(session => session.UserId).IsRequired(true);
         }
     }
 }
