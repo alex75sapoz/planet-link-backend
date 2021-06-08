@@ -70,11 +70,11 @@ namespace Library.StockMarket
 
             StockMarketMemoryCache.StockMarketAlertTypes.Clear();
             foreach (var alertType in alertTypeEntities.Select(alertTypeEntity => alertTypeEntity.MaptToAlertTypeContract()))
-                StockMarketMemoryCache.StockMarketAlertTypes.TryAdd(alertType.AlertTypeId, alertType);
+                StockMarketMemoryCache.StockMarketAlertTypes.TryAdd(alertType.TypeId, alertType);
 
             StockMarketMemoryCache.StockMarketAlertCompletedTypes.Clear();
             foreach (var alertCompletedType in alertCompletedTypeEntities.Select(alertCompletedTypeEntity => alertCompletedTypeEntity.MaptToAlertCompletedTypeContract()))
-                StockMarketMemoryCache.StockMarketAlertCompletedTypes.TryAdd(alertCompletedType.AlertCompletedTypeId, alertCompletedType);
+                StockMarketMemoryCache.StockMarketAlertCompletedTypes.TryAdd(alertCompletedType.CompletedTypeId, alertCompletedType);
 
             StockMarketMemoryCache.StockMarketEmotions.Clear();
             foreach (var emotion in emotionEntities.Select(emotionEntity => emotionEntity.MapToEmotionContract()))

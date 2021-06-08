@@ -68,7 +68,7 @@ namespace Library.StockMarket
 
             return StockMarketMemoryCache.StockMarketQuoteUserAlerts
                 .Where(quoteUserAlert =>
-                    (quoteUserAlert.Value.AlertTypeId == alertTypeId) &&
+                    (quoteUserAlert.Value.TypeId == alertTypeId) &&
                     (!userId.HasValue || quoteUserAlert.Value.UserId == userId) &&
                     (!quoteId.HasValue || quoteUserAlert.Value.QuoteId == quoteId)
                 )
@@ -370,10 +370,10 @@ namespace Library.StockMarket
             {
                 AlertTypeCounts = StockMarketMemoryCache.StockMarketQuoteUserAlerts
                     .Where(quoteUserAlert => quoteUserAlert.Value.UserId == user.UserId)
-                    .GroupBy(quoteUserAlert => quoteUserAlert.Value.AlertTypeId)
+                    .GroupBy(quoteUserAlert => quoteUserAlert.Value.TypeId)
                     .Select(alertTypeGroup => new StockMarketUserAlertTypeCountContract()
                     {
-                        AlertTypeId = alertTypeGroup.Key,
+                        TypeId = alertTypeGroup.Key,
                         Count = alertTypeGroup.Count(),
                         Points = alertTypeGroup.Key switch
                         {
@@ -421,7 +421,7 @@ namespace Library.StockMarket
             var quoteUserAlerts = StockMarketMemoryCache.StockMarketQuoteUserAlerts
                 .Where(quoteUserAlert =>
                     quoteUserAlert.Value.UserId == user.UserId &&
-                    !quoteUserAlert.Value.AlertCompletedTypeId.HasValue
+                    !quoteUserAlert.Value.CompletedTypeId.HasValue
                 )
                 .Select(quoteUserAlert => quoteUserAlert.Value)
                 .ToList();
@@ -508,7 +508,7 @@ namespace Library.StockMarket
             if (quoteUserAlert.UserId != user.UserId)
                 throw new BadRequestException($"{nameof(quoteUserAlertId)} is not owned by you");
 
-            if (quoteUserAlert.AlertCompletedTypeId.HasValue)
+            if (quoteUserAlert.CompletedTypeId.HasValue)
                 throw new BadRequestException($"{nameof(quoteUserAlertId)} is already completed");
 
             await ProcessQuoteUserAlertsReverseSplitsAsync(new List<int> { quoteUserAlert.QuoteUserAlertId });
@@ -707,8 +707,8 @@ namespace Library.StockMarket
                             if (!StockMarketMemoryCache.StockMarketQuoteUserAlerts.TryGetValue(quoteUserAlertEntity.QuoteUserAlertId, out StockMarketQuoteUserAlertContract quoteUserAlert))
                                 return;
 
-                            quoteUserAlert.AlertTypeId = quoteUserAlertEntity.AlertTypeId;
-                            quoteUserAlert.AlertCompletedTypeId = quoteUserAlertEntity.AlertCompletedTypeId;
+                            quoteUserAlert.TypeId = quoteUserAlertEntity.AlertTypeId;
+                            quoteUserAlert.CompletedTypeId = quoteUserAlertEntity.AlertCompletedTypeId;
                             quoteUserAlert.CompletedSell = quoteUserAlertEntity.CompletedSell;
                             quoteUserAlert.CompletedOn = quoteUserAlertEntity.CompletedOn;
                         });

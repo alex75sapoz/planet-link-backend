@@ -117,8 +117,8 @@ namespace Api.Configuration.Authentication
             {
                 new Claim(nameof(AuthenticationResult.IsAuthenticated), bool.TrueString),
                 new Claim(nameof(AuthenticationResult.UserSessionId), userSession.UserSessionId.ToString()),
-                new Claim(nameof(AuthenticationResult.UserId), userSession.User.UserId.ToString()),
-                new Claim(nameof(AuthenticationResult.UserTypeId), userSession.User.Type.TypeId.ToString()),
+                new Claim(nameof(AuthenticationResult.UserId), userSession.UserId.ToString()),
+                new Claim(nameof(AuthenticationResult.UserTypeId), userSession.User.TypeId.ToString()),
                 new Claim(nameof(AuthenticationResult.Timezone), timezone.Id)
             })), Scheme.Name));
     }

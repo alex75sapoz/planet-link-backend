@@ -39,7 +39,7 @@ namespace Library.User.Entity.Configuration
 
             entity.HasOne(user => user.Type).WithMany(type => type.Users).HasForeignKey(user => user.UserTypeId).IsRequired(true);
 
-            entity.HasMany(user => user.Sessions).WithOne(session => session.User);
+            entity.HasMany(user => user.Sessions).WithOne(session => session.User).HasForeignKey(session => session.UserId);
         }
     }
 }

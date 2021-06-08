@@ -387,7 +387,7 @@ namespace Library.User
                 UserMemoryCache.UserSessions.TryRemove(userSession.UserSessionId, out _);
             }
 
-            if (userSession.User.Type.TypeId == (int)UserType.Stocktwits)
+            if (userSession.User.TypeId == (int)UserType.Stocktwits)
             {
                 //There is only one token per multiple devices, no need to revoke it
                 return;
