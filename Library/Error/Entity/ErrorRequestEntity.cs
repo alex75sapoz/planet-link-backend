@@ -5,6 +5,17 @@ namespace Library.Error.Entity
 {
     public class ErrorRequestEntity
     {
+        public ErrorRequestEntity()
+        {
+            Method = default!;
+            Path = default!;
+            Query = default!;
+            ExceptionType = default!;
+            ExceptionMessage = default!;
+            TimezoneId = default!;
+            Error = default!;
+        }
+
         public int ErrorId { get; internal set; }
         public string Method { get; internal set; }
         public string Path { get; internal set; }
@@ -29,7 +40,7 @@ namespace Library.Error.Entity.Configuration
             entity.ToTable(nameof(ErrorContext.ErrorsRequest));
             entity.HasKey(request => request.ErrorId);
 
-            entity.HasOne(request => request.Error).WithOne(error => error.Request).IsRequired(true);
+            entity.HasOne(request => request.Error).WithOne(error => error.Request!).IsRequired(true);
         }
     }
 }

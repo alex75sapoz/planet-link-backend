@@ -6,6 +6,13 @@ namespace Library.User.Entity
 {
     public class UserStocktwitsEntity
     {
+        public UserStocktwitsEntity()
+        {
+            Name = default!;
+            Username = default!;
+            User = default!;
+        }
+
         public int UserId { get; internal set; }
         public string Name { get; internal set; }
         public string Username { get; internal set; }
@@ -29,7 +36,7 @@ namespace Library.User.Entity.Configuration
             entity.ToTable(nameof(UserContext.UsersStocktwits));
             entity.HasKey(stocktwtits => stocktwtits.UserId);
 
-            entity.HasOne(stocktwits => stocktwits.User).WithOne(user => user.Stocktwits).IsRequired(true);
+            entity.HasOne(stocktwits => stocktwits.User).WithOne(user => user.Stocktwits!).IsRequired(true);
         }
     }
 }

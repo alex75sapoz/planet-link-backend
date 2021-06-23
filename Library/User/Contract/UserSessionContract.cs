@@ -5,6 +5,12 @@ namespace Library.User.Contract
 {
     public class UserSessionContract
     {
+        public UserSessionContract()
+        {
+            RefreshToken = default!;
+            Token = default!;
+        }
+
         [JsonIgnore]
         public string RefreshToken { get; internal set; }
         [JsonIgnore]

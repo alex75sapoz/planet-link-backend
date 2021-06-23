@@ -40,11 +40,11 @@ namespace Library.User
         {
             (int)UserType.Google => UserMemoryCache.Users.Where(user =>
                 user.Value.UserTypeId == userTypeId &&
-                user.Value.Google.Username.StartsWith(keyword, StringComparison.OrdinalIgnoreCase)
+                user.Value.Google!.Username.StartsWith(keyword, StringComparison.OrdinalIgnoreCase)
             ),
             (int)UserType.Stocktwits => UserMemoryCache.Users.Where(user =>
                 user.Value.UserTypeId == userTypeId &&
-                user.Value.Stocktwits.Username.StartsWith(keyword, StringComparison.OrdinalIgnoreCase)
+                user.Value.Stocktwits!.Username.StartsWith(keyword, StringComparison.OrdinalIgnoreCase)
             ),
             _ => throw new BadRequestException($"{nameof(userTypeId)} is invalid")
         }).Select(user => user.Value)
@@ -64,12 +64,12 @@ namespace Library.User
         };
 
         public UserContract GetUser(int userId) =>
-            UserMemoryCache.Users.TryGetValue(userId, out UserContract user)
+            UserMemoryCache.Users.TryGetValue(userId, out UserContract? user)
                 ? user
                 : throw new BadRequestException($"{nameof(userId)} is invalid");
 
         public UserSessionContract GetSession(int userSessionId, bool isExpiredSessionValid = false) =>
-            UserMemoryCache.UserSessions.TryGetValue(userSessionId, out UserSessionContract userSession)
+            UserMemoryCache.UserSessions.TryGetValue(userSessionId, out UserSessionContract? userSession)
                 ? isExpiredSessionValid || !userSession.IsExpired
                       ? userSession
                       : throw new BadRequestException($"{nameof(userSessionId)} is expired")
@@ -114,8 +114,8 @@ namespace Library.User
 
                     if ((currentTime - userSessionEntity.User.LastUpdatedOn).TotalHours > _configuration.Threshold.GoogleUpdateThresholdInHours)
                     {
-                        userSessionEntity.User.Google.Name = googleJsonWebToken.Payload.TryGetValue("name", out object name) ? name.ToString() : userSessionEntity.User.Google.Name;
-                        userSessionEntity.User.Google.Email = googleJsonWebToken.Payload.TryGetValue("email", out object email) ? email.ToString() : userSessionEntity.User.Google.Email;
+                        userSessionEntity.User.Google!.Name = googleJsonWebToken.Payload.TryGetValue("name", out object? name) ? name.ToString()! : userSessionEntity.User.Google.Name;
+                        userSessionEntity.User.Google.Email = googleJsonWebToken.Payload.TryGetValue("email", out object? email) ? email.ToString()! : userSessionEntity.User.Google.Email;
                         userSessionEntity.User.LastUpdatedOn = currentTime;
                     }
 
@@ -125,7 +125,7 @@ namespace Library.User
 
                     await _repository.SaveChangesAsync();
 
-                    userSession.User.Google.Name = userSessionEntity.User.Google.Name;
+                    userSession.User.Google!.Name = userSessionEntity.User.Google!.Name;
                     userSession.User.Google.Username = userSessionEntity.User.Google.Email;
                     userSession.Token = userSessionEntity.Token;
                     userSession.TokenExpiresOn = userSessionEntity.TokenExpiresOn;
@@ -152,7 +152,7 @@ namespace Library.User
                     {
                         var userStocktwitsResponse = await GetStocktwitsResponseAsync(userSession.Token);
 
-                        userSessionEntity.User.Stocktwits.Name = userStocktwitsResponse.Name;
+                        userSessionEntity.User.Stocktwits!.Name = userStocktwitsResponse.Name;
                         userSessionEntity.User.Stocktwits.Username = userStocktwitsResponse.Username;
                         userSessionEntity.User.Stocktwits.FollowersCount = userStocktwitsResponse.FollowersCount;
                         userSessionEntity.User.Stocktwits.FollowingsCount = userStocktwitsResponse.FollowingsCount;
@@ -168,7 +168,7 @@ namespace Library.User
 
                     await _repository.SaveChangesAsync();
 
-                    userSession.User.Stocktwits.Name = userSessionEntity.User.Stocktwits.Name;
+                    userSession.User.Stocktwits!.Name = userSessionEntity.User.Stocktwits!.Name;
                     userSession.User.Stocktwits.Username = userSessionEntity.User.Stocktwits.Username;
                     userSession.User.Stocktwits.FollowersCount = userSessionEntity.User.Stocktwits.FollowersCount;
                     userSession.User.Stocktwits.FollowingsCount = userSessionEntity.User.Stocktwits.FollowingsCount;
@@ -217,8 +217,8 @@ namespace Library.User
                         LastUpdatedOn = currentTime,
                         Google = new UserGoogleEntity
                         {
-                            Name = googleJsonWebToken.Payload.TryGetValue("name", out object name) ? name.ToString() : string.Empty,
-                            Email = googleJsonWebToken.Payload.TryGetValue("email", out object email) ? email.ToString() : string.Empty
+                            Name = googleJsonWebToken.Payload.TryGetValue("name", out object? name) ? name.ToString()! : string.Empty,
+                            Email = googleJsonWebToken.Payload.TryGetValue("email", out object? email) ? email.ToString()! : string.Empty
                         },
                         Sessions = new List<UserSessionEntity>
                         {
@@ -230,8 +230,8 @@ namespace Library.User
                 {
                     if ((currentTime - userEntity.LastUpdatedOn).TotalHours > _configuration.Threshold.GoogleUpdateThresholdInHours)
                     {
-                        userEntity.Google.Name = googleJsonWebToken.Payload.TryGetValue("name", out object name) ? name.ToString() : userEntity.Google.Name;
-                        userEntity.Google.Email = googleJsonWebToken.Payload.TryGetValue("email", out object email) ? email.ToString() : userEntity.Google.Email;
+                        userEntity.Google!.Name = googleJsonWebToken.Payload.TryGetValue("name", out object? name) ? name.ToString()! : userEntity.Google.Name;
+                        userEntity.Google.Email = googleJsonWebToken.Payload.TryGetValue("email", out object? email) ? email.ToString()! : userEntity.Google.Email;
                         userEntity.LastUpdatedOn = currentTime;
                     }
 
@@ -256,7 +256,7 @@ namespace Library.User
 
                 var userSession = UserMemoryCache.UserSessions[userSessionEntity.UserSessionId];
 
-                userSession.User.Google.Name = userEntity.Google.Name;
+                userSession.User.Google!.Name = userEntity.Google!.Name;
                 userSession.User.Google.Username = userEntity.Google.Email;
                 userSession.Token = userSessionEntity.Token;
                 userSession.RefreshToken = userSessionEntity.RefreshToken;
@@ -312,7 +312,7 @@ namespace Library.User
                     if ((currentTime - userEntity.LastUpdatedOn).TotalHours > _configuration.Threshold.StocktwitsUpdateThresholdInHours)
                     {
                         var userStocktwitsResponse = await GetStocktwitsResponseAsync(stocktwitsTokenResponse.Token);
-                        userEntity.Stocktwits.Name = userStocktwitsResponse.Name;
+                        userEntity.Stocktwits!.Name = userStocktwitsResponse.Name;
                         userEntity.Stocktwits.Username = userStocktwitsResponse.Username;
                         userEntity.Stocktwits.FollowersCount = userStocktwitsResponse.FollowersCount;
                         userEntity.Stocktwits.FollowingsCount = userStocktwitsResponse.FollowingsCount;
@@ -344,7 +344,7 @@ namespace Library.User
 
                 var userSession = UserMemoryCache.UserSessions[userSessionEntity.UserSessionId];
 
-                userSession.User.Stocktwits.Name = userEntity.Stocktwits.Name;
+                userSession.User.Stocktwits!.Name = userEntity.Stocktwits!.Name;
                 userSession.User.Stocktwits.Username = userEntity.Stocktwits.Username;
                 userSession.User.Stocktwits.FollowersCount = userEntity.Stocktwits.FollowersCount;
                 userSession.User.Stocktwits.FollowingsCount = userEntity.Stocktwits.FollowingsCount;

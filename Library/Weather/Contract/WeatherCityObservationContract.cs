@@ -4,6 +4,13 @@ namespace Library.Weather.Contract
 {
     public class WeatherCityObservationContract
     {
+        public WeatherCityObservationContract()
+        {
+            Title = default!;
+            LongTitle = default!;
+            Icon = default!;
+        }
+
         public string Title { get; internal set; }
         public string LongTitle { get; internal set; }
         public string Icon { get; internal set; }

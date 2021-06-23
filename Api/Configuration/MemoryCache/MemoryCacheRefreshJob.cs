@@ -43,13 +43,13 @@ namespace Api.Configuration.MemoryCache
             using var scope = _serviceProvider.CreateScope();
             var errorService = scope.ServiceProvider.GetRequiredService<IErrorService>();
 
-            await errorService.CreateErrorProcessingAsync(new ErrorProcessingContract()
-            {
-                ClassName = nameof(MemoryCacheRefreshJob),
-                ClassMethodName = nameof(MemoryCacheRefreshJob.StartAsync),
-                ExceptionType = exception.GetType().Name,
-                ExceptionMessage = exception.GetFullMessage()
-            });
+            await errorService.CreateErrorProcessingAsync(new ErrorProcessingCreateContract
+            (
+                className: nameof(MemoryCacheRefreshJob),
+                classMethodName: nameof(MemoryCacheRefreshJob.StartAsync),
+                exceptionType: exception.GetType().Name,
+                exceptionMessage: exception.GetFullMessage()
+            ));
         }
     }
 }

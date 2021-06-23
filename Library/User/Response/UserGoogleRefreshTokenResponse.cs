@@ -4,6 +4,15 @@ namespace Library.User.Response
 {
     internal class UserGoogleRefreshTokenResponse
     {
+        public UserGoogleRefreshTokenResponse()
+        {
+            UserJsonWebToken = default!;
+            Token = default!;
+            TokenType = default!;
+            RefreshToken = default!;
+            Permission = default!;
+        }
+
         [DeserializeAs(Name = "id_token")]
         public string UserJsonWebToken { get; set; }
 

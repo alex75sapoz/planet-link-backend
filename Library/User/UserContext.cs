@@ -4,7 +4,14 @@ namespace Library.User
 {
     internal class UserContext : BaseContext
     {
-        public UserContext(DbContextOptions<UserContext> options) : base(options) { }
+        public UserContext(DbContextOptions<UserContext> options) : base(options)
+        {
+            UserTypes = default!;
+            Users = default!;
+            UsersGoogle = default!;
+            UsersStocktwits = default!;
+            UserSessions = default!;
+        }
 
         public DbSet<UserTypeEntity> UserTypes { get; set; }
         public DbSet<UserEntity> Users { get; set; }

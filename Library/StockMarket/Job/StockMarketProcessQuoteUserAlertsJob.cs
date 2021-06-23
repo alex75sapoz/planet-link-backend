@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Library.StockMarket.Job
 {
-    internal class StockMarketProcessQuoteUserAlertsInProgressJob : BaseJob
+    internal class StockMarketProcessQuoteUserAlertsJob : BaseJob
     {
-        public StockMarketProcessQuoteUserAlertsInProgressJob(IServiceProvider serviceProvider) : base(serviceProvider, (
+        public StockMarketProcessQuoteUserAlertsJob(IServiceProvider serviceProvider) : base(serviceProvider, (
             delay: TimeSpan.FromMinutes(30),
             interval: TimeSpan.FromHours(1),
             isDependentOnCache: true
@@ -29,13 +29,13 @@ namespace Library.StockMarket.Job
             using var scope = _serviceProvider.CreateScope();
             var errorService = scope.ServiceProvider.GetRequiredService<IErrorService>();
 
-            await errorService.CreateErrorProcessingAsync(new ErrorProcessingContract()
-            {
-                ClassName = nameof(StockMarketProcessQuotesJob),
-                ClassMethodName = nameof(StockMarketProcessQuotesJob.StartAsync),
-                ExceptionType = exception.GetType().Name,
-                ExceptionMessage = exception.GetFullMessage()
-            });
+            await errorService.CreateErrorProcessingAsync(new ErrorProcessingCreateContract
+            (
+                className: nameof(StockMarketProcessQuotesJob),
+                classMethodName: nameof(StockMarketProcessQuotesJob.StartAsync),
+                exceptionType: exception.GetType().Name,
+                exceptionMessage: exception.GetFullMessage()
+            ));
         }
 
     }

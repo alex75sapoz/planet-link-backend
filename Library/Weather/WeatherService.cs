@@ -37,7 +37,7 @@ namespace Library.Weather
         #region Get
 
         public WeatherEmotionContract GetEmotion(int emotionId) =>
-            WeatherMemoryCache.WeatherEmotions.TryGetValue(emotionId, out WeatherEmotionContract emotion)
+            WeatherMemoryCache.WeatherEmotions.TryGetValue(emotionId, out WeatherEmotionContract? emotion)
                 ? emotion
                 : throw new BadRequestException($"{nameof(emotionId)} is invalid");
 

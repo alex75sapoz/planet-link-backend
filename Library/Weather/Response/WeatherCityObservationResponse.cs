@@ -6,6 +6,20 @@ namespace Library.Weather.Response
 {
     internal class WeatherCityObservationResponse : WeatherErrorResponse
     {
+        public WeatherCityObservationResponse()
+        {
+            CityName = default!;
+            Base = default!;
+            Coordinates = default!;
+            Conditions = default!;
+            Temperature = default!;
+            Wind = default!;
+            Cloud = default!;
+            Rain = default!;
+            Snow = default!;
+            City = default!;
+        }
+
         [DeserializeAs(Name = "id")]
         public int OpenWeatherId { get; set; }
 
@@ -53,6 +67,11 @@ namespace Library.Weather.Response
 
     public class WeatherObservationCityResponse
     {
+        public WeatherObservationCityResponse()
+        {
+            Country = default!;
+        }
+
         [DeserializeAs(Name = "country")]
         public string Country { get; set; }
 

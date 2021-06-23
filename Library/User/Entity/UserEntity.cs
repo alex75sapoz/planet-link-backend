@@ -9,6 +9,8 @@ namespace Library.User.Entity
     {
         public UserEntity()
         {
+            ExternalUserId = default!;
+            Type = default!;
             Sessions = new HashSet<UserSessionEntity>();
         }
 
@@ -19,8 +21,8 @@ namespace Library.User.Entity
         public DateTimeOffset LastUpdatedOn { get; internal set; }
 
         public virtual UserTypeEntity Type { get; internal set; }
-        public virtual UserGoogleEntity Google { get; internal set; }
-        public virtual UserStocktwitsEntity Stocktwits { get; internal set; }
+        public virtual UserGoogleEntity? Google { get; internal set; }
+        public virtual UserStocktwitsEntity? Stocktwits { get; internal set; }
         public virtual ICollection<UserSessionEntity> Sessions { get; internal set; }
     }
 }
@@ -34,8 +36,8 @@ namespace Library.User.Entity.Configuration
             entity.ToTable(nameof(UserContext.Users));
             entity.HasKey(user => user.UserId);
 
-            entity.HasOne(user => user.Google).WithOne(google => google.User).IsRequired(false);
-            entity.HasOne(user => user.Stocktwits).WithOne(google => google.User).IsRequired(false);
+            entity.HasOne(user => user.Google).WithOne(google => google!.User).IsRequired(false);
+            entity.HasOne(user => user.Stocktwits).WithOne(google => google!.User).IsRequired(false);
 
             entity.HasOne(user => user.Type).WithMany(type => type.Users).HasForeignKey(user => user.UserTypeId).IsRequired(true);
 

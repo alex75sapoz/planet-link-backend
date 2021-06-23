@@ -8,6 +8,7 @@ namespace Library.User.Entity
     {
         public UserTypeEntity()
         {
+            Name = default!;
             Users = new HashSet<UserEntity>();
         }
 

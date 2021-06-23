@@ -5,6 +5,13 @@ namespace Library.User.Entity
 {
     public class UserGoogleEntity
     {
+        public UserGoogleEntity()
+        {
+            Name = default!;
+            Email = default!;
+            User = default!;
+        }
+
         public int UserId { get; internal set; }
         public string Name { get; internal set; }
         public string Email { get; internal set; }
@@ -22,7 +29,7 @@ namespace Library.User.Entity.Configuration
             entity.ToTable(nameof(UserContext.UsersGoogle));
             entity.HasKey(userGoogle => userGoogle.UserId);
 
-            entity.HasOne(google => google.User).WithOne(user => user.Google).IsRequired(true);
+            entity.HasOne(google => google.User).WithOne(user => user.Google!).IsRequired(true);
         }
     }
 }

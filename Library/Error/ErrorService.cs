@@ -6,8 +6,8 @@ namespace Library.Error
 {
     public interface IErrorService
     {
-        Task CreateErrorProcessingAsync(ErrorProcessingContract processing);
-        Task CreateErrorRequestAsync(ErrorRequestContract request);
+        Task CreateErrorProcessingAsync(ErrorProcessingCreateContract processing);
+        Task CreateErrorRequestAsync(ErrorRequestCreateContract request);
     }
 
     internal class ErrorService : BaseService<ErrorConfiguration, ErrorRepository>, IErrorService
@@ -16,7 +16,7 @@ namespace Library.Error
 
         #region Create
 
-        public async Task CreateErrorProcessingAsync(ErrorProcessingContract processing)
+        public async Task CreateErrorProcessingAsync(ErrorProcessingCreateContract processing)
         {
             try
             {
@@ -37,7 +37,7 @@ namespace Library.Error
             catch { }
         }
 
-        public async Task CreateErrorRequestAsync(ErrorRequestContract request)
+        public async Task CreateErrorRequestAsync(ErrorRequestCreateContract request)
         {
             try
             {

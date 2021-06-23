@@ -47,7 +47,7 @@ namespace Library.StockMarket
                 .AddTransient<IStockMarketService, StockMarketService>()
                 //Job
                 .AddHostedService<StockMarketProcessQuotesJob>()
-                .AddHostedService<StockMarketProcessQuoteUserAlertsInProgressJob>();
+                .AddHostedService<StockMarketProcessQuoteUserAlertsJob>();
 
             IsStarted = true;
         }
@@ -121,7 +121,7 @@ namespace Library.StockMarket
                 Job = new[]
                 {
                     nameof(StockMarketProcessQuotesJob),
-                    nameof(StockMarketProcessQuoteUserAlertsInProgressJob)
+                    nameof(StockMarketProcessQuoteUserAlertsJob)
                 }
             },
             MemoryCache = new

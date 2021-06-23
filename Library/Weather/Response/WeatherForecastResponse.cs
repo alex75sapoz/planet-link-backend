@@ -6,6 +6,12 @@ namespace Library.Weather.Response
 {
     internal class WeatherForecastResponse : WeatherErrorResponse
     {
+        public WeatherForecastResponse()
+        {
+            City = default!;
+            Forecasts = default!;
+        }
+
         [DeserializeAs(Name = "cnt")]
         public int TotalForecasts { get; set; }
 
@@ -18,6 +24,13 @@ namespace Library.Weather.Response
 
     internal class WeatherForecastCityResponse
     {
+        public WeatherForecastCityResponse()
+        {
+            Name = default!;
+            Coordinates = default!;
+            Country = default!;
+        }
+
         [DeserializeAs(Name = "id")]
         public int OpenWeatherId { get; set; }
 

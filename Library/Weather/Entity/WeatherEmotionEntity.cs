@@ -9,6 +9,8 @@ namespace Library.Weather.Entity
         public WeatherEmotionEntity()
         {
             CityUserEmotions = new HashSet<WeatherCityUserEmotionEntity>();
+            Name = default!;
+            Emoji = default!;
         }
 
         public int EmotionId { get; internal set; }

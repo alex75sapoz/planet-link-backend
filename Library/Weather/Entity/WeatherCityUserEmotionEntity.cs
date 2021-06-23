@@ -6,6 +6,11 @@ namespace Library.Weather.Entity
 {
     public class WeatherCityUserEmotionEntity
     {
+        public WeatherCityUserEmotionEntity()
+        {
+            Emotion = default!;
+        }
+
         public int CityUserEmotionId { get; internal set; }
         public int CityId { get; internal set; }
         public int UserId { get; internal set; }

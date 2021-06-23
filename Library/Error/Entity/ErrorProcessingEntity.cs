@@ -5,12 +5,21 @@ namespace Library.Error.Entity
 {
     public class ErrorProcessingEntity
     {
+        public ErrorProcessingEntity()
+        {
+            ClassName = default!;
+            ClassMethodName = default!;
+            ExceptionType = default!;
+            ExceptionMessage = default!;
+            Error = default!;
+        }
+
         public int ErrorId { get; internal set; }
         public string ClassName { get; internal set; }
         public string ClassMethodName { get; internal set; }
         public string ExceptionType { get; internal set; }
         public string ExceptionMessage { get; internal set; }
-        public string Input { get; internal set; }
+        public string? Input { get; internal set; }
 
         public virtual ErrorEntity Error { get; internal set; }
     }
@@ -25,7 +34,7 @@ namespace Library.Error.Entity.Configuration
             entity.ToTable(nameof(ErrorContext.ErrorsProcessing));
             entity.HasKey(processing => processing.ErrorId);
 
-            entity.HasOne(processing => processing.Error).WithOne(error => error.Processing).IsRequired(true);
+            entity.HasOne(processing => processing.Error).WithOne(error => error.Processing!).IsRequired(true);
         }
     }
 }

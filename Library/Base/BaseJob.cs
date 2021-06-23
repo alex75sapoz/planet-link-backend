@@ -20,7 +20,7 @@ namespace Library.Base
         public TimeSpan Delay { get; private set; }
         public TimeSpan Interval { get; private set; }
         public bool IsDependentOnCache { get; private set; }
-        public Timer Timer { get; private set; }
+        public Timer? Timer { get; private set; }
         public JobState State { get; private set; }
         public DateTime NextStartOn { get; private set; }
 
@@ -63,7 +63,7 @@ namespace Library.Base
         public virtual async Task StopAsync(CancellationToken cancellationToken)
         {
             await PauseAsync();
-            await Timer.DisposeAsync();
+            await Timer!.DisposeAsync();
         }
 
         #endregion
@@ -83,13 +83,13 @@ namespace Library.Base
             while (State != JobState.Paused && State != JobState.Finished)
                 await Task.Delay(TimeSpan.FromSeconds(1));
 
-            Timer.Change(Timeout.Infinite, Timeout.Infinite);
+            Timer!.Change(Timeout.Infinite, Timeout.Infinite);
             State = JobState.Paused;
         }
 
         public async Task ResumeAsync()
         {
-            Timer.Change(
+            Timer!.Change(
                 NextStartOn < DateTime.Now
                 ? TimeSpan.Zero
                 : NextStartOn - DateTime.Now,

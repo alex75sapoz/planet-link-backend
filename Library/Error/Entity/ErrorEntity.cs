@@ -6,13 +6,18 @@ namespace Library.Error.Entity
 {
     public class ErrorEntity
     {
+        public ErrorEntity()
+        {
+            Type = default!;
+        }
+
         public int ErrorId { get; internal set; }
         public int ErrorTypeId { get; internal set; }
         public DateTimeOffset CreatedOn { get; internal set; }
 
         public virtual ErrorTypeEntity Type { get; internal set; }
-        public virtual ErrorProcessingEntity Processing { get; internal set; }
-        public virtual ErrorRequestEntity Request { get; internal set; }
+        public virtual ErrorProcessingEntity? Processing { get; internal set; }
+        public virtual ErrorRequestEntity? Request { get; internal set; }
     }
 }
 
@@ -25,8 +30,8 @@ namespace Library.Error.Entity.Configuration
             entity.ToTable(nameof(ErrorContext.Errors));
             entity.HasKey(error => error.ErrorId);
 
-            entity.HasOne(error => error.Processing).WithOne(processing => processing.Error).IsRequired(false);
-            entity.HasOne(error => error.Request).WithOne(request => request.Error).IsRequired(false);
+            entity.HasOne(error => error.Processing).WithOne(processing => processing!.Error).IsRequired(false);
+            entity.HasOne(error => error.Request).WithOne(request => request!.Error).IsRequired(false);
 
             entity.HasOne(error => error.Type).WithMany(type => type.Errors).HasForeignKey(error => error.ErrorTypeId).IsRequired(true);
         }

@@ -5,11 +5,22 @@ namespace Library.User.Response
 {
     internal class StocktwitsUserResponseRoot
     {
+        public StocktwitsUserResponseRoot()
+        {
+            User = default!;
+        }
+
         public UserStocktwitsResponse User { get; set; }
     }
 
     internal class UserStocktwitsResponse
     {
+        public UserStocktwitsResponse()
+        {
+            Name = default!;
+            Username = default!;
+        }
+
         [DeserializeAs(Name = "id")]
         public int UserId { get; set; }
 

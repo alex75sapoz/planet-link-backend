@@ -6,6 +6,13 @@ namespace Library.User.Entity
 {
     public class UserSessionEntity
     {
+        public UserSessionEntity()
+        {
+            Token = default!;
+            RefreshToken = default!;
+            User = default!;
+        }
+
         public int UserSessionId { get; internal set; }
         public int UserId { get; internal set; }
         public string Token { get; internal set; }

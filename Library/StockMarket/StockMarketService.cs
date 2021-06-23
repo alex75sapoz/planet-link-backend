@@ -526,13 +526,13 @@ namespace Library.StockMarket
             }
             catch (Exception exception)
             {
-                await _errorService.CreateErrorProcessingAsync(new ErrorProcessingContract()
-                {
-                    ClassName = nameof(StockMarketService),
-                    ClassMethodName = nameof(ProcessQuotesAsync),
-                    ExceptionType = exception.GetType().Name,
-                    ExceptionMessage = exception.GetFullMessage()
-                });
+                await _errorService.CreateErrorProcessingAsync(new ErrorProcessingCreateContract
+                (
+                    className: nameof(StockMarketService),
+                    classMethodName: nameof(ProcessQuotesAsync),
+                    exceptionType: exception.GetType().Name,
+                    exceptionMessage: exception.GetFullMessage()
+                ));
                 return;
             }
 
@@ -582,12 +582,14 @@ namespace Library.StockMarket
                 }
                 catch (Exception exception)
                 {
-                    await _errorService.CreateErrorProcessingAsync(new ErrorProcessingContract()
+                    await _errorService.CreateErrorProcessingAsync(new ErrorProcessingCreateContract
+                    (
+                        className: nameof(StockMarketService),
+                        classMethodName: nameof(ProcessQuoteUserAlertsReverseSplitsAsync),
+                        exceptionType: exception.GetType().Name,
+                        exceptionMessage: exception.GetFullMessage()
+                    )
                     {
-                        ClassName = nameof(StockMarketService),
-                        ClassMethodName = nameof(ProcessQuoteUserAlertsReverseSplitsAsync),
-                        ExceptionType = exception.GetType().Name,
-                        ExceptionMessage = exception.GetFullMessage(),
                         Input = $"{nameof(quoteId)}:{quoteId}"
                     });
                     continue;
@@ -654,12 +656,14 @@ namespace Library.StockMarket
                 }
                 catch (Exception exception)
                 {
-                    await _errorService.CreateErrorProcessingAsync(new ErrorProcessingContract()
+                    await _errorService.CreateErrorProcessingAsync(new ErrorProcessingCreateContract
+                    (
+                        className: nameof(StockMarketService),
+                        classMethodName: nameof(ProcessQuoteUserAlertsReverseSplitsAsync),
+                        exceptionType: exception.GetType().Name,
+                        exceptionMessage: exception.GetFullMessage()
+                    )
                     {
-                        ClassName = nameof(StockMarketService),
-                        ClassMethodName = nameof(ProcessQuoteUserAlertsReverseSplitsAsync),
-                        ExceptionType = exception.GetType().Name,
-                        ExceptionMessage = exception.GetFullMessage(),
                         Input = $"{nameof(quoteId)}:{quoteId}"
                     });
                     continue;
