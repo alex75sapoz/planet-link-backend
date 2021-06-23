@@ -1,9 +1,4 @@
-﻿using Library.Base;
-using Library.User.Contract;
-using Library.User.Entity;
-using Library.User.Enum;
-using Library.User.Response;
-using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.Extensions.Caching.Memory;
 using NodaTime;
 using RestSharp;
 using System;

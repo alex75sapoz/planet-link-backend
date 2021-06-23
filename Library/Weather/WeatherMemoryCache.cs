@@ -1,5 +1,4 @@
-﻿using Library.Weather.Contract;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace Library.Weather

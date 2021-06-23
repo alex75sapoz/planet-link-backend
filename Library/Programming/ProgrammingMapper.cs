@@ -1,6 +1,4 @@
-﻿using Library.Programming.Contract;
-using Library.Programming.Entity;
-using System.Linq;
+﻿using System.Linq;
 
 namespace Library.Programming
 {

@@ -1,6 +1,4 @@
-﻿using Library.Base;
-using Library.User.Entity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Library.User
 {

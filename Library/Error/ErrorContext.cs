@@ -1,6 +1,4 @@
-﻿using Library.Base;
-using Library.Error.Entity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Library.Error
 {

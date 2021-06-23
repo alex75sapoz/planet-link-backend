@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿global using Library.Base;
+global using Library.Location.Contract;
+global using Library.Location.Entity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;

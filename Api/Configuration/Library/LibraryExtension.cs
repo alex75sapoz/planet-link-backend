@@ -1,5 +1,4 @@
-﻿using Api.Configuration.Database;
-using Library.Error;
+﻿using Library.Error;
 using Library.Location;
 using Library.Programming;
 using Library.StockMarket;

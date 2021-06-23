@@ -1,10 +1,5 @@
-﻿using Library.Base;
-using Library.Error;
+﻿using Library.Error;
 using Library.Error.Contract;
-using Library.StockMarket.Contract;
-using Library.StockMarket.Entity;
-using Library.StockMarket.Enum;
-using Library.StockMarket.Response;
 using Library.User;
 using Library.User.Enum;
 using Microsoft.Extensions.Caching.Memory;

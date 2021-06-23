@@ -1,5 +1,4 @@
-﻿using Api.Configuration.Authorization;
-using Library.Weather;
+﻿using Library.Weather;
 using Library.Weather.Contract;
 using Library.Weather.Enum;
 using Microsoft.AspNetCore.Mvc;

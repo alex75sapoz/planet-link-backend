@@ -1,7 +1,4 @@
-﻿using Library.Base;
-using Library.Weather.Contract;
-using Library.Weather.Response;
-using NodaTime;
+﻿using NodaTime;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,4 +1,9 @@
-﻿using Library.StockMarket.Job;
+﻿global using Library.Base;
+global using Library.StockMarket.Contract;
+global using Library.StockMarket.Entity;
+global using Library.StockMarket.Enum;
+global using Library.StockMarket.Job;
+global using Library.StockMarket.Response;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;

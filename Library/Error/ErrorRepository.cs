@@ -1,6 +1,4 @@
-﻿using Library.Base;
-
-namespace Library.Error
+﻿namespace Library.Error
 {
     public interface IErrorRepository
     {

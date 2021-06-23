@@ -1,5 +1,4 @@
-﻿using Library.StockMarket.Contract;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace Library.StockMarket

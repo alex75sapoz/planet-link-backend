@@ -1,5 +1,4 @@
-﻿using Api.Configuration.Authorization;
-using Library.Base;
+﻿using Library.Base;
 using Library.Location;
 using Library.Location.Contract;
 using Microsoft.AspNetCore.Mvc;

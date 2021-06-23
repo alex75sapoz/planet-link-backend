@@ -1,5 +1,4 @@
-﻿using Api.Configuration.Authentication;
-using Api.Controller;
+﻿using Api.Controller;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using NodaTime;

@@ -1,5 +1,4 @@
-﻿using Library.Base;
-using Library.Error;
+﻿using Library.Error;
 using Library.Error.Contract;
 using Microsoft.Extensions.DependencyInjection;
 using System;

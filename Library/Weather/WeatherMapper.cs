@@ -1,7 +1,4 @@
-﻿using Library.Weather.Contract;
-using Library.Weather.Entity;
-using Library.Weather.Response;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace Library.Weather

@@ -1,5 +1,4 @@
-﻿using Api.Configuration.Authentication;
-using Library.Base;
+﻿using Library.Base;
 using Library.Error;
 using Library.Error.Contract;
 using Microsoft.AspNetCore.Diagnostics;

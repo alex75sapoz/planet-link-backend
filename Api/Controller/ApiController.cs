@@ -1,5 +1,4 @@
-﻿using Api.Configuration.Authentication;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using NodaTime;
 
 namespace Api.Controller

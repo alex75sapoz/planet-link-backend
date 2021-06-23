@@ -1,5 +1,4 @@
-﻿using Api.Configuration.Authorization;
-using Library.StockMarket;
+﻿using Library.StockMarket;
 using Library.StockMarket.Contract;
 using Library.StockMarket.Enum;
 using Microsoft.AspNetCore.Mvc;

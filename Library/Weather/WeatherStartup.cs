@@ -1,4 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿global using Library.Base;
+global using Library.Weather.Contract;
+global using Library.Weather.Entity;
+global using Library.Weather.Response;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;

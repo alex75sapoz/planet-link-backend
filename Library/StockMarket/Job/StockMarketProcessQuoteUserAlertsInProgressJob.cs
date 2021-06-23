@@ -1,7 +1,5 @@
-﻿using Library.Base;
-using Library.Error;
+﻿using Library.Error;
 using Library.Error.Contract;
-using Library.StockMarket.Enum;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;

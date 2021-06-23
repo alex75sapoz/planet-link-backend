@@ -1,4 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿global using Library.Base;
+global using Library.Error.Contract;
+global using Library.Error.Entity;
+global using Library.Error.Enum;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Library.Error

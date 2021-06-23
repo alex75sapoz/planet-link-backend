@@ -1,7 +1,4 @@
-﻿using Library.Base;
-using Library.StockMarket.Contract;
-using Library.StockMarket.Enum;
-using NodaTime;
+﻿using NodaTime;
 using System;
 using System.Collections.Generic;
 using System.Linq;

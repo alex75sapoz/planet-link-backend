@@ -1,14 +1,14 @@
-using Api.Configuration.Authentication;
-using Api.Configuration.Authorization;
-using Api.Configuration.Compression;
-using Api.Configuration.Controller;
-using Api.Configuration.CrossOriginRequest;
-using Api.Configuration.Database;
-using Api.Configuration.Endpoint;
-using Api.Configuration.Exception;
-using Api.Configuration.Library;
-using Api.Configuration.MemoryCache;
-using Api.Configuration.Swagger;
+global using Api.Configuration.Authentication;
+global using Api.Configuration.Authorization;
+global using Api.Configuration.Compression;
+global using Api.Configuration.Controller;
+global using Api.Configuration.CrossOriginRequest;
+global using Api.Configuration.Database;
+global using Api.Configuration.Endpoint;
+global using Api.Configuration.Exception;
+global using Api.Configuration.Library;
+global using Api.Configuration.MemoryCache;
+global using Api.Configuration.Swagger;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -24,7 +24,7 @@ namespace Api
             _configuration = configuration;
             _environment = environment;
 
-            configuration = configuration.GetSection($"{nameof(Api)}");
+            configuration = configuration.GetSection(nameof(Api));
             _databaseConfiguration = configuration.GetSection(nameof(DatabaseConfiguration)).Get<DatabaseConfiguration>();
             _crossOriginRequestConfiguration = configuration.GetSection(nameof(CrossOriginRequestConfiguration)).Get<CrossOriginRequestConfiguration>();
             _endpointConfiguration = configuration.GetSection(nameof(EndpointConfiguration)).Get<EndpointConfiguration>();

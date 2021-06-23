@@ -1,9 +1,5 @@
-﻿using Library.Base;
-using Library.Location;
+﻿using Library.Location;
 using Library.User;
-using Library.Weather.Contract;
-using Library.Weather.Entity;
-using Library.Weather.Response;
 using Microsoft.Extensions.Caching.Memory;
 using NodaTime;
 using RestSharp;

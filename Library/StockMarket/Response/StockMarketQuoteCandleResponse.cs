@@ -1,5 +1,4 @@
-﻿using Library.Base;
-using RestSharp.Deserializers;
+﻿using RestSharp.Deserializers;
 using System;
 
 namespace Library.StockMarket.Response
