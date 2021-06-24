@@ -2,18 +2,12 @@
 
 namespace Library.Weather.Response
 {
-    internal class WeatherErrorResponse
+    class WeatherErrorResponse
     {
-        public WeatherErrorResponse()
-        {
-            Code = default!;
-            Message = default!;
-        }
-
         [DeserializeAs(Name = "cod")]
-        public string Code { get; set; }
+        public string Code { get; set; } = default!;
 
         [DeserializeAs(Name = "message")]
-        public string Message { get; set; }
+        public string Message { get; set; } = default!;
     }
 }

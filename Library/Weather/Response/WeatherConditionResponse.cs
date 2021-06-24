@@ -2,25 +2,18 @@
 
 namespace Library.Weather.Response
 {
-    internal class WeatherConditionResponse
+    class WeatherConditionResponse
     {
-        public WeatherConditionResponse()
-        {
-            Name = default!;
-            Description = default!;
-            Icon = default!;
-        }
-
         [DeserializeAs(Name = "id")]
         public int WeatherConditionId { get; set; }
 
         [DeserializeAs(Name = "main")]
-        public string Name { get; set; }
+        public string Name { get; set; } = default!;
 
         [DeserializeAs(Name = "description")]
-        public string Description { get; set; }
+        public string Description { get; set; } = default!;
 
         [DeserializeAs(Name = "icon")]
-        public string Icon { get; set; }
+        public string Icon { get; set; } = default!;
     }
 }

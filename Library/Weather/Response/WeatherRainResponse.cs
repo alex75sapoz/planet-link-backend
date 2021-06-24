@@ -2,7 +2,7 @@
 
 namespace Library.Weather.Response
 {
-    internal class WeatherRainResponse
+    class WeatherRainResponse
     {
         [DeserializeAs(Name = "1h")]
         public decimal OneHourVolume { get; set; }

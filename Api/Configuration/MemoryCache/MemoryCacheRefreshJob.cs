@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Api.Configuration.MemoryCache
 {
-    internal class MemoryCacheRefreshJob : BaseJob
+    class MemoryCacheRefreshJob : BaseJob
     {
         public MemoryCacheRefreshJob(IServiceProvider serviceProvider) : base(serviceProvider,
             (

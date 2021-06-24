@@ -15,7 +15,7 @@ namespace Library.Location
         List<LocationCountryContract> SearchCountries(string keyword);
     }
 
-    internal class LocationService : BaseService<LocationConfiguration, LocationRepository>, ILocationService
+    class LocationService : BaseService<LocationConfiguration, LocationRepository>, ILocationService
     {
         public LocationService(LocationConfiguration configuration, LocationRepository repository, IMemoryCache memoryCache) : base(configuration, repository, memoryCache) { }
 
@@ -44,12 +44,12 @@ namespace Library.Location
         #region Get
 
         public LocationCountryContract GetCountry(int countryId) =>
-            LocationMemoryCache.LocationCountries.TryGetValue(countryId, out LocationCountryContract country)
+            LocationMemoryCache.LocationCountries.TryGetValue(countryId, out LocationCountryContract? country)
                 ? country
                 : throw new BadRequestException($"{nameof(countryId)} is invalid");
 
         public LocationCityContract GetCity(int cityId) =>
-            LocationMemoryCache.LocationCities.TryGetValue(cityId, out LocationCityContract city)
+            LocationMemoryCache.LocationCities.TryGetValue(cityId, out LocationCityContract? city)
                 ? city
                 : throw new BadRequestException($"{nameof(cityId)} is invalid");
 

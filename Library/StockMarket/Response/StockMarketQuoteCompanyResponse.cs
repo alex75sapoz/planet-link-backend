@@ -3,46 +3,46 @@ using System;
 
 namespace Library.StockMarket.Response
 {
-    internal class StockMarketQuoteCompanyResponse
+    class StockMarketQuoteCompanyResponse
     {
-        public string Symbol { get; set; }
+        public string Symbol { get; set; } = default!;
 
         [DeserializeAs(Name = "companyName")]
-        public string Name { get; set; }
+        public string Name { get; set; } = default!;
 
-        public string Description { get; set; }
+        public string Description { get; set; } = default!;
 
         [DeserializeAs(Name = "exchangeShortName")]
-        public string Exchange { get; set; }
+        public string Exchange { get; set; } = default!;
 
-        public string Industry { get; set; }
+        public string? Industry { get; set; }
 
         [DeserializeAs(Name = "website")]
-        public string WebsiteUrl { get; set; }
+        public string? WebsiteUrl { get; set; }
 
         [DeserializeAs(Name = "ceo")]
-        public string ChiefExecutiveOfficer { get; set; }
+        public string? ChiefExecutiveOfficer { get; set; }
 
-        public string Sector { get; set; }
+        public string? Sector { get; set; }
 
-        public string Country { get; set; }
+        public string? Country { get; set; }
 
         [DeserializeAs(Name = "fullTimeEmployees")]
         public int? Employees { get; set; }
 
-        public string Phone { get; set; }
+        public string? Phone { get; set; }
 
-        public string Address { get; set; }
+        public string? Address { get; set; }
 
-        public string City { get; set; }
+        public string? City { get; set; }
 
-        public string State { get; set; }
+        public string? State { get; set; }
 
         [DeserializeAs(Name = "zip")]
-        public string Zipcode { get; set; }
+        public string? Zipcode { get; set; }
 
         [DeserializeAs(Name = "image")]
-        public string LogoUrl { get; set; }
+        public string? LogoUrl { get; set; }
 
         public decimal? Beta { get; set; }
 

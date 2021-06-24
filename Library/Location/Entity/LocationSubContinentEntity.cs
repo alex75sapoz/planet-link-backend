@@ -6,21 +6,16 @@ namespace Library.Location.Entity
 {
     public class LocationSubContinentEntity
     {
-        public LocationSubContinentEntity()
-        {
-            Countries = new HashSet<LocationCountryEntity>();
-        }
-
         public int SubContinentId { get; internal set; }
-        public string Name { get; internal set; }
+        public string Name { get; internal set; } = default!;
 
-        public virtual ICollection<LocationCountryEntity> Countries { get; internal set; }
+        public virtual ICollection<LocationCountryEntity> Countries { get; internal set; } = new HashSet<LocationCountryEntity>();
     }
 }
 
 namespace Library.Location.Entity.Configuration
 {
-    internal class SubContinentEntityConfiguration : IEntityTypeConfiguration<LocationSubContinentEntity>
+    class SubContinentEntityConfiguration : IEntityTypeConfiguration<LocationSubContinentEntity>
     {
         public void Configure(EntityTypeBuilder<LocationSubContinentEntity> entity)
         {

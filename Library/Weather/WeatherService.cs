@@ -21,7 +21,7 @@ namespace Library.Weather
         WeatherEmotionContract GetEmotion(int emotionId);
     }
 
-    internal class WeatherService : BaseService<WeatherConfiguration, WeatherRepository>, IWeatherService
+    class WeatherService : BaseService<WeatherConfiguration, WeatherRepository>, IWeatherService
     {
         public WeatherService(WeatherConfiguration configuration, WeatherRepository repository, ILocationService locationService, IUserService userService, IMemoryCache cache) : base(configuration, repository, cache)
         {

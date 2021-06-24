@@ -19,12 +19,12 @@ namespace Api.Controller
         [ResponseCache(Duration = 299, VaryByHeader = ApiHeader.UserTypeId + "," + ApiHeader.Token)]
         [Authorization(Requirement.UserTypeAny)]
         public async Task<IActionResult> AuthenticateSessionAsync([Required, FromHeader(Name = ApiHeader.UserTypeId)] AuthenticationUserType userTypeId, [FromHeader(Name = ApiHeader.Subdomain)] string subdomain) =>
-            Ok(await Task.FromResult(_service.GetSession(UserSessionId.Value)));
+            Ok(await Task.FromResult(_service.GetSession(UserSessionId!.Value)));
 
         [HttpPost("Revoke"), ProducesResponseType((int)HttpStatusCode.NoContent)]
         [Authorization(Requirement.UserTypeAny)]
         public async Task RemoveSessionAsync() =>
-            await _service.RevokeSessionAsync(UserSessionId.Value);
+            await _service.RevokeSessionAsync(UserSessionId!.Value);
 
         [HttpGet("ConsentUrl"), ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
         [ResponseCache(Duration = 299, VaryByHeader = ApiHeader.UserTypeId + "," + ApiHeader.Token)]

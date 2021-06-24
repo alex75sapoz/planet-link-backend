@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Api.Configuration.Authorization
 {
-    internal class AuthorizationDefaultRequirement : AuthorizationHandler<AuthorizationDefaultRequirement>, IAuthorizationRequirement
+    class AuthorizationDefaultRequirement : AuthorizationHandler<AuthorizationDefaultRequirement>, IAuthorizationRequirement
     {
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AuthorizationDefaultRequirement requirement)
         {

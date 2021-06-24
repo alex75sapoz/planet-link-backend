@@ -6,18 +6,13 @@ namespace Library.Location.Entity
 {
     public class LocationCurrencyEntity
     {
-        public LocationCurrencyEntity()
-        {
-            CountryCurrencies = new HashSet<LocationCountryCurrencyEntity>();
-        }
-
         public int CurrencyId { get; internal set; }
-        public string Name { get; internal set; }
-        public string Symbol { get; internal set; }
-        public string ThreeLetterCode { get; internal set; }
-        public string ThreeDigitCode { get; internal set; }
+        public string Name { get; internal set; } = default!;
+        public string Symbol { get; internal set; } = default!;
+        public string ThreeLetterCode { get; internal set; } = default!;
+        public string ThreeDigitCode { get; internal set; } = default!;
 
-        public virtual ICollection<LocationCountryCurrencyEntity> CountryCurrencies { get; internal set; }
+        public virtual ICollection<LocationCountryCurrencyEntity> CountryCurrencies { get; internal set; } = new HashSet<LocationCountryCurrencyEntity>();
     }
 }
 

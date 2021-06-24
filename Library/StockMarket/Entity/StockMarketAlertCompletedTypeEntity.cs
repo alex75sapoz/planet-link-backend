@@ -6,28 +6,23 @@ namespace Library.StockMarket.Entity
 {
     public class StockMarketAlertCompletedTypeEntity
     {
-        public StockMarketAlertCompletedTypeEntity()
-        {
-            QuoteUserAlerts = new HashSet<StockMarketQuoteUserAlertEntity>();
-        }
-
         public int AlertCompletedTypeId { get; internal set; }
-        public string Name { get; internal set; }
+        public string Name { get; internal set; } = default!;
 
-        public virtual ICollection<StockMarketQuoteUserAlertEntity> QuoteUserAlerts { get; internal set; }
+        public virtual ICollection<StockMarketQuoteUserAlertEntity> QuoteUserAlerts { get; internal set; } = new HashSet<StockMarketQuoteUserAlertEntity>();
     }
 }
 
 namespace Library.StockMarket.Entity.Configuration
 {
-    internal class StockMarketAlertCompletedTypeEntityConfiguration : IEntityTypeConfiguration<StockMarketAlertCompletedTypeEntity>
+    class StockMarketAlertCompletedTypeEntityConfiguration : IEntityTypeConfiguration<StockMarketAlertCompletedTypeEntity>
     {
         public void Configure(EntityTypeBuilder<StockMarketAlertCompletedTypeEntity> entity)
         {
             entity.ToTable(nameof(StockMarketContext.StockMarketAlertCompletedTypes));
             entity.HasKey(completedType => completedType.AlertCompletedTypeId);
 
-            entity.HasMany(completedType => completedType.QuoteUserAlerts).WithOne(quoteUserAlert => quoteUserAlert.CompletedType).HasForeignKey(quoteUserAlert => quoteUserAlert.AlertCompletedTypeId);
+            entity.HasMany(completedType => completedType.QuoteUserAlerts).WithOne(quoteUserAlert => quoteUserAlert.CompletedType!).HasForeignKey(quoteUserAlert => quoteUserAlert.AlertCompletedTypeId);
         }
     }
 }

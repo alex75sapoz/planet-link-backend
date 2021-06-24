@@ -21,7 +21,7 @@ namespace Library.User
         List<UserContract> SearchUsers(string keyword, int userTypeId);
     }
 
-    internal class UserService : BaseService<UserConfiguration, UserRepository>, IUserService
+    class UserService : BaseService<UserConfiguration, UserRepository>, IUserService
     {
         public UserService(UserConfiguration configuration, UserRepository repository, IMemoryCache memoryCache) : base(configuration, repository, memoryCache)
         {

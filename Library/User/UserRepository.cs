@@ -14,7 +14,7 @@ namespace Library.User
         Task<List<UserTypeEntity>> GetUserTypesAsync();
     }
 
-    internal class UserRepository : BaseRepository<UserContext>, IUserRepository
+    class UserRepository : BaseRepository<UserContext>, IUserRepository
     {
         public UserRepository(UserContext context) : base(context) { }
 

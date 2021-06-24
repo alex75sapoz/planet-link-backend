@@ -13,7 +13,7 @@ namespace Library.Programming
         Task<List<ProgrammingTechnologyStackEntity>> GetTechnologyStacksAsync();
     }
 
-    internal class ProgrammingRepository : BaseRepository<ProgrammingContext>, IProgrammingRepository
+    class ProgrammingRepository : BaseRepository<ProgrammingContext>, IProgrammingRepository
     {
         public ProgrammingRepository(ProgrammingContext context) : base(context) { }
 

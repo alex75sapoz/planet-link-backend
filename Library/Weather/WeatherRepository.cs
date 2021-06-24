@@ -12,7 +12,7 @@ namespace Library.Weather
         Task<List<WeatherEmotionEntity>> GetEmotionsAsync();
     }
 
-    internal class WeatherRepository : BaseRepository<WeatherContext>, IWeatherRepository
+    class WeatherRepository : BaseRepository<WeatherContext>, IWeatherRepository
     {
         public WeatherRepository(WeatherContext context) : base(context) { }
 

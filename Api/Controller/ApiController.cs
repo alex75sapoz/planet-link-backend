@@ -6,7 +6,7 @@ namespace Api.Controller
     [Route("[controller]"), Produces("application/json"), ApiController]
     public abstract class ApiController : ControllerBase
     {
-        private AuthenticationResult _authenticationResult;
+        private AuthenticationResult? _authenticationResult;
 
         protected AuthenticationResult AuthenticationResult =>
             _authenticationResult is null
@@ -26,7 +26,7 @@ namespace Api.Controller
         protected readonly TService _service;
     }
 
-    internal class ApiHeader
+    class ApiHeader
     {
         public const string Token = "api-token";
 

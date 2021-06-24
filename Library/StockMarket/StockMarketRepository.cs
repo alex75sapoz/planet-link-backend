@@ -14,12 +14,12 @@ namespace Library.StockMarket
         Task<List<StockMarketExchangeEntity>> GetExchangesAsync();
         Task<List<StockMarketQuoteEntity>> GetQuotesAsync();
         Task<StockMarketQuoteUserAlertEntity> GetQuoteUserAlertAsync(int quoteUserAlertId);
-        Task<List<StockMarketQuoteUserAlertEntity>> GetQuoteUserAlertsAsync(int? alertTypeId = null, List<int> quoteUserAlertIds = null);
+        Task<List<StockMarketQuoteUserAlertEntity>> GetQuoteUserAlertsAsync(int? alertTypeId = null, List<int>? quoteUserAlertIds = null);
         Task<List<StockMarketQuoteUserEmotionEntity>> GetQuoteUserEmotionsAsync(DateTimeOffset from);
         Task<List<StockMarketTimeframeEntity>> GetTimeframesAsync();
     }
 
-    internal class StockMarketRepository : BaseRepository<StockMarketContext>, IStockMarketRepository
+    class StockMarketRepository : BaseRepository<StockMarketContext>, IStockMarketRepository
     {
         public StockMarketRepository(StockMarketContext context) : base(context) { }
 
@@ -35,7 +35,7 @@ namespace Library.StockMarket
             await _context.StockMarketTimeframes
                 .ToListAsync();
 
-        public async Task<List<StockMarketQuoteUserAlertEntity>> GetQuoteUserAlertsAsync(int? alertTypeId = null, List<int> quoteUserAlertIds = null) =>
+        public async Task<List<StockMarketQuoteUserAlertEntity>> GetQuoteUserAlertsAsync(int? alertTypeId = null, List<int>? quoteUserAlertIds = null) =>
             await _context.StockMarketQuoteUserAlerts
                 .Include(quoteUserAlert => quoteUserAlert.Quote)
                 .Where(quoteUserAlert =>

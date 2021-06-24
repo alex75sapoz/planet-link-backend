@@ -2,16 +2,16 @@
 
 namespace Api.Configuration.Authentication
 {
-    internal class AuthenticationConfiguration
+    class AuthenticationConfiguration
     {
-        public string Scheme { get; set; }
-        public string AuthenticateUrlSegment { get; set; }
+        public string Scheme { get; set; } = default!;
+        public string AuthenticateUrlSegment { get; set; } = default!;
     }
 
-    internal class AuthenticationScheme : AuthenticationSchemeOptions
+    class AuthenticationScheme : AuthenticationSchemeOptions
     {
-        public string SwaggerUrlSegment { get; set; }
-        public string AuthenticateUrlSegment { get; set; }
+        public string SwaggerUrlSegment { get; set; } = default!;
+        public string AuthenticateUrlSegment { get; set; } = default!;
         public bool IsDevelopment { get; set; }
     }
 }

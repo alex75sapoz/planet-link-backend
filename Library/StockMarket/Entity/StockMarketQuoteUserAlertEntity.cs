@@ -21,15 +21,15 @@ namespace Library.StockMarket.Entity
         public decimal? CompletedSell { get; internal set; }
         public DateTimeOffset? CompletedOn { get; internal set; }
 
-        public virtual StockMarketQuoteEntity Quote { get; internal set; }
-        public virtual StockMarketAlertTypeEntity Type { get; internal set; }
-        public virtual StockMarketAlertCompletedTypeEntity CompletedType { get; internal set; }
+        public virtual StockMarketQuoteEntity Quote { get; internal set; } = default!;
+        public virtual StockMarketAlertTypeEntity Type { get; internal set; } = default!;
+        public virtual StockMarketAlertCompletedTypeEntity? CompletedType { get; internal set; }
     }
 }
 
 namespace Library.StockMarket.Entity.Configuration
 {
-    internal class UserStockMrketAlertEntityConfiguration : IEntityTypeConfiguration<StockMarketQuoteUserAlertEntity>
+    class UserStockMrketAlertEntityConfiguration : IEntityTypeConfiguration<StockMarketQuoteUserAlertEntity>
     {
         public void Configure(EntityTypeBuilder<StockMarketQuoteUserAlertEntity> entity)
         {
@@ -43,7 +43,7 @@ namespace Library.StockMarket.Entity.Configuration
 
             entity.HasOne(quoteUserAlert => quoteUserAlert.Quote).WithMany(quote => quote.UserAlerts).IsRequired(true);
             entity.HasOne(quoteUserAlert => quoteUserAlert.Type).WithMany(type => type.QuoteUserAlerts).HasForeignKey(quoteUserAlert => quoteUserAlert.AlertTypeId).IsRequired(true);
-            entity.HasOne(quoteUserAlert => quoteUserAlert.CompletedType).WithMany(completedType => completedType.QuoteUserAlerts).HasForeignKey(quoteUserAlert => quoteUserAlert.AlertCompletedTypeId).IsRequired(false);
+            entity.HasOne(quoteUserAlert => quoteUserAlert.CompletedType).WithMany(completedType => completedType!.QuoteUserAlerts).HasForeignKey(quoteUserAlert => quoteUserAlert.AlertCompletedTypeId).IsRequired(false);
         }
     }
 }

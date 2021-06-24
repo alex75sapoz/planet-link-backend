@@ -17,7 +17,7 @@ namespace Api.Configuration.Controller
                     })
                     .ConfigureApiBehaviorOptions(options =>
                         options.InvalidModelStateResponseFactory = context =>
-                            new BadRequestObjectResult(string.Join(", ", context.ModelState.Keys.Distinct().Select(key => $"{key} is {context.ModelState[key].ValidationState.ToString().ToLower()}")))
+                            new BadRequestObjectResult(string.Join(", ", context.ModelState.Keys.Distinct().Select(key => $"{key} is {context.ModelState[key]?.ValidationState.ToString().ToLower()}")))
                     );
     }
 }

@@ -10,7 +10,7 @@ namespace Library.Error
         Task CreateErrorRequestAsync(ErrorRequestCreateContract request);
     }
 
-    internal class ErrorService : BaseService<ErrorConfiguration, ErrorRepository>, IErrorService
+    class ErrorService : BaseService<ErrorConfiguration, ErrorRepository>, IErrorService
     {
         public ErrorService(ErrorConfiguration configuration, ErrorRepository repository, IMemoryCache memoryCache) : base(configuration, repository, memoryCache) { }
 

@@ -6,21 +6,16 @@ namespace Library.Programming.Entity
 {
     public class ProgrammingProjectTypeEntity
     {
-        public ProgrammingProjectTypeEntity()
-        {
-            Projects = new HashSet<ProgrammingProjectEntity>();
-        }
-
         public int ProjectTypeId { get; internal set; }
-        public string Name { get; internal set; }
+        public string Name { get; internal set; } = default!;
 
-        public virtual ICollection<ProgrammingProjectEntity> Projects { get; internal set; }
+        public virtual ICollection<ProgrammingProjectEntity> Projects { get; internal set; } = new HashSet<ProgrammingProjectEntity>();
     }
 }
 
 namespace Library.Programming.Entity.Configuration
 {
-    internal class ProgrammingProjectTypeEntityConfiguration : IEntityTypeConfiguration<ProgrammingProjectTypeEntity>
+    class ProgrammingProjectTypeEntityConfiguration : IEntityTypeConfiguration<ProgrammingProjectTypeEntity>
     {
         public void Configure(EntityTypeBuilder<ProgrammingProjectTypeEntity> entity)
         {

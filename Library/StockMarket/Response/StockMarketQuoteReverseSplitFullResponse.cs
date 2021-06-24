@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace Library.StockMarket.Response
 {
-    internal class StockMarketQuoteReverseSplitFullResponse
+    class StockMarketQuoteReverseSplitFullResponse
     {
-        public string Symbol { get; set; }
+        public string Symbol { get; set; } = default!;
 
         [DeserializeAs(Name = "historical")]
-        public List<StockMarketQuoteReverseSplitResponse> ReverseSplits { get; set; }
+        public List<StockMarketQuoteReverseSplitResponse> ReverseSplits { get; set; } = default!;
     }
 }

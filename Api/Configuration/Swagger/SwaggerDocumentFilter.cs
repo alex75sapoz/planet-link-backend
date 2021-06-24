@@ -7,7 +7,7 @@ using System;
 
 namespace Api.Configuration.Swagger
 {
-    internal class SwaggerDocumentFilter : IDocumentFilter
+    class SwaggerDocumentFilter : IDocumentFilter
     {
         public SwaggerDocumentFilter(AuthenticationConfiguration authenticationConfiguration) =>
             _authenticationConfiguration = authenticationConfiguration;

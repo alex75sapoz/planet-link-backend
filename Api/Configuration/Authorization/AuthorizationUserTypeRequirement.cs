@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Api.Configuration.Authorization
 {
-    internal class AuthorizationUserTypeAnyRequirement : AuthorizationHandler<AuthorizationUserTypeAnyRequirement>, IAuthorizationRequirement
+    class AuthorizationUserTypeAnyRequirement : AuthorizationHandler<AuthorizationUserTypeAnyRequirement>, IAuthorizationRequirement
     {
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AuthorizationUserTypeAnyRequirement requirement)
         {
@@ -18,7 +18,7 @@ namespace Api.Configuration.Authorization
         }
     }
 
-    internal class AuthorizationUserTypeGoogleRequirement : AuthorizationHandler<AuthorizationUserTypeGoogleRequirement>, IAuthorizationRequirement
+    class AuthorizationUserTypeGoogleRequirement : AuthorizationHandler<AuthorizationUserTypeGoogleRequirement>, IAuthorizationRequirement
     {
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AuthorizationUserTypeGoogleRequirement requirement)
         {
@@ -31,7 +31,7 @@ namespace Api.Configuration.Authorization
         }
     }
 
-    internal class AuthorizationUserTypeStocktwitsRequirement : AuthorizationHandler<AuthorizationUserTypeStocktwitsRequirement>, IAuthorizationRequirement
+    class AuthorizationUserTypeStocktwitsRequirement : AuthorizationHandler<AuthorizationUserTypeStocktwitsRequirement>, IAuthorizationRequirement
     {
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AuthorizationUserTypeStocktwitsRequirement requirement)
         {

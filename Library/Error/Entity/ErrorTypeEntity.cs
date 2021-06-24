@@ -6,21 +6,16 @@ namespace Library.Error.Entity
 {
     public class ErrorTypeEntity
     {
-        public ErrorTypeEntity()
-        {
-            Errors = new HashSet<ErrorEntity>();
-        }
-
         public int ErrorTypeId { get; internal set; }
-        public int Name { get; internal set; }
+        public string Name { get; internal set; } = default!;
 
-        public virtual ICollection<ErrorEntity> Errors { get; internal set; }
+        public virtual ICollection<ErrorEntity> Errors { get; internal set; } = new HashSet<ErrorEntity>();
     }
 }
 
 namespace Library.Error.Entity.Configuration
 {
-    internal class ErrorTypeEntityConfiguration : IEntityTypeConfiguration<ErrorTypeEntity>
+    class ErrorTypeEntityConfiguration : IEntityTypeConfiguration<ErrorTypeEntity>
     {
         public void Configure(EntityTypeBuilder<ErrorTypeEntity> entity)
         {

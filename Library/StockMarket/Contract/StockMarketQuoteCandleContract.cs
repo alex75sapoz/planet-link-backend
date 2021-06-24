@@ -13,6 +13,6 @@ namespace Library.StockMarket.Contract
         public DateTimeOffset CreatedOn { get; internal set; }
         public int TimeframeMultiplier { get; internal set; }
 
-        public List<StockMarketQuoteUserAlertContract> QuoteUserAlerts { get; internal set; }
+        public List<StockMarketQuoteUserAlertContract> QuoteUserAlerts { get; internal set; } = new List<StockMarketQuoteUserAlertContract>();
     }
 }

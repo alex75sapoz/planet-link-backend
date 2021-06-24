@@ -4,44 +4,31 @@ using System.Collections.Generic;
 
 namespace Library.Weather.Response
 {
-    internal class WeatherForecastResponse : WeatherErrorResponse
+    class WeatherForecastResponse : WeatherErrorResponse
     {
-        public WeatherForecastResponse()
-        {
-            City = default!;
-            Forecasts = default!;
-        }
-
         [DeserializeAs(Name = "cnt")]
         public int TotalForecasts { get; set; }
 
         [DeserializeAs(Name = "city")]
-        public WeatherForecastCityResponse City { get; set; }
+        public WeatherForecastCityResponse City { get; set; } = default!;
 
         [DeserializeAs(Name = "list")]
-        public List<WeatherCityForecastResponse> Forecasts { get; set; }
+        public List<WeatherCityForecastResponse> Forecasts { get; set; } = default!;
     }
 
-    internal class WeatherForecastCityResponse
+    class WeatherForecastCityResponse
     {
-        public WeatherForecastCityResponse()
-        {
-            Name = default!;
-            Coordinates = default!;
-            Country = default!;
-        }
-
         [DeserializeAs(Name = "id")]
         public int OpenWeatherId { get; set; }
 
         [DeserializeAs(Name = "name")]
-        public string Name { get; set; }
+        public string Name { get; set; } = default!;
 
         [DeserializeAs(Name = "coord")]
-        public WeatherCoordinateResponse Coordinates { get; set; }
+        public WeatherCoordinateResponse Coordinates { get; set; } = default!;
 
         [DeserializeAs(Name = "country")]
-        public string Country { get; set; }
+        public string Country { get; set; } = default!;
 
         //Data provider returns timezone offset relative to the requested city
         [DeserializeAs(Name = "timezone")]

@@ -3,30 +3,19 @@ using System;
 
 namespace Library.User.Response
 {
-    internal class StocktwitsUserResponseRoot
+    class StocktwitsUserResponseRoot
     {
-        public StocktwitsUserResponseRoot()
-        {
-            User = default!;
-        }
-
-        public UserStocktwitsResponse User { get; set; }
+        public UserStocktwitsResponse User { get; set; } = default!;
     }
 
-    internal class UserStocktwitsResponse
+    class UserStocktwitsResponse
     {
-        public UserStocktwitsResponse()
-        {
-            Name = default!;
-            Username = default!;
-        }
-
         [DeserializeAs(Name = "id")]
         public int UserId { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = default!;
 
-        public string Username { get; set; }
+        public string Username { get; set; } = default!;
 
         [DeserializeAs(Name = "followers")]
         public int FollowersCount { get; set; }

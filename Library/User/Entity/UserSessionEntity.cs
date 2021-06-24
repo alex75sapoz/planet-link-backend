@@ -6,28 +6,21 @@ namespace Library.User.Entity
 {
     public class UserSessionEntity
     {
-        public UserSessionEntity()
-        {
-            Token = default!;
-            RefreshToken = default!;
-            User = default!;
-        }
-
         public int UserSessionId { get; internal set; }
         public int UserId { get; internal set; }
-        public string Token { get; internal set; }
-        public string RefreshToken { get; internal set; }
+        public string Token { get; internal set; } = default!;
+        public string RefreshToken { get; internal set; } = default!;
         public DateTimeOffset TokenExpiresOn { get; internal set; }
         public DateTimeOffset CreatedOn { get; internal set; }
         public DateTimeOffset LastUpdatedOn { get; internal set; }
 
-        public virtual UserEntity User { get; internal set; }
+        public virtual UserEntity User { get; internal set; } = default!;
     }
 }
 
 namespace Library.User.Entity.Configuration
 {
-    internal class UserSessionEntityConfiguration : IEntityTypeConfiguration<UserSessionEntity>
+    class UserSessionEntityConfiguration : IEntityTypeConfiguration<UserSessionEntity>
     {
         public void Configure(EntityTypeBuilder<UserSessionEntity> entity)
         {

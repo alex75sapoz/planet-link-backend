@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Api.Configuration.Authorization
 {
-    internal class AuthorizationLocationMemoryCacheRequirement : AuthorizationHandler<AuthorizationLocationMemoryCacheRequirement>, IAuthorizationRequirement
+    class AuthorizationLocationMemoryCacheRequirement : AuthorizationHandler<AuthorizationLocationMemoryCacheRequirement>, IAuthorizationRequirement
     {
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AuthorizationLocationMemoryCacheRequirement requirement)
         {
@@ -21,7 +21,7 @@ namespace Api.Configuration.Authorization
         }
     }
 
-    internal class AuthorizationProgrammingMemoryCacheRequirement : AuthorizationHandler<AuthorizationProgrammingMemoryCacheRequirement>, IAuthorizationRequirement
+    class AuthorizationProgrammingMemoryCacheRequirement : AuthorizationHandler<AuthorizationProgrammingMemoryCacheRequirement>, IAuthorizationRequirement
     {
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AuthorizationProgrammingMemoryCacheRequirement requirement)
         {
@@ -34,7 +34,7 @@ namespace Api.Configuration.Authorization
         }
     }
 
-    internal class AuthorizationStockMarketMemoryCacheRequirement : AuthorizationHandler<AuthorizationStockMarketMemoryCacheRequirement>, IAuthorizationRequirement
+    class AuthorizationStockMarketMemoryCacheRequirement : AuthorizationHandler<AuthorizationStockMarketMemoryCacheRequirement>, IAuthorizationRequirement
     {
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AuthorizationStockMarketMemoryCacheRequirement requirement)
         {
@@ -47,7 +47,7 @@ namespace Api.Configuration.Authorization
         }
     }
 
-    internal class AuthorizationUserMemoryCacheRequirement : AuthorizationHandler<AuthorizationUserMemoryCacheRequirement>, IAuthorizationRequirement
+    class AuthorizationUserMemoryCacheRequirement : AuthorizationHandler<AuthorizationUserMemoryCacheRequirement>, IAuthorizationRequirement
     {
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AuthorizationUserMemoryCacheRequirement requirement)
         {
@@ -60,7 +60,7 @@ namespace Api.Configuration.Authorization
         }
     }
 
-    internal class AuthorizationWeatherMemoryCacheRequirement : AuthorizationHandler<AuthorizationWeatherMemoryCacheRequirement>, IAuthorizationRequirement
+    class AuthorizationWeatherMemoryCacheRequirement : AuthorizationHandler<AuthorizationWeatherMemoryCacheRequirement>, IAuthorizationRequirement
     {
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AuthorizationWeatherMemoryCacheRequirement requirement)
         {

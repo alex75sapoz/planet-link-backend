@@ -5,14 +5,8 @@ namespace Library.User.Contract
 {
     public class UserSessionContract
     {
-        public UserSessionContract()
-        {
-            RefreshToken = default!;
-            Token = default!;
-        }
-
         [JsonIgnore]
-        public string RefreshToken { get; internal set; }
+        public string RefreshToken { get; internal set; } = default!;
         [JsonIgnore]
         public bool IsAuthenticated => !IsExpired;
         [JsonIgnore]
@@ -23,7 +17,7 @@ namespace Library.User.Contract
         public int UserId { get; internal set; }
 
         public int UserSessionId { get; internal set; }
-        public string Token { get; internal set; }
+        public string Token { get; internal set; } = default!;
         public DateTimeOffset TokenExpiresOn { get; internal set; }
 
         public UserContract User => IUserMemoryCache.Users[UserId];

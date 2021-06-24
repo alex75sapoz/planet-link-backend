@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Library.StockMarket.Job
 {
-    internal class StockMarketProcessQuotesJob : BaseJob
+    class StockMarketProcessQuotesJob : BaseJob
     {
         public StockMarketProcessQuotesJob(IServiceProvider serviceProvider) : base(serviceProvider, (
             delay: TimeSpan.FromDays(1),

@@ -6,21 +6,16 @@ namespace Library.Programming.Entity
 {
     public class ProgrammingLanguageEntity
     {
-        public ProgrammingLanguageEntity()
-        {
-            ProjectLanguages = new HashSet<ProgrammingProjectLanguageEntity>();
-        }
-
         public int LanguageId { get; internal set; }
-        public string Name { get; internal set; }
+        public string Name { get; internal set; } = default!;
 
-        public virtual ICollection<ProgrammingProjectLanguageEntity> ProjectLanguages { get; internal set; }
+        public virtual ICollection<ProgrammingProjectLanguageEntity> ProjectLanguages { get; internal set; } = new HashSet<ProgrammingProjectLanguageEntity>();
     }
 }
 
 namespace Library.Programming.Entity.Configuration
 {
-    internal class ProgrammingLanguageEntityConfiguration : IEntityTypeConfiguration<ProgrammingLanguageEntity>
+    class ProgrammingLanguageEntityConfiguration : IEntityTypeConfiguration<ProgrammingLanguageEntity>
     {
         public void Configure(EntityTypeBuilder<ProgrammingLanguageEntity> entity)
         {

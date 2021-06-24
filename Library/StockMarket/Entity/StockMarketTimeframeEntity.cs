@@ -6,16 +6,16 @@ namespace Library.StockMarket.Entity
     public class StockMarketTimeframeEntity
     {
         public int TimeframeId { get; internal set; }
-        public string Name { get; internal set; }
+        public string Name { get; internal set; } = default!;
         public int Prefix { get; internal set; }
-        public string Suffix { get; internal set; }
+        public string Suffix { get; internal set; } = default!;
         public int Multiplier { get; internal set; }
     }
 }
 
 namespace Library.StockMarket.Entity.Configuration
 {
-    internal class StockMarketTimeframeEntityConfiguration : IEntityTypeConfiguration<StockMarketTimeframeEntity>
+    class StockMarketTimeframeEntityConfiguration : IEntityTypeConfiguration<StockMarketTimeframeEntity>
     {
         public void Configure(EntityTypeBuilder<StockMarketTimeframeEntity> entity)
         {

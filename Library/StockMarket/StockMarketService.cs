@@ -33,7 +33,7 @@ namespace Library.StockMarket
         List<StockMarketQuoteUserAlertContract> SearchQuoteUserAlerts(int alertTypeId, int? userId, int? quoteId);
     }
 
-    internal class StockMarketService : BaseService<StockMarketConfiguration, StockMarketRepository>, IStockMarketService
+    class StockMarketService : BaseService<StockMarketConfiguration, StockMarketRepository>, IStockMarketService
     {
         public StockMarketService(StockMarketConfiguration configuration, StockMarketRepository repository, IUserService userService, IErrorService errorService, IMemoryCache memoryCache) : base(configuration, repository, memoryCache)
         {
@@ -78,17 +78,17 @@ namespace Library.StockMarket
         #region Get
 
         public StockMarketQuoteContract GetQuote(int quoteId) =>
-            StockMarketMemoryCache.StockMarketQuotes.TryGetValue(quoteId, out StockMarketQuoteContract quote)
+            StockMarketMemoryCache.StockMarketQuotes.TryGetValue(quoteId, out StockMarketQuoteContract? quote)
                 ? quote
                 : throw new BadRequestException($"{nameof(quoteId)} is invalid");
 
         public StockMarketEmotionContract GetEmotion(int emotionId) =>
-            StockMarketMemoryCache.StockMarketEmotions.TryGetValue(emotionId, out StockMarketEmotionContract emotion)
+            StockMarketMemoryCache.StockMarketEmotions.TryGetValue(emotionId, out StockMarketEmotionContract? emotion)
                 ? emotion
                 : throw new BadRequestException($"{nameof(emotionId)} is invalid");
 
         public StockMarketTimeframeContract GetTimeframe(int timeframeId) =>
-            StockMarketMemoryCache.StockMarketTimeframes.TryGetValue(timeframeId, out StockMarketTimeframeContract timeframe)
+            StockMarketMemoryCache.StockMarketTimeframes.TryGetValue(timeframeId, out StockMarketTimeframeContract? timeframe)
                 ? timeframe
                 : throw new BadRequestException($"{nameof(timeframeId)} is invalid");
 
@@ -228,7 +228,7 @@ namespace Library.StockMarket
             var currentSet = 1;
 
             DateTime? currentTimeframeMultiplierStartDate = null;
-            StockMarketQuoteCandleResponse lastCandleFromPreviousSet = null;
+            StockMarketQuoteCandleResponse? lastCandleFromPreviousSet = null;
 
             while (quoteCandlesResponse.Any() && currentTimeframeMultiplier <= timeframe.Multiplier)
             {
@@ -373,10 +373,10 @@ namespace Library.StockMarket
                         Points = alertTypeGroup.Key switch
                         {
                             (int)AlertType.InProgress => 0,
-                            (int)AlertType.Successful => alertTypeGroup.Select(quoteUserAlert => quoteUserAlert.Value.CompletedSellPoints.Value)
+                            (int)AlertType.Successful => alertTypeGroup.Select(quoteUserAlert => quoteUserAlert.Value.CompletedSellPoints!.Value)
                                                                        .DefaultIfEmpty(0)
                                                                        .Sum(),
-                            (int)AlertType.Unsuccessful => alertTypeGroup.Select(quoteUserAlert => quoteUserAlert.Value.CompletedSellPoints.Value)
+                            (int)AlertType.Unsuccessful => alertTypeGroup.Select(quoteUserAlert => quoteUserAlert.Value.CompletedSellPoints!.Value)
                                                                          .DefaultIfEmpty(0)
                                                                          .Sum(),
                             _ => 0
@@ -395,7 +395,7 @@ namespace Library.StockMarket
             var user = _userService.GetUser(userId);
             var quote = GetQuote(quoteId);
 
-            if (user.Stocktwits.CreatedOn.UtcDateTime.Date.AddMonths(_configuration.Requirement.CreateQuoteUserAlertMinimumStocktwitsCreatedOnAgeInMonths) > DateTimeOffset.UtcNow.Date)
+            if (user.Stocktwits!.CreatedOn.UtcDateTime.Date.AddMonths(_configuration.Requirement.CreateQuoteUserAlertMinimumStocktwitsCreatedOnAgeInMonths) > DateTimeOffset.UtcNow.Date)
                 throw new BadRequestException($"Your account must be at least {_configuration.Requirement.CreateQuoteUserAlertMinimumStocktwitsCreatedOnAgeInMonths} months old");
 
             if (user.Stocktwits.FollowersCount < _configuration.Requirement.CreateQuoteUserAlertMinimumFollowersCount)
@@ -497,7 +497,7 @@ namespace Library.StockMarket
         {
             var user = _userService.GetUser(userId);
 
-            if (!StockMarketMemoryCache.StockMarketQuoteUserAlerts.TryGetValue(quoteUserAlertId, out StockMarketQuoteUserAlertContract quoteUserAlert))
+            if (!StockMarketMemoryCache.StockMarketQuoteUserAlerts.TryGetValue(quoteUserAlertId, out StockMarketQuoteUserAlertContract? quoteUserAlert))
                 throw new BadRequestException($"{nameof(quoteUserAlertId)} is invalid");
 
             if (quoteUserAlert.UserId != user.UserId)
@@ -567,7 +567,7 @@ namespace Library.StockMarket
                 StockMarketMemoryCache.StockMarketQuotes.TryAdd(quote.QuoteId, quote);
         }
 
-        internal async Task ProcessQuoteUserAlertsReverseSplitsAsync(List<int> quoteUserAlertIds = null)
+        internal async Task ProcessQuoteUserAlertsReverseSplitsAsync(List<int>? quoteUserAlertIds = null)
         {
             var quoteUserAlertEntities = await _repository.GetQuoteUserAlertsAsync(quoteUserAlertIds: quoteUserAlertIds);
             var quoteUserAlertCacheUpdates = new List<Action>();
@@ -618,7 +618,7 @@ namespace Library.StockMarket
                     if (originalQuoteUserAlertEntityReverseSplitCount != quoteUserAlertEntity.ReverseSplitCount)
                         quoteUserAlertCacheUpdates.Add(() =>
                         {
-                            if (!StockMarketMemoryCache.StockMarketQuoteUserAlerts.TryGetValue(quoteUserAlertEntity.QuoteUserAlertId, out StockMarketQuoteUserAlertContract quoteUserAlert))
+                            if (!StockMarketMemoryCache.StockMarketQuoteUserAlerts.TryGetValue(quoteUserAlertEntity.QuoteUserAlertId, out StockMarketQuoteUserAlertContract? quoteUserAlert))
                                 return;
 
                             quoteUserAlert.Buy = quoteUserAlertEntity.Buy;
@@ -635,7 +635,7 @@ namespace Library.StockMarket
                 quoteUserAlertCacheUpdate();
         }
 
-        internal async Task ProcessQuoteUserAlertsInProgressAsync(int alertCompletionTypeId, List<int> quoteUserAlertIds = null)
+        internal async Task ProcessQuoteUserAlertsInProgressAsync(int alertCompletionTypeId, List<int>? quoteUserAlertIds = null)
         {
             var quoteUserAlertEntities = (await _repository.GetQuoteUserAlertsAsync(alertTypeId: (int)AlertType.InProgress, quoteUserAlertIds))
                 .Where(quoteUserAlertEntity => quoteUserAlertEntity.LastReverseSplitCheckOn >= quoteUserAlertEntity.LastCheckOn)
@@ -645,7 +645,7 @@ namespace Library.StockMarket
             foreach (var quoteId in quoteUserAlertEntities.Select(quoteUserAlertEntity => quoteUserAlertEntity.QuoteId).Distinct())
             {
                 List<StockMarketQuoteCandleContract> quoteCandles;
-                StockMarketQuotePriceContract price;
+                StockMarketQuotePriceContract? price;
 
                 try
                 {
@@ -703,7 +703,7 @@ namespace Library.StockMarket
                     if (quoteUserAlertEntity.AlertTypeId != (int)AlertType.InProgress)
                         quoteUserAlertCacheUpdates.Add(() =>
                         {
-                            if (!StockMarketMemoryCache.StockMarketQuoteUserAlerts.TryGetValue(quoteUserAlertEntity.QuoteUserAlertId, out StockMarketQuoteUserAlertContract quoteUserAlert))
+                            if (!StockMarketMemoryCache.StockMarketQuoteUserAlerts.TryGetValue(quoteUserAlertEntity.QuoteUserAlertId, out StockMarketQuoteUserAlertContract? quoteUserAlert))
                                 return;
 
                             quoteUserAlert.AlertTypeId = quoteUserAlertEntity.AlertTypeId;

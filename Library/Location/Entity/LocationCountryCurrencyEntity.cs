@@ -9,14 +9,14 @@ namespace Library.Location.Entity
         public int CountryId { get; internal set; }
         public int CurrencyId { get; internal set; }
 
-        public virtual LocationCountryEntity Country { get; internal set; }
-        public virtual LocationCurrencyEntity Currency { get; internal set; }
+        public virtual LocationCountryEntity Country { get; internal set; } = default!;
+        public virtual LocationCurrencyEntity Currency { get; internal set; } = default!;
     }
 }
 
 namespace Library.Location.Entity.Configuration
 {
-    internal class CountryCurrencyEntityConfiguration : IEntityTypeConfiguration<LocationCountryCurrencyEntity>
+    class CountryCurrencyEntityConfiguration : IEntityTypeConfiguration<LocationCountryCurrencyEntity>
     {
         public void Configure(EntityTypeBuilder<LocationCountryCurrencyEntity> entity)
         {

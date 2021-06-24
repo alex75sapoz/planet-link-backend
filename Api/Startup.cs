@@ -17,7 +17,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Api
 {
-    internal class Startup
+    class Startup
     {
         public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {

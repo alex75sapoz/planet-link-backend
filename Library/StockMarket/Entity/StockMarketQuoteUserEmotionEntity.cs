@@ -12,13 +12,13 @@ namespace Library.StockMarket.Entity
         public int EmotionId { get; internal set; }
         public DateTimeOffset CreatedOn { get; internal set; }
 
-        public virtual StockMarketEmotionEntity Emotion { get; internal set; }
+        public virtual StockMarketEmotionEntity Emotion { get; internal set; } = default!;
     }
 }
 
 namespace Library.StockMarket.Entity.Configuration
 {
-    internal class StockMarketQuoteUserEmotionEntityConfiguration : IEntityTypeConfiguration<StockMarketQuoteUserEmotionEntity>
+    class StockMarketQuoteUserEmotionEntityConfiguration : IEntityTypeConfiguration<StockMarketQuoteUserEmotionEntity>
     {
         public void Configure(EntityTypeBuilder<StockMarketQuoteUserEmotionEntity> entity)
         {

@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Api.Configuration.Authentication
 {
-    internal class AuthenticationHandler : AuthenticationHandler<AuthenticationScheme>
+    class AuthenticationHandler : AuthenticationHandler<AuthenticationScheme>
     {
         public AuthenticationHandler(IOptionsMonitor<AuthenticationScheme> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock, IUserService userService) : base(options, logger, encoder, clock) =>
             _userService = userService;

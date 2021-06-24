@@ -2,22 +2,12 @@
 {
     public class UserConfiguration
     {
-        public UserConfiguration()
-        {
-            Limit = default!;
-            Duration = default!;
-            Threshold = default!;
-            Default = default!;
-            GoogleApi = default!;
-            StocktwitsApi = default!;
-        }
-
-        public UserLimit Limit { get; set; }
-        public UserDuration Duration { get; set; }
-        public UserThreshold Threshold { get; set; }
-        public UserDefault Default { get; set; }
-        public UserGoogleApi GoogleApi { get; set; }
-        public UserStocktwitsApi StocktwitsApi { get; set; }
+        public UserLimit Limit { get; set; } = default!;
+        public UserDuration Duration { get; set; } = default!;
+        public UserThreshold Threshold { get; set; } = default!;
+        public UserDefault Default { get; set; } = default!;
+        public UserGoogleApi GoogleApi { get; set; } = default!;
+        public UserStocktwitsApi StocktwitsApi { get; set; } = default!;
 
         public class UserLimit
         {
@@ -37,44 +27,23 @@
 
         public class UserDefault
         {
-            public UserDefault()
-            {
-                RedirectUrl = default!;
-            }
-
-            public string RedirectUrl { get; set; }
+            public string RedirectUrl { get; set; } = default!;
         }
 
         public class UserGoogleApi
         {
-            public UserGoogleApi()
-            {
-                AuthenticationServer = default!;
-                TokenServer = default!;
-                AuthenticationKey = default!;
-                AuthenticationSecretKey = default!;
-            }
-
-            public string AuthenticationServer { get; set; }
-            public string TokenServer { get; set; }
-            public string AuthenticationKey { get; set; }
-            public string AuthenticationSecretKey { get; set; }
+            public string AuthenticationServer { get; set; } = default!;
+            public string TokenServer { get; set; } = default!;
+            public string AuthenticationKey { get; set; } = default!;
+            public string AuthenticationSecretKey { get; set; } = default!;
         }
 
         public class UserStocktwitsApi
         {
-            public UserStocktwitsApi()
-            {
-                Server = default!;
-                RedirectUrl = default!;
-                AuthenticationKey = default!;
-                AuthenticationSecretKey = default!;
-            }
-
-            public string Server { get; set; }
-            public string RedirectUrl { get; set; }
-            public string AuthenticationKey { get; set; }
-            public string AuthenticationSecretKey { get; set; }
+            public string Server { get; set; } = default!;
+            public string RedirectUrl { get; set; } = default!;
+            public string AuthenticationKey { get; set; } = default!;
+            public string AuthenticationSecretKey { get; set; } = default!;
         }
     }
 }

@@ -6,22 +6,17 @@ namespace Library.StockMarket.Entity
 {
     public class StockMarketExchangeEntity
     {
-        public StockMarketExchangeEntity()
-        {
-            Quotes = new HashSet<StockMarketQuoteEntity>();
-        }
-
         public int ExchangeId { get; internal set; }
-        public string FinancialModelingPrepId { get; internal set; }
-        public string Name { get; internal set; }
+        public string FinancialModelingPrepId { get; internal set; } = default!;
+        public string Name { get; internal set; } = default!;
 
-        public virtual ICollection<StockMarketQuoteEntity> Quotes { get; internal set; }
+        public virtual ICollection<StockMarketQuoteEntity> Quotes { get; internal set; } = new HashSet<StockMarketQuoteEntity>();
     }
 }
 
 namespace Library.StockMarket.Entity.Configuration
 {
-    internal class StockMarketExchangeEntityConfiguration : IEntityTypeConfiguration<StockMarketExchangeEntity>
+    class StockMarketExchangeEntityConfiguration : IEntityTypeConfiguration<StockMarketExchangeEntity>
     {
         public void Configure(EntityTypeBuilder<StockMarketExchangeEntity> entity)
         {

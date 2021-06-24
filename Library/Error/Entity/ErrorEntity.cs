@@ -6,16 +6,11 @@ namespace Library.Error.Entity
 {
     public class ErrorEntity
     {
-        public ErrorEntity()
-        {
-            Type = default!;
-        }
-
         public int ErrorId { get; internal set; }
         public int ErrorTypeId { get; internal set; }
         public DateTimeOffset CreatedOn { get; internal set; }
 
-        public virtual ErrorTypeEntity Type { get; internal set; }
+        public virtual ErrorTypeEntity Type { get; internal set; } = default!;
         public virtual ErrorProcessingEntity? Processing { get; internal set; }
         public virtual ErrorRequestEntity? Request { get; internal set; }
     }
@@ -23,7 +18,7 @@ namespace Library.Error.Entity
 
 namespace Library.Error.Entity.Configuration
 {
-    internal class ErrorEntityConfiguration : IEntityTypeConfiguration<ErrorEntity>
+    class ErrorEntityConfiguration : IEntityTypeConfiguration<ErrorEntity>
     {
         public void Configure(EntityTypeBuilder<ErrorEntity> entity)
         {

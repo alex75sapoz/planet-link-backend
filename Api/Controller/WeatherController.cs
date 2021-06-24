@@ -33,12 +33,12 @@ namespace Api.Controller
         [HttpPost("City/UserEmotion"), ProducesResponseType(typeof(WeatherCityUserEmotionContract), (int)HttpStatusCode.OK)]
         [Authorization(Requirement.UserTypeGoogle)]
         public async Task<IActionResult> CreateCityUserEmotionAsync([Required, Range(1, int.MaxValue)] int cityId, [Required, Range(1, int.MaxValue)] Emotion emotionId) =>
-            Ok(await _service.CreateCityUserEmotionAsync(UserId.Value, cityId, (int)emotionId, Timezone));
+            Ok(await _service.CreateCityUserEmotionAsync(UserId!.Value, cityId, (int)emotionId, Timezone));
 
         [HttpGet("City/UserConfiguration"), ProducesResponseType(typeof(WeatherCityUserConfigurationContract), (int)HttpStatusCode.OK)]
         [Authorization(Requirement.UserTypeGoogle)]
         public async Task<IActionResult> GetCityUserConfigurationAsync([Required, Range(1, int.MaxValue)] int cityId) =>
-            Ok(await Task.FromResult(_service.GetCityUserConfiguration(UserId.Value, cityId, Timezone)));
+            Ok(await Task.FromResult(_service.GetCityUserConfiguration(UserId!.Value, cityId, Timezone)));
 
         [HttpGet("Configuration"), ProducesResponseType(typeof(WeatherConfigurationContract), (int)HttpStatusCode.OK)]
         [ResponseCache(Duration = 299)]

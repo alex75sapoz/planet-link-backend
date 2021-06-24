@@ -1,10 +1,10 @@
 ﻿namespace Api.Configuration.CrossOriginRequest
 {
-    internal class CrossOriginRequestConfiguration
+    class CrossOriginRequestConfiguration
     {
-        public string Name { get; set; }
-        public string[] Origins { get; set; }
-        public string[] Headers { get; set; }
-        public string[] Methods { get; set; }
+        public string Name { get; set; } = default!;
+        public string[] Origins { get; set; } = default!;
+        public string[] Headers { get; set; } = default!;
+        public string[] Methods { get; set; } = default!;
     }
 }

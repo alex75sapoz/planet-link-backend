@@ -2,16 +2,9 @@
 {
     public class WeatherConfiguration
     {
-        public WeatherConfiguration()
-        {
-            Limit = default!;
-            Duration = default!;
-            OpenWeatherApi = default!;
-        }
-
-        public WeatherLimit Limit { get; set; }
-        public WeatherDuration Duration { get; set; }
-        public WeatherOpenWeatherApi OpenWeatherApi { get; set; }
+        public WeatherLimit Limit { get; set; } = default!;
+        public WeatherDuration Duration { get; set; } = default!;
+        public WeatherOpenWeatherApi OpenWeatherApi { get; set; } = default!;
 
         public class WeatherLimit
         {
@@ -26,14 +19,8 @@
 
         public class WeatherOpenWeatherApi
         {
-            public WeatherOpenWeatherApi()
-            {
-                Server = default!;
-                AuthenticationKey = default!;
-            }
-
-            public string Server { get; set; }
-            public string AuthenticationKey { get; set; }
+            public string Server { get; set; } = default!;
+            public string AuthenticationKey { get; set; } = default!;
         }
     }
 }
