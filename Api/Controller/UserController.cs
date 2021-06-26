@@ -18,7 +18,7 @@ namespace Api.Controller
         [HttpGet("Authenticate"), ProducesResponseType(typeof(UserSessionContract), (int)HttpStatusCode.OK)]
         [ResponseCache(Duration = 299, VaryByHeader = ApiHeader.UserTypeId + "," + ApiHeader.Token)]
         [Authorization(Requirement.UserTypeAny)]
-        public async Task<IActionResult> AuthenticateSessionAsync([Required, FromHeader(Name = ApiHeader.UserTypeId)] AuthenticationUserType userTypeId, [FromHeader(Name = ApiHeader.Subdomain)] string subdomain) =>
+        public async Task<IActionResult> AuthenticateSessionAsync([Required, FromHeader(Name = ApiHeader.UserTypeId)] AuthenticationUserType userTypeId, [FromHeader(Name = ApiHeader.Subdomain)] string? subdomain) =>
             Ok(await Task.FromResult(_service.GetSession(UserSessionId!.Value)));
 
         [HttpPost("Revoke"), ProducesResponseType((int)HttpStatusCode.NoContent)]
