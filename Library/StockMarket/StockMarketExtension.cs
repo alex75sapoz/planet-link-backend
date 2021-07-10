@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Library.StockMarket
 {
-    internal static class StockMarketExtension
+    static class StockMarketExtension
     {
         public static decimal GetChangePercent(decimal from, decimal to) =>
             from == 0

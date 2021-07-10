@@ -48,7 +48,6 @@ namespace Api.Controller
                     Id = job.Key,
                     Delay = job.Value.Delay.ToString(),
                     Interval = job.Value.Interval.ToString(),
-                    job.Value.IsDependentOnCache,
                     job.Value.State,
                     job.Value.NextStartOn
                 })

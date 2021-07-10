@@ -5,7 +5,7 @@ using System.IO.Compression;
 
 namespace Api.Configuration.Compression
 {
-    internal static class CompressionExtension
+    static class CompressionExtension
     {
         public static void AddApiCompression(this IServiceCollection services)
         {

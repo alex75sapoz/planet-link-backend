@@ -2,38 +2,29 @@
 global using Library.User.Contract;
 global using Library.User.Entity;
 global using Library.User.Enum;
+global using Library.User.Job;
 global using Library.User.Response;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Library.User
 {
     public interface IUserStartup
     {
-        public static bool IsMemoryCacheReady =>
-            UserStartup.IsMemoryCacheReady;
-
         public static void Startup(IServiceCollection services, UserConfiguration configuration, string databaseConnection) =>
             UserStartup.Startup(services, configuration, databaseConnection);
-
-        public static async Task RefreshMemoryCacheAsync(IServiceProvider serviceProvider) =>
-            await UserStartup.RefreshMemoryCacheAsync(serviceProvider.GetRequiredService<UserRepository>());
 
         public static object GetStatus() =>
             UserStartup.GetStatus();
     }
 
-    internal static class UserStartup
+    static class UserStartup
     {
-        public static bool IsStarted { get; set; }
-        public static bool IsMemoryCacheReady { get; set; }
+        public static bool IsReady { get; private set; }
 
         public static void Startup(IServiceCollection services, UserConfiguration configuration, string databaseConnection)
         {
-            IsStarted = false;
+            if (IsReady) return;
 
             services
                 //Internal
@@ -43,38 +34,17 @@ namespace Library.User
                 .AddSingleton(configuration)
                 //Public
                 .AddTransient<IUserRepository, UserRepository>()
-                .AddTransient<IUserService, UserService>();
+                .AddTransient<IUserService, UserService>()
+                //Job
+                .AddHostedService<UserProcessMemoryCacheJob>();
 
-            IsStarted = true;
-        }
-
-        public static async Task RefreshMemoryCacheAsync(UserRepository repository)
-        {
-            IsMemoryCacheReady = false;
-
-            var userTypeEntities = await repository.GetUserTypesAsync();
-            var userEntities = await repository.GetUsersAsync();
-            var userSessionEntities = await repository.GetUserSessionsAsync();
-
-            UserMemoryCache.UserTypes.Clear();
-            foreach (var userType in userTypeEntities.Select(userTypeEntity => userTypeEntity.MapToTypeContract()))
-                UserMemoryCache.UserTypes.TryAdd(userType.UserTypeId, userType);
-
-            UserMemoryCache.Users.Clear();
-            foreach (var user in userEntities.Select(userEntity => userEntity.MapToUserContract()))
-                UserMemoryCache.Users.TryAdd(user.UserId, user);
-
-            UserMemoryCache.UserSessions.Clear();
-            foreach (var userSession in userSessionEntities.Select(userSessionEntity => userSessionEntity.MapToSessionContract()))
-                UserMemoryCache.UserSessions.TryAdd(userSession.UserSessionId, userSession);
-
-            IsMemoryCacheReady = true;
+            IsReady = true;
         }
 
         public static object GetStatus() => new
         {
-            IsStarted,
-            IsMemoryCacheReady,
+            IsReady,
+            IsMemoryCacheReady = UserMemoryCache.IsReady,
             RegisteredType = new
             {
                 Internal = new[]
@@ -82,12 +52,18 @@ namespace Library.User
                     nameof(UserContext),
                     nameof(UserRepository),
                     nameof(UserService),
+                    nameof(UserMemoryCache),
                     nameof(UserConfiguration)
                 },
                 Public = new[]
                 {
                     nameof(IUserRepository),
-                    nameof(IUserService)
+                    nameof(IUserService),
+                    nameof(IUserMemoryCache)
+                },
+                Job = new[]
+                {
+                    nameof(UserProcessMemoryCacheJob)
                 }
             },
             MemoryCache = new

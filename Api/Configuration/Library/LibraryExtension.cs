@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Api.Configuration.Library
 {
-    internal static class LibraryExtension
+    static class LibraryExtension
     {
         public static void AddApiLibrary(this IServiceCollection services, IConfiguration configuration, DatabaseConfiguration databaseConfiguration)
         {

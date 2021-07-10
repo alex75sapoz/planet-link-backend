@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Api.Configuration.CrossOriginRequest
 {
-    internal static class CrossOriginRequestExtension
+    static class CrossOriginRequestExtension
     {
         public static void AddApiCrossOriginRequest(this IServiceCollection services, CrossOriginRequestConfiguration configuration) =>
             services.AddCors(options => options.AddPolicy(configuration.Name, builder => builder.WithOrigins(configuration.Origins).WithHeaders(configuration.Headers).WithMethods(configuration.Methods)));

@@ -427,8 +427,6 @@ namespace Library.StockMarket
             if (quoteUserAlerts.Count >= _configuration.Limit.CreateQuoteUserAlertLimit)
                 throw new BadRequestException("You have reached your limit");
 
-            var global = await GetGlobalAsync();
-
             var price = await GetQuotePriceAsync(quote.QuoteId);
 
             if (price.Current >= alert.sell)
@@ -516,7 +514,7 @@ namespace Library.StockMarket
 
         #region Processing
 
-        internal async Task ProcessQuotesAsync()
+        public async Task ProcessQuotesAsync()
         {
             List<StockMarketQuoteResponse> quotesResponse;
 
@@ -567,7 +565,7 @@ namespace Library.StockMarket
                 StockMarketMemoryCache.StockMarketQuotes.TryAdd(quote.QuoteId, quote);
         }
 
-        internal async Task ProcessQuoteUserAlertsReverseSplitsAsync(List<int>? quoteUserAlertIds = null)
+        public async Task ProcessQuoteUserAlertsReverseSplitsAsync(List<int>? quoteUserAlertIds = null)
         {
             var quoteUserAlertEntities = await _repository.GetQuoteUserAlertsAsync(quoteUserAlertIds: quoteUserAlertIds);
             var quoteUserAlertCacheUpdates = new List<Action>();
@@ -635,7 +633,7 @@ namespace Library.StockMarket
                 quoteUserAlertCacheUpdate();
         }
 
-        internal async Task ProcessQuoteUserAlertsInProgressAsync(int alertCompletionTypeId, List<int>? quoteUserAlertIds = null)
+        public async Task ProcessQuoteUserAlertsInProgressAsync(int alertCompletionTypeId, List<int>? quoteUserAlertIds = null)
         {
             var quoteUserAlertEntities = (await _repository.GetQuoteUserAlertsAsync(alertTypeId: (int)AlertType.InProgress, quoteUserAlertIds))
                 .Where(quoteUserAlertEntity => quoteUserAlertEntity.LastReverseSplitCheckOn >= quoteUserAlertEntity.LastCheckOn)

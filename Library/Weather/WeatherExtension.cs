@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Library.Weather
 {
-    internal static class WeatherExtension
+    static class WeatherExtension
     {
         public static string GetLongTitle(this List<WeatherConditionResponse> input) =>
             string.Join(' ', input.First().Description

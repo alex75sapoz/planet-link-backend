@@ -7,27 +7,41 @@ namespace Library.Base
 {
     public abstract class BaseJob : IHostedService
     {
-        protected BaseJob(IServiceProvider serviceProvider, (TimeSpan delay, TimeSpan interval, bool isDependentOnCache) options)
+        protected BaseJob(IServiceProvider serviceProvider, (TimeSpan delay, TimeSpan interval, JobState state) options)
         {
             _serviceProvider = serviceProvider;
             Delay = options.delay;
             Interval = options.interval;
-            IsDependentOnCache = options.isDependentOnCache;
+            State = options.state;
         }
 
         protected readonly IServiceProvider _serviceProvider;
 
         public TimeSpan Delay { get; private set; }
         public TimeSpan Interval { get; private set; }
-        public bool IsDependentOnCache { get; private set; }
         public Timer? Timer { get; private set; }
         public JobState State { get; private set; }
         public DateTime NextStartOn { get; private set; }
 
         public enum JobState
         {
+            ///<summary>
+            ///Initial State = Start immediately blocking the startup thread
+            ///<br/>
+            ///Normal State = Currently running
+            ///</summary>
             Started = 1,
+            ///<summary>
+            ///Initial State = Start based on the schedule in the background
+            ///<br/>
+            ///Normal State = Currently not running
+            ///</summary>
             Finished = 2,
+            ///<summary>
+            ///Initial State = Pause immediately
+            ///<br/>
+            ///Normal State = Currently not running
+            ///</summary>
             Paused = 3
         }
 
@@ -51,13 +65,29 @@ namespace Library.Base
 
                 State = JobState.Finished;
             }, null, Timeout.Infinite, Timeout.Infinite);
-            State = JobState.Paused;
             NextStartOn = DateTime.Now + Delay;
 
             BaseMemoryCache.Jobs.TryAdd(GetType().Name, this);
 
-            if (!IsDependentOnCache)
+            if (State == JobState.Paused)
+                return;
+
+            if (State == JobState.Finished)
                 await ResumeAsync();
+
+            if (State == JobState.Started)
+            {
+                try
+                {
+                    await StartAsync();
+                }
+                catch (Exception exception)
+                {
+                    await ErrorAsync(exception);
+                }
+
+                await ResumeAsync();
+            }
         }
 
         public virtual async Task StopAsync(CancellationToken cancellationToken)

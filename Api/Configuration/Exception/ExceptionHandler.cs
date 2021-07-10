@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Api.Configuration.Exception
 {
-    internal static class ExceptionHandler
+    static class ExceptionHandler
     {
         public static async Task HandleExceptionAsync(HttpContext context)
         {

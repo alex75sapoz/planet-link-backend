@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Library.Weather
 {
-    internal static class WeatherMapper
+    static class WeatherMapper
     {
         public static WeatherCityObservationContract MapToCityObservationContract(this WeatherCityObservationResponse src) => new()
         {

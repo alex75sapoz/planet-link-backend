@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace Api.Configuration.Controller
 {
-    internal static class ControllerExtension
+    static class ControllerExtension
     {
         public static void AddApiControllers(this IServiceCollection services) =>
             services.AddControllers()

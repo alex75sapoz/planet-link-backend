@@ -2,7 +2,7 @@
 
 namespace Library.Programming
 {
-    internal static class ProgrammingMapper
+    static class ProgrammingMapper
     {
         public static ProgrammingLanguageContract MapToLanguageContract(this ProgrammingLanguageEntity src) => new()
         {

@@ -4,24 +4,24 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
 
-namespace Library.StockMarket.Job
+namespace Library.Programming.Job
 {
-    class StockMarketProcessQuoteUserAlertsJob : BaseJob
+    class ProgrammingProcessMemoryCacheJob : BaseJob
     {
-        public StockMarketProcessQuoteUserAlertsJob(IServiceProvider serviceProvider) : base(serviceProvider, (
-            delay: TimeSpan.FromMinutes(30),
-            interval: TimeSpan.FromHours(1),
-            state: JobState.Paused
+        public ProgrammingProcessMemoryCacheJob(IServiceProvider serviceProvider) : base(serviceProvider,
+        (
+            delay: TimeSpan.Zero,
+            interval: TimeSpan.FromDays(1),
+            state: JobState.Finished
         ))
         { }
 
         protected override async Task StartAsync()
         {
             using var scope = _serviceProvider.CreateScope();
-            var service = scope.ServiceProvider.GetRequiredService<StockMarketService>();
+            var repository = scope.ServiceProvider.GetRequiredService<ProgrammingRepository>();
 
-            await service.ProcessQuoteUserAlertsReverseSplitsAsync();
-            await service.ProcessQuoteUserAlertsInProgressAsync((int)AlertCompletedType.Automatic);
+            await ProgrammingMemoryCache.RefreshAsync(repository);
         }
 
         protected override async Task ErrorAsync(Exception exception)
@@ -31,12 +31,11 @@ namespace Library.StockMarket.Job
 
             await errorService.CreateErrorProcessingAsync(new ErrorProcessingCreateContract
             (
-                className: nameof(StockMarketProcessQuotesJob),
-                classMethodName: nameof(StockMarketProcessQuotesJob.StartAsync),
+                className: nameof(ProgrammingProcessMemoryCacheJob),
+                classMethodName: nameof(ProgrammingProcessMemoryCacheJob.StartAsync),
                 exceptionType: exception.GetType().Name,
                 exceptionMessage: exception.GetFullMessage()
             ));
         }
-
     }
 }

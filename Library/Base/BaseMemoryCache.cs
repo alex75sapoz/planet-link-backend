@@ -8,7 +8,7 @@ namespace Library.Base
         public static IReadOnlyDictionary<string, BaseJob> Jobs => BaseMemoryCache.Jobs;
     }
 
-    internal static class BaseMemoryCache
+    static class BaseMemoryCache
     {
         public static readonly ConcurrentDictionary<string, BaseJob> Jobs = new();
     }

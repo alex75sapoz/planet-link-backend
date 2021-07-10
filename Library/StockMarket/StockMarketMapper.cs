@@ -2,7 +2,7 @@
 
 namespace Library.StockMarket
 {
-    internal static class StockMarketMapper
+    static class StockMarketMapper
     {
         public static StockMarketExchangeContract MaptToExchangeContract(this StockMarketExchangeEntity src) => new()
         {
