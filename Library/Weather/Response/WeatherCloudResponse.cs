@@ -2,7 +2,7 @@
 
 namespace Library.Weather.Response
 {
-    internal class WeatherCloudResponse
+    class WeatherCloudResponse
     {
         [DeserializeAs(Name = "all")]
         public decimal Cloudiness { get; set; }

@@ -7,35 +7,30 @@ namespace Library.User.Entity
 {
     public class UserEntity
     {
-        public UserEntity()
-        {
-            Sessions = new HashSet<UserSessionEntity>();
-        }
-
         public int UserId { get; internal set; }
         public int UserTypeId { get; internal set; }
-        public string ExternalUserId { get; internal set; }
+        public string ExternalUserId { get; internal set; } = default!;
         public DateTimeOffset CreatedOn { get; internal set; }
         public DateTimeOffset LastUpdatedOn { get; internal set; }
 
-        public virtual UserTypeEntity Type { get; internal set; }
-        public virtual UserGoogleEntity Google { get; internal set; }
-        public virtual UserStocktwitsEntity Stocktwits { get; internal set; }
-        public virtual ICollection<UserSessionEntity> Sessions { get; internal set; }
+        public virtual UserTypeEntity Type { get; internal set; } = default!;
+        public virtual UserGoogleEntity? Google { get; internal set; }
+        public virtual UserStocktwitsEntity? Stocktwits { get; internal set; }
+        public virtual ICollection<UserSessionEntity> Sessions { get; internal set; } = new HashSet<UserSessionEntity>();
     }
 }
 
 namespace Library.User.Entity.Configuration
 {
-    internal class UserEntityConfiguration : IEntityTypeConfiguration<UserEntity>
+    class UserEntityConfiguration : IEntityTypeConfiguration<UserEntity>
     {
         public void Configure(EntityTypeBuilder<UserEntity> entity)
         {
             entity.ToTable(nameof(UserContext.Users));
             entity.HasKey(user => user.UserId);
 
-            entity.HasOne(user => user.Google).WithOne(google => google.User).IsRequired(false);
-            entity.HasOne(user => user.Stocktwits).WithOne(google => google.User).IsRequired(false);
+            entity.HasOne(user => user.Google).WithOne(google => google!.User).IsRequired(false);
+            entity.HasOne(user => user.Stocktwits).WithOne(google => google!.User).IsRequired(false);
 
             entity.HasOne(user => user.Type).WithMany(type => type.Users).HasForeignKey(user => user.UserTypeId).IsRequired(true);
 

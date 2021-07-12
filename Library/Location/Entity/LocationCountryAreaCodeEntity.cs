@@ -9,14 +9,14 @@ namespace Library.Location.Entity
         public int CountryId { get; internal set; }
         public int AreaCodeId { get; internal set; }
 
-        public virtual LocationCountryEntity Country { get; internal set; }
-        public virtual LocationAreaCodeEntity AreaCode { get; internal set; }
+        public virtual LocationCountryEntity Country { get; internal set; } = default!;
+        public virtual LocationAreaCodeEntity AreaCode { get; internal set; } = default!;
     }
 }
 
 namespace Library.Location.Entity.Configuration
 {
-    internal class CountryAreaCodeEntityConfiguration : IEntityTypeConfiguration<LocationCountryAreaCodeEntity>
+    class CountryAreaCodeEntityConfiguration : IEntityTypeConfiguration<LocationCountryAreaCodeEntity>
     {
         public void Configure(EntityTypeBuilder<LocationCountryAreaCodeEntity> entity)
         {

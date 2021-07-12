@@ -1,6 +1,4 @@
-﻿using Api.Configuration.Authentication;
-using Api.Configuration.Authorization;
-using Library.User;
+﻿using Library.User;
 using Library.User.Contract;
 using Library.User.Enum;
 using Microsoft.AspNetCore.Mvc;
@@ -20,13 +18,13 @@ namespace Api.Controller
         [HttpGet("Authenticate"), ProducesResponseType(typeof(UserSessionContract), (int)HttpStatusCode.OK)]
         [ResponseCache(Duration = 299, VaryByHeader = ApiHeader.UserTypeId + "," + ApiHeader.Token)]
         [Authorization(Requirement.UserTypeAny)]
-        public async Task<IActionResult> AuthenticateSessionAsync([Required, FromHeader(Name = ApiHeader.UserTypeId)] AuthenticationUserType userTypeId, [FromHeader(Name = ApiHeader.Subdomain)] string subdomain) =>
-            Ok(await Task.FromResult(_service.GetSession(UserSessionId.Value)));
+        public async Task<IActionResult> AuthenticateSessionAsync([Required, FromHeader(Name = ApiHeader.UserTypeId)] AuthenticationUserType userTypeId, [FromHeader(Name = ApiHeader.Subdomain)] string? subdomain) =>
+            Ok(await Task.FromResult(_service.GetSession(UserSessionId!.Value)));
 
         [HttpPost("Revoke"), ProducesResponseType((int)HttpStatusCode.NoContent)]
         [Authorization(Requirement.UserTypeAny)]
         public async Task RemoveSessionAsync() =>
-            await _service.RevokeSessionAsync(UserSessionId.Value);
+            await _service.RevokeSessionAsync(UserSessionId!.Value);
 
         [HttpGet("ConsentUrl"), ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
         [ResponseCache(Duration = 299, VaryByHeader = ApiHeader.UserTypeId + "," + ApiHeader.Token)]

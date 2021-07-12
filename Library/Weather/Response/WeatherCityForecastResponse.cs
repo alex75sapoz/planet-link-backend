@@ -4,31 +4,31 @@ using System.Collections.Generic;
 
 namespace Library.Weather.Response
 {
-    internal class WeatherCityForecastResponse
+    class WeatherCityForecastResponse
     {
         //Data provider returns UTC timestamp
         [DeserializeAs(Name = "dt")]
         public DateTimeOffset CreatedOn { get; set; }
 
         [DeserializeAs(Name = "dt_txt")]
-        public string DatetimeText { get; set; }
+        public string DatetimeText { get; set; } = default!;
 
         [DeserializeAs(Name = "main")]
-        public WeatherTemperatureResponse Temperature { get; set; }
+        public WeatherTemperatureResponse Temperature { get; set; } = default!;
 
         [DeserializeAs(Name = "weather")]
-        public List<WeatherConditionResponse> Conditions { get; set; }
+        public List<WeatherConditionResponse> Conditions { get; set; } = default!;
 
         [DeserializeAs(Name = "clouds")]
-        public WeatherCloudResponse Cloud { get; set; }
+        public WeatherCloudResponse Cloud { get; set; } = default!;
 
         [DeserializeAs(Name = "wind")]
-        public WeatherWindResponse Wind { get; set; }
+        public WeatherWindResponse Wind { get; set; } = default!;
 
         [DeserializeAs(Name = "rain")]
-        public WeatherRainResponse Rain { get; set; }
+        public WeatherRainResponse Rain { get; set; } = default!;
 
         [DeserializeAs(Name = "snow")]
-        public WeatherSnowResponse Snow { get; set; }
+        public WeatherSnowResponse Snow { get; set; } = default!;
     }
 }

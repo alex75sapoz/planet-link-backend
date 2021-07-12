@@ -2,11 +2,9 @@
 
 namespace Api.Configuration.MemoryCache
 {
-    internal static class MemoryCacheExtension
+    static class MemoryCacheExtension
     {
         public static void AddApiMemoryCache(this IServiceCollection services) =>
-            services
-                .AddMemoryCache()
-                .AddHostedService<MemoryCacheRefreshJob>();
+            services.AddMemoryCache();
     }
 }

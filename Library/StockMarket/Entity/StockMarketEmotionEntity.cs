@@ -6,22 +6,17 @@ namespace Library.StockMarket.Entity
 {
     public class StockMarketEmotionEntity
     {
-        public StockMarketEmotionEntity()
-        {
-            QuoteUserEmotions = new HashSet<StockMarketQuoteUserEmotionEntity>();
-        }
-
         public int EmotionId { get; internal set; }
-        public string Name { get; internal set; }
-        public string Emoji { get; internal set; }
+        public string Name { get; internal set; } = default!;
+        public string Emoji { get; internal set; } = default!;
 
-        public virtual ICollection<StockMarketQuoteUserEmotionEntity> QuoteUserEmotions { get; internal set; }
+        public virtual ICollection<StockMarketQuoteUserEmotionEntity> QuoteUserEmotions { get; internal set; } = new HashSet<StockMarketQuoteUserEmotionEntity>();
     }
 }
 
 namespace Library.StockMarket.Entity.Configuration
 {
-    internal class StockMarketEmotionEntityConfiguration : IEntityTypeConfiguration<StockMarketEmotionEntity>
+    class StockMarketEmotionEntityConfiguration : IEntityTypeConfiguration<StockMarketEmotionEntity>
     {
         public void Configure(EntityTypeBuilder<StockMarketEmotionEntity> entity)
         {

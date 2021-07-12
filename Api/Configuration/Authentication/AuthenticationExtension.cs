@@ -1,11 +1,10 @@
-﻿using Api.Configuration.Swagger;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace Api.Configuration.Authentication
 {
-    internal static class AuthenticationExtension
+    static class AuthenticationExtension
     {
         public static void AddApiAuthentication(this IServiceCollection services, IWebHostEnvironment environment, AuthenticationConfiguration configuration, SwaggerConfiguration swaggerConfiguration) =>
             services.AddAuthentication(configuration.Scheme)

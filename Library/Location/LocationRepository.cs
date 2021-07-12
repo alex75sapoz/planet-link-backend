@@ -1,6 +1,4 @@
-﻿using Library.Base;
-using Library.Location.Entity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -13,7 +11,7 @@ namespace Library.Location
         Task<List<LocationStateEntity>> GetStatesAsync();
     }
 
-    internal class LocationRepository : BaseRepository<LocationContext>, ILocationRepository
+    class LocationRepository : BaseRepository<LocationContext>, ILocationRepository
     {
         public LocationRepository(LocationContext context) : base(context) { }
 

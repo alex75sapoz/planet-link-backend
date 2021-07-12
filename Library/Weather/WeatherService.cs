@@ -1,9 +1,5 @@
-﻿using Library.Base;
-using Library.Location;
+﻿using Library.Location;
 using Library.User;
-using Library.Weather.Contract;
-using Library.Weather.Entity;
-using Library.Weather.Response;
 using Microsoft.Extensions.Caching.Memory;
 using NodaTime;
 using RestSharp;
@@ -25,7 +21,7 @@ namespace Library.Weather
         WeatherEmotionContract GetEmotion(int emotionId);
     }
 
-    internal class WeatherService : BaseService<WeatherConfiguration, WeatherRepository>, IWeatherService
+    class WeatherService : BaseService<WeatherConfiguration, WeatherRepository>, IWeatherService
     {
         public WeatherService(WeatherConfiguration configuration, WeatherRepository repository, ILocationService locationService, IUserService userService, IMemoryCache cache) : base(configuration, repository, cache)
         {
@@ -41,7 +37,7 @@ namespace Library.Weather
         #region Get
 
         public WeatherEmotionContract GetEmotion(int emotionId) =>
-            WeatherMemoryCache.WeatherEmotions.TryGetValue(emotionId, out WeatherEmotionContract emotion)
+            WeatherMemoryCache.WeatherEmotions.TryGetValue(emotionId, out WeatherEmotionContract? emotion)
                 ? emotion
                 : throw new BadRequestException($"{nameof(emotionId)} is invalid");
 

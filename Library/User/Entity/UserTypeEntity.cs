@@ -6,21 +6,16 @@ namespace Library.User.Entity
 {
     public class UserTypeEntity
     {
-        public UserTypeEntity()
-        {
-            Users = new HashSet<UserEntity>();
-        }
-
         public int UserTypeId { get; internal set; }
-        public string Name { get; internal set; }
+        public string Name { get; internal set; } = default!;
 
-        public virtual ICollection<UserEntity> Users { get; internal set; }
+        public virtual ICollection<UserEntity> Users { get; internal set; } = new HashSet<UserEntity>();
     }
 }
 
 namespace Library.User.Entity.Configuration
 {
-    internal class UserTypeEntityConfiguration : IEntityTypeConfiguration<UserTypeEntity>
+    class UserTypeEntityConfiguration : IEntityTypeConfiguration<UserTypeEntity>
     {
         public void Configure(EntityTypeBuilder<UserTypeEntity> entity)
         {

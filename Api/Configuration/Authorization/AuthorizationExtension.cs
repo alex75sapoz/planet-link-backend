@@ -2,7 +2,7 @@
 
 namespace Api.Configuration.Authorization
 {
-    internal static class AuthorizationExtension
+    static class AuthorizationExtension
     {
         public static void AddApiAuthorization(this IServiceCollection services) =>
             services.AddAuthorization(options =>

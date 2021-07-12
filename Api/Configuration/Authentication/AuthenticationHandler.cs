@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Api.Configuration.Authentication
 {
-    internal class AuthenticationHandler : AuthenticationHandler<AuthenticationScheme>
+    class AuthenticationHandler : AuthenticationHandler<AuthenticationScheme>
     {
         public AuthenticationHandler(IOptionsMonitor<AuthenticationScheme> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock, IUserService userService) : base(options, logger, encoder, clock) =>
             _userService = userService;
@@ -58,7 +58,7 @@ namespace Api.Configuration.Authentication
                 return GetGuestAuthenticateResult(timezone);
 
             //Step 4 - Memory Cache
-            if (!IUserStartup.IsMemoryCacheReady)
+            if (!IUserMemoryCache.IsReady)
                 return AuthenticateResult.Fail($"MemoryCache is not ready");
 
             //Step 5 - Token or Code/Subdomain/Page

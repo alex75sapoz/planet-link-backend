@@ -1,6 +1,4 @@
-﻿using Library.Base;
-using Library.User.Entity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -16,7 +14,7 @@ namespace Library.User
         Task<List<UserTypeEntity>> GetUserTypesAsync();
     }
 
-    internal class UserRepository : BaseRepository<UserContext>, IUserRepository
+    class UserRepository : BaseRepository<UserContext>, IUserRepository
     {
         public UserRepository(UserContext context) : base(context) { }
 

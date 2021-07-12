@@ -6,22 +6,17 @@ namespace Library.Location.Entity
 {
     public class LocationContinentEntity
     {
-        public LocationContinentEntity()
-        {
-            Countries = new HashSet<LocationCountryEntity>();
-        }
-
         public int ContinentId { get; internal set; }
-        public string Name { get; internal set; }
-        public string TwoLetterCode { get; internal set; }
+        public string Name { get; internal set; } = default!;
+        public string TwoLetterCode { get; internal set; } = default!;
 
-        public virtual ICollection<LocationCountryEntity> Countries { get; internal set; }
+        public virtual ICollection<LocationCountryEntity> Countries { get; internal set; } = new HashSet<LocationCountryEntity>();
     }
 }
 
 namespace Library.Location.Entity.Configuration
 {
-    internal class ContinentEntityConfiguration : IEntityTypeConfiguration<LocationContinentEntity>
+    class ContinentEntityConfiguration : IEntityTypeConfiguration<LocationContinentEntity>
     {
         public void Configure(EntityTypeBuilder<LocationContinentEntity> entity)
         {

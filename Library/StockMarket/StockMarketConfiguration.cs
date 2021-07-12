@@ -2,10 +2,10 @@
 {
     public class StockMarketConfiguration
     {
-        public StockMarketLimit Limit { get; set; }
-        public StockMarketDuration Duration { get; set; }
-        public StockMarketRequirement Requirement { get; set; }
-        public StockMarketFinancialModelingPrepApi FinancialModelingPrepApi { get; set; }
+        public StockMarketLimit Limit { get; set; } = default!;
+        public StockMarketDuration Duration { get; set; } = default!;
+        public StockMarketRequirement Requirement { get; set; } = default!;
+        public StockMarketFinancialModelingPrepApi FinancialModelingPrepApi { get; set; } = default!;
 
         public class StockMarketLimit
         {
@@ -38,8 +38,8 @@
 
         public class StockMarketFinancialModelingPrepApi
         {
-            public string Server { get; set; }
-            public string AuthenticationKey { get; set; }
+            public string Server { get; set; } = default!;
+            public string AuthenticationKey { get; set; } = default!;
         }
     }
 }

@@ -1,8 +1,8 @@
 ﻿namespace Api.Configuration.Endpoint
 {
-    internal class EndpointConfiguration
+    class EndpointConfiguration
     {
-        public string Name { get; set; }
-        public string Pattern { get; set; }
+        public string Name { get; set; } = default!;
+        public string Pattern { get; set; } = default!;
     }
 }

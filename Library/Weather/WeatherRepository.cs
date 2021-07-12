@@ -1,6 +1,4 @@
-﻿using Library.Base;
-using Library.Weather.Entity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +12,7 @@ namespace Library.Weather
         Task<List<WeatherEmotionEntity>> GetEmotionsAsync();
     }
 
-    internal class WeatherRepository : BaseRepository<WeatherContext>, IWeatherRepository
+    class WeatherRepository : BaseRepository<WeatherContext>, IWeatherRepository
     {
         public WeatherRepository(WeatherContext context) : base(context) { }
 

@@ -1,12 +1,11 @@
-﻿using Api.Configuration.Authentication;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace Api.Configuration.Swagger
 {
-    internal static class SwaggerExtension
+    static class SwaggerExtension
     {
         public static void AddApiSwagger(this IServiceCollection services, SwaggerConfiguration configuration, AuthenticationConfiguration authenticationConfiguration) =>
             services.AddSwaggerGen(options =>

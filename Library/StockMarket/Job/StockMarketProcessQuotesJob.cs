@@ -1,5 +1,4 @@
-﻿using Library.Base;
-using Library.Error;
+﻿using Library.Error;
 using Library.Error.Contract;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -7,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace Library.StockMarket.Job
 {
-    internal class StockMarketProcessQuotesJob : BaseJob
+    class StockMarketProcessQuotesJob : BaseJob
     {
         public StockMarketProcessQuotesJob(IServiceProvider serviceProvider) : base(serviceProvider, (
             delay: TimeSpan.FromDays(1),
             interval: TimeSpan.FromDays(1),
-            isDependentOnCache: true
+            state: JobState.Paused
         ))
         { }
 
@@ -29,13 +28,13 @@ namespace Library.StockMarket.Job
             using var scope = _serviceProvider.CreateScope();
             var errorService = scope.ServiceProvider.GetRequiredService<IErrorService>();
 
-            await errorService.CreateErrorProcessingAsync(new ErrorProcessingContract()
-            {
-                ClassName = nameof(StockMarketProcessQuotesJob),
-                ClassMethodName = nameof(StockMarketProcessQuotesJob.StartAsync),
-                ExceptionType = exception.GetType().Name,
-                ExceptionMessage = exception.GetFullMessage()
-            });
+            await errorService.CreateErrorProcessingAsync(new ErrorProcessingCreateContract
+            (
+                className: nameof(StockMarketProcessQuotesJob),
+                classMethodName: nameof(StockMarketProcessQuotesJob.StartAsync),
+                exceptionType: exception.GetType().Name,
+                exceptionMessage: exception.GetFullMessage()
+            ));
         }
 
     }

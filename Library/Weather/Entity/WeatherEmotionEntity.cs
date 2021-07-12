@@ -6,22 +6,17 @@ namespace Library.Weather.Entity
 {
     public class WeatherEmotionEntity
     {
-        public WeatherEmotionEntity()
-        {
-            CityUserEmotions = new HashSet<WeatherCityUserEmotionEntity>();
-        }
-
         public int EmotionId { get; internal set; }
-        public string Name { get; internal set; }
-        public string Emoji { get; internal set; }
+        public string Name { get; internal set; } = default!;
+        public string Emoji { get; internal set; } = default!;
 
-        public virtual ICollection<WeatherCityUserEmotionEntity> CityUserEmotions { get; internal set; }
+        public virtual ICollection<WeatherCityUserEmotionEntity> CityUserEmotions { get; internal set; } = new HashSet<WeatherCityUserEmotionEntity>();
     }
 }
 
 namespace Library.Weather.Entity.Configuration
 {
-    internal class WeatherEmotionEntityConfiguration : IEntityTypeConfiguration<WeatherEmotionEntity>
+    class WeatherEmotionEntityConfiguration : IEntityTypeConfiguration<WeatherEmotionEntity>
     {
         public void Configure(EntityTypeBuilder<WeatherEmotionEntity> entity)
         {

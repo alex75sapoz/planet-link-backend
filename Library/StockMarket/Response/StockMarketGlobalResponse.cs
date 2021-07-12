@@ -2,7 +2,7 @@
 
 namespace Library.StockMarket.Response
 {
-    internal class StockMarketGlobalResponse
+    class StockMarketGlobalResponse
     {
         [DeserializeAs(Name = "isTheStockMarketOpen")]
         public bool IsStockMarketOpen { get; set; }

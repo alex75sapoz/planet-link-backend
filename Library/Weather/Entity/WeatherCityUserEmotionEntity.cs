@@ -12,13 +12,13 @@ namespace Library.Weather.Entity
         public int EmotionId { get; internal set; }
         public DateTimeOffset CreatedOn { get; internal set; }
 
-        public virtual WeatherEmotionEntity Emotion { get; internal set; }
+        public virtual WeatherEmotionEntity Emotion { get; internal set; } = default!;
     }
 }
 
 namespace Library.Weather.Entity.Configuration
 {
-    internal class WeatherCityUserEmotionEntityConfiguration : IEntityTypeConfiguration<WeatherCityUserEmotionEntity>
+    class WeatherCityUserEmotionEntityConfiguration : IEntityTypeConfiguration<WeatherCityUserEmotionEntity>
     {
         public void Configure(EntityTypeBuilder<WeatherCityUserEmotionEntity> entity)
         {

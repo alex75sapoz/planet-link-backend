@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace Library.StockMarket.Response
 {
-    internal class StockMarketQuoteCandleFullResponse
+    class StockMarketQuoteCandleFullResponse
     {
-        public string Symbol { get; set; }
+        public string Symbol { get; set; } = default!;
 
         [DeserializeAs(Name = "historical")]
-        public List<StockMarketQuoteCandleResponse> Candles { get; set; }
+        public List<StockMarketQuoteCandleResponse> Candles { get; set; } = default!;
     }
 }

@@ -6,21 +6,16 @@ namespace Library.StockMarket.Entity
 {
     public class StockMarketAlertTypeEntity
     {
-        public StockMarketAlertTypeEntity()
-        {
-            QuoteUserAlerts = new HashSet<StockMarketQuoteUserAlertEntity>();
-        }
-
         public int AlertTypeId { get; internal set; }
-        public string Name { get; internal set; }
+        public string Name { get; internal set; } = default!;
 
-        public virtual ICollection<StockMarketQuoteUserAlertEntity> QuoteUserAlerts { get; internal set; }
+        public virtual ICollection<StockMarketQuoteUserAlertEntity> QuoteUserAlerts { get; internal set; } = new HashSet<StockMarketQuoteUserAlertEntity>();
     }
 }
 
 namespace Library.StockMarket.Entity.Configuration
 {
-    internal class StockMarketAlertTypeEntityConfiguration : IEntityTypeConfiguration<StockMarketAlertTypeEntity>
+    class StockMarketAlertTypeEntityConfiguration : IEntityTypeConfiguration<StockMarketAlertTypeEntity>
     {
         public void Configure(EntityTypeBuilder<StockMarketAlertTypeEntity> entity)
         {

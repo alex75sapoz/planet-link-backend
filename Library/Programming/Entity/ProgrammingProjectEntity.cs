@@ -7,31 +7,26 @@ namespace Library.Programming.Entity
 {
     public class ProgrammingProjectEntity
     {
-        public ProgrammingProjectEntity()
-        {
-            ProjectLanguages = new HashSet<ProgrammingProjectLanguageEntity>();
-        }
-
         public int ProjectId { get; internal set; }
         public int ProjectTypeId { get; internal set; }
         public int JobId { get; internal set; }
         public int TechnologyStackId { get; internal set; }
-        public string Name { get; internal set; }
-        public string Tag { get; internal set; }
-        public string Description { get; internal set; }
+        public string Name { get; internal set; } = default!;
+        public string Tag { get; internal set; } = default!;
+        public string Description { get; internal set; } = default!;
         public bool IsImportant { get; internal set; }
         public DateTimeOffset CreatedOn { get; internal set; }
 
-        public virtual ProgrammingProjectTypeEntity Type { get; internal set; }
-        public virtual ProgrammingJobEntity Job { get; internal set; }
-        public virtual ProgrammingTechnologyStackEntity TechnologyStack { get; internal set; }
-        public virtual ICollection<ProgrammingProjectLanguageEntity> ProjectLanguages { get; internal set; }
+        public virtual ProgrammingProjectTypeEntity Type { get; internal set; } = default!;
+        public virtual ProgrammingJobEntity Job { get; internal set; } = default!;
+        public virtual ProgrammingTechnologyStackEntity TechnologyStack { get; internal set; } = default!;
+        public virtual ICollection<ProgrammingProjectLanguageEntity> ProjectLanguages { get; internal set; } = new HashSet<ProgrammingProjectLanguageEntity>();
     }
 }
 
 namespace Library.Programming.Entity.Configuration
 {
-    internal class ProgrammingProjectEntityConfiguration : IEntityTypeConfiguration<ProgrammingProjectEntity>
+    class ProgrammingProjectEntityConfiguration : IEntityTypeConfiguration<ProgrammingProjectEntity>
     {
         public void Configure(EntityTypeBuilder<ProgrammingProjectEntity> entity)
         {

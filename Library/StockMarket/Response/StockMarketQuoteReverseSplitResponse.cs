@@ -1,10 +1,9 @@
-﻿using Library.Base;
-using RestSharp.Deserializers;
+﻿using RestSharp.Deserializers;
 using System;
 
 namespace Library.StockMarket.Response
 {
-    internal class StockMarketQuoteReverseSplitResponse
+    class StockMarketQuoteReverseSplitResponse
     {
         public decimal Numerator { get; set; }
         public decimal Denominator { get; set; }

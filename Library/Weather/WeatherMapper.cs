@@ -1,12 +1,9 @@
-﻿using Library.Weather.Contract;
-using Library.Weather.Entity;
-using Library.Weather.Response;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace Library.Weather
 {
-    internal static class WeatherMapper
+    static class WeatherMapper
     {
         public static WeatherCityObservationContract MapToCityObservationContract(this WeatherCityObservationResponse src) => new()
         {

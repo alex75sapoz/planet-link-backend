@@ -1,4 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿global using Library.Base;
+global using Library.Error.Contract;
+global using Library.Error.Entity;
+global using Library.Error.Enum;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Library.Error
@@ -12,13 +16,13 @@ namespace Library.Error
             ErrorStartup.GetStatus();
     }
 
-    internal static class ErrorStartup
+    static class ErrorStartup
     {
-        public static bool IsStarted { get; set; }
+        public static bool IsReady { get; private set; }
 
         public static void Startup(IServiceCollection services, ErrorConfiguration configuration, string databaseConnection)
         {
-            IsStarted = false;
+            if (IsReady) return;
 
             services
                 //Internal
@@ -30,12 +34,12 @@ namespace Library.Error
                 .AddTransient<IErrorRepository, ErrorRepository>()
                 .AddTransient<IErrorService, ErrorService>();
 
-            IsStarted = true;
+            IsReady = true;
         }
 
         public static object GetStatus() => new
         {
-            IsStarted,
+            IsReady,
             RegisteredTypes = new
             {
                 Internal = new[]

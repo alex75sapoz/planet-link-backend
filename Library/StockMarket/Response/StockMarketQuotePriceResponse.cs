@@ -3,13 +3,13 @@ using System;
 
 namespace Library.StockMarket.Response
 {
-    internal class StockMarketQuotePriceResponse
+    class StockMarketQuotePriceResponse
     {
-        public string Symbol { get; set; }
+        public string Symbol { get; set; } = default!;
 
-        public string Name { get; set; }
+        public string Name { get; set; } = default!;
 
-        public string Exchange { get; set; }
+        public string Exchange { get; set; } = default!;
 
         [DeserializeAs(Name = "price")]
         public decimal Current { get; set; }

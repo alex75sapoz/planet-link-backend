@@ -4,9 +4,9 @@ namespace Library.Weather.Contract
 {
     public class WeatherCityForecastContract
     {
-        public string Title { get; internal set; }
-        public string LongTitle { get; internal set; }
-        public string Icon { get; internal set; }
+        public string Title { get; internal set; } = default!;
+        public string LongTitle { get; internal set; } = default!;
+        public string Icon { get; internal set; } = default!;
         public decimal Current { get; internal set; }
         public decimal FeelsLike { get; internal set; }
         public decimal Min { get; internal set; }

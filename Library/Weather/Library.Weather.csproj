@@ -1,12 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <LangVersion>latest</LangVersion>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>preview</LangVersion>
+    <AnalysisLevel>preview</AnalysisLevel>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Base\Library.Base.csproj" />
+    <ProjectReference Include="..\Error\Library.Error.csproj" />
     <ProjectReference Include="..\Location\Library.Location.csproj" />
     <ProjectReference Include="..\User\Library.User.csproj" />
   </ItemGroup>

@@ -9,14 +9,14 @@ namespace Library.Programming.Entity
         public int ProjectId { get; internal set; }
         public int LanguageId { get; internal set; }
 
-        public virtual ProgrammingProjectEntity Project { get; internal set; }
-        public virtual ProgrammingLanguageEntity Language { get; internal set; }
+        public virtual ProgrammingProjectEntity Project { get; internal set; } = default!;
+        public virtual ProgrammingLanguageEntity Language { get; internal set; } = default!;
     }
 }
 
 namespace Library.Programming.Entity.Configuration
 {
-    internal class ProgrammingProjectLanguageEntityConfiguration : IEntityTypeConfiguration<ProgrammingProjectLanguageEntity>
+    class ProgrammingProjectLanguageEntityConfiguration : IEntityTypeConfiguration<ProgrammingProjectLanguageEntity>
     {
         public void Configure(EntityTypeBuilder<ProgrammingProjectLanguageEntity> entity)
         {

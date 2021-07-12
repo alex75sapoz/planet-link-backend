@@ -1,9 +1,6 @@
-﻿using Library.User.Contract;
-using Library.User.Entity;
-
-namespace Library.User
+﻿namespace Library.User
 {
-    internal static class UserMapper
+    static class UserMapper
     {
         public static UserTypeContract MapToTypeContract(this UserTypeEntity src) => new()
         {

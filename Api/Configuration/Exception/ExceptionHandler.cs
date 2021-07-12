@@ -1,5 +1,4 @@
-﻿using Api.Configuration.Authentication;
-using Library.Base;
+﻿using Library.Base;
 using Library.Error;
 using Library.Error.Contract;
 using Microsoft.AspNetCore.Diagnostics;
@@ -10,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Api.Configuration.Exception
 {
-    internal static class ExceptionHandler
+    static class ExceptionHandler
     {
         public static async Task HandleExceptionAsync(HttpContext context)
         {
@@ -38,17 +37,19 @@ namespace Api.Configuration.Exception
 
             var authenticationResult = new AuthenticationResult(context.User);
 
-            await errorService.CreateErrorRequestAsync(new ErrorRequestContract()
+            await errorService.CreateErrorRequestAsync(new ErrorRequestCreateContract
+            (
+                method: context.Request.Method,
+                path: context.Request.Path,
+                query: context.Request.QueryString.ToString(),
+                statusCodeId: statusCodeId,
+                exceptionType: exception.GetType().Name,
+                exceptionMessage: exceptionMessage,
+                timezoneId: authenticationResult.Timezone.Id
+            )
             {
-                Method = context.Request.Method,
-                Path = context.Request.Path,
-                Query = context.Request.QueryString.ToString(),
-                StatusCodeId = statusCodeId,
-                ExceptionType = exception.GetType().Name,
-                ExceptionMessage = exceptionMessage,
                 UserSessionId = authenticationResult.UserSessionId,
-                UserId = authenticationResult.UserId,
-                TimezoneId = authenticationResult.Timezone.Id
+                UserId = authenticationResult.UserId
             });
 
             context.Response.StatusCode = statusCodeId;

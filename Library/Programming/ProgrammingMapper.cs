@@ -1,10 +1,8 @@
-﻿using Library.Programming.Contract;
-using Library.Programming.Entity;
-using System.Linq;
+﻿using System.Linq;
 
 namespace Library.Programming
 {
-    internal static class ProgrammingMapper
+    static class ProgrammingMapper
     {
         public static ProgrammingLanguageContract MapToLanguageContract(this ProgrammingLanguageEntity src) => new()
         {

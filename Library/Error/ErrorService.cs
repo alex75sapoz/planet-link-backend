@@ -1,8 +1,4 @@
-﻿using Library.Base;
-using Library.Error.Contract;
-using Library.Error.Entity;
-using Library.Error.Enum;
-using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Threading.Tasks;
 
@@ -10,17 +6,17 @@ namespace Library.Error
 {
     public interface IErrorService
     {
-        Task CreateErrorProcessingAsync(ErrorProcessingContract processing);
-        Task CreateErrorRequestAsync(ErrorRequestContract request);
+        Task CreateErrorProcessingAsync(ErrorProcessingCreateContract processing);
+        Task CreateErrorRequestAsync(ErrorRequestCreateContract request);
     }
 
-    internal class ErrorService : BaseService<ErrorConfiguration, ErrorRepository>, IErrorService
+    class ErrorService : BaseService<ErrorConfiguration, ErrorRepository>, IErrorService
     {
         public ErrorService(ErrorConfiguration configuration, ErrorRepository repository, IMemoryCache memoryCache) : base(configuration, repository, memoryCache) { }
 
         #region Create
 
-        public async Task CreateErrorProcessingAsync(ErrorProcessingContract processing)
+        public async Task CreateErrorProcessingAsync(ErrorProcessingCreateContract processing)
         {
             try
             {
@@ -41,7 +37,7 @@ namespace Library.Error
             catch { }
         }
 
-        public async Task CreateErrorRequestAsync(ErrorRequestContract request)
+        public async Task CreateErrorRequestAsync(ErrorRequestCreateContract request)
         {
             try
             {

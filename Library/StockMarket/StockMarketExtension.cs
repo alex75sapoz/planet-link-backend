@@ -1,14 +1,11 @@
-﻿using Library.Base;
-using Library.StockMarket.Contract;
-using Library.StockMarket.Enum;
-using NodaTime;
+﻿using NodaTime;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Library.StockMarket
 {
-    internal static class StockMarketExtension
+    static class StockMarketExtension
     {
         public static decimal GetChangePercent(decimal from, decimal to) =>
             from == 0

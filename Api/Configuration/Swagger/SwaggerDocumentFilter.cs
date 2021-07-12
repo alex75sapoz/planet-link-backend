@@ -1,5 +1,4 @@
-﻿using Api.Configuration.Authentication;
-using Api.Controller;
+﻿using Api.Controller;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using NodaTime;
@@ -8,7 +7,7 @@ using System;
 
 namespace Api.Configuration.Swagger
 {
-    internal class SwaggerDocumentFilter : IDocumentFilter
+    class SwaggerDocumentFilter : IDocumentFilter
     {
         public SwaggerDocumentFilter(AuthenticationConfiguration authenticationConfiguration) =>
             _authenticationConfiguration = authenticationConfiguration;

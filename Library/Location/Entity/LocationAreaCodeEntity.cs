@@ -6,21 +6,16 @@ namespace Library.Location.Entity
 {
     public class LocationAreaCodeEntity
     {
-        public LocationAreaCodeEntity()
-        {
-            CountryAreaCodes = new HashSet<LocationCountryAreaCodeEntity>();
-        }
-
         public int AreaCodeId { get; internal set; }
         public int CodeId { get; internal set; }
 
-        public virtual ICollection<LocationCountryAreaCodeEntity> CountryAreaCodes { get; internal set; }
+        public virtual ICollection<LocationCountryAreaCodeEntity> CountryAreaCodes { get; internal set; } = new HashSet<LocationCountryAreaCodeEntity>();
     }
 }
 
 namespace Library.Location.Entity.Configuration
 {
-    internal class LocationAreaCodeEntityConfiguration : IEntityTypeConfiguration<LocationAreaCodeEntity>
+    class LocationAreaCodeEntityConfiguration : IEntityTypeConfiguration<LocationAreaCodeEntity>
     {
         public void Configure(EntityTypeBuilder<LocationAreaCodeEntity> entity)
         {

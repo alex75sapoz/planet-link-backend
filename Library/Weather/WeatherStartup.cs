@@ -1,34 +1,29 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿global using Library.Base;
+global using Library.Weather.Contract;
+global using Library.Weather.Entity;
+global using Library.Weather.Job;
+global using Library.Weather.Response;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Library.Weather
 {
     public interface IWeatherStartup
     {
-        public static bool IsMemoryCacheReady =>
-            WeatherStartup.IsMemoryCacheReady;
-
         public static void Startup(IServiceCollection services, WeatherConfiguration configuration, string databaseConnection) =>
             WeatherStartup.Startup(services, configuration, databaseConnection);
-
-        public static async Task RefreshMemoryCacheAsync(IServiceProvider serviceProvider) =>
-            await WeatherStartup.RefreshMemoryCacheAsync(serviceProvider.GetRequiredService<WeatherRepository>());
 
         public static object GetStatus() =>
             WeatherStartup.GetStatus();
     }
 
-    internal static class WeatherStartup
+    static class WeatherStartup
     {
-        public static bool IsStarted { get; set; }
-        public static bool IsMemoryCacheReady { get; set; }
+        public static bool IsReady { get; private set; }
 
         public static void Startup(IServiceCollection services, WeatherConfiguration configuration, string databaseConnection)
         {
-            IsStarted = false;
+            if (IsReady) return;
 
             services
                 //Internal
@@ -38,33 +33,17 @@ namespace Library.Weather
                 .AddSingleton(configuration)
                 //Public
                 .AddTransient<IWeatherRepository, WeatherRepository>()
-                .AddTransient<IWeatherService, WeatherService>();
+                .AddTransient<IWeatherService, WeatherService>()
+                //Job
+                .AddHostedService<WeatherProcessMemoryCacheJob>();
 
-            IsStarted = true;
-        }
-
-        public static async Task RefreshMemoryCacheAsync(WeatherRepository repository)
-        {
-            IsMemoryCacheReady = false;
-
-            var emotionEntities = await repository.GetEmotionsAsync();
-            var cityUserEmotionEntities = await repository.GetCityUserEmotionsAsync(DateTimeOffset.Now.AddDays(-1));
-
-            WeatherMemoryCache.WeatherEmotions.Clear();
-            foreach (var emotion in emotionEntities.Select(emotionEntity => emotionEntity.MapToEmotionContract()))
-                WeatherMemoryCache.WeatherEmotions.TryAdd(emotion.EmotionId, emotion);
-
-            WeatherMemoryCache.WeatherCityUserEmotions.Clear();
-            foreach (var cityUserEmotion in cityUserEmotionEntities.Select(cityUserEmotionEntity => cityUserEmotionEntity.MapToCityUserEmotionContract()))
-                WeatherMemoryCache.WeatherCityUserEmotions.TryAdd(cityUserEmotion.CityUserEmotionId, cityUserEmotion);
-
-            IsMemoryCacheReady = true;
+            IsReady = true;
         }
 
         public static object GetStatus() => new
         {
-            IsStarted,
-            IsMemoryCacheReady,
+            IsReady,
+            IsMemoryCacheReady = WeatherMemoryCache.IsReady,
             RegisteredTypes = new
             {
                 Internal = new[]
@@ -72,12 +51,18 @@ namespace Library.Weather
                     nameof(WeatherContext),
                     nameof(WeatherRepository),
                     nameof(WeatherService),
+                    nameof(WeatherMemoryCache),
                     nameof(WeatherConfiguration)
                 },
                 Public = new[]
                 {
                     nameof(IWeatherRepository),
-                    nameof(IWeatherService)
+                    nameof(IWeatherService),
+                    nameof(IWeatherMemoryCache)
+                },
+                Job = new[]
+                {
+                    nameof(WeatherProcessMemoryCacheJob)
                 }
             },
             MemoryCache = new

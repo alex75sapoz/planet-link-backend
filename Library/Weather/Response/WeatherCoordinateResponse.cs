@@ -2,7 +2,7 @@
 
 namespace Library.Weather.Response
 {
-    internal class WeatherCoordinateResponse
+    class WeatherCoordinateResponse
     {
         [DeserializeAs(Name = "lat")]
         public decimal Latitude { get; set; }

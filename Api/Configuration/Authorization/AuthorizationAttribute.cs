@@ -4,7 +4,7 @@ using System;
 namespace Api.Configuration.Authorization
 {
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = true)]
-    internal class AuthorizationAttribute : AuthorizeAttribute
+    class AuthorizationAttribute : AuthorizeAttribute
     {
         public AuthorizationAttribute(Requirement requirement) : base(requirement switch
         {

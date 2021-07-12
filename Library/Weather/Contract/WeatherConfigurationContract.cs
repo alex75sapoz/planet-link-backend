@@ -4,6 +4,6 @@ namespace Library.Weather.Contract
 {
     public class WeatherConfigurationContract
     {
-        public List<WeatherEmotionContract> Emotions { get; internal set; }
+        public List<WeatherEmotionContract> Emotions { get; internal set; } = default!;
     }
 }

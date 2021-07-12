@@ -7,7 +7,7 @@ namespace Library.Base
     {
         public HttpStatusCode StatusCode { get; set; }
 
-        public string InternalMessage { get; set; }
+        public string? InternalMessage { get; set; }
 
         public BaseException(HttpStatusCode statusCode, string message) : base(message) =>
             StatusCode = statusCode;

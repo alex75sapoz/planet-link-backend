@@ -3,6 +3,6 @@
     public class StockMarketAlertCompletedTypeContract
     {
         public int AlertCompletedTypeId { get; internal set; }
-        public string Name { get; internal set; }
+        public string Name { get; internal set; } = default!;
     }
 }

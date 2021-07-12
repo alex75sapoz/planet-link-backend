@@ -2,8 +2,8 @@
 {
     public class LocationConfiguration
     {
-        public LocationLimit Limit { get; set; }
-        public LocationDefault Default { get; set; }
+        public LocationLimit Limit { get; set; } = default!;
+        public LocationDefault Default { get; set; } = default!;
 
         public class LocationLimit
         {

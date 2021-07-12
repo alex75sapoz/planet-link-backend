@@ -1,14 +1,11 @@
-﻿using Library.Base;
-using Library.Weather.Contract;
-using Library.Weather.Response;
-using NodaTime;
+﻿using NodaTime;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Library.Weather
 {
-    internal static class WeatherExtension
+    static class WeatherExtension
     {
         public static string GetLongTitle(this List<WeatherConditionResponse> input) =>
             string.Join(' ', input.First().Description

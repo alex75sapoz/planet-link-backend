@@ -2,13 +2,13 @@
 
 namespace Library.StockMarket.Response
 {
-    internal class StockMarketQuoteResponse
+    class StockMarketQuoteResponse
     {
-        public string Symbol { get; set; }
+        public string Symbol { get; set; } = default!;
 
-        public string Name { get; set; }
+        public string Name { get; set; } = default!;
 
         [DeserializeAs(Name = "exchangeShortName")]
-        public string Exchange { get; set; }
+        public string Exchange { get; set; } = default!;
     }
 }

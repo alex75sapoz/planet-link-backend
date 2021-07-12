@@ -10,7 +10,7 @@ namespace Library.StockMarket.Contract
         [JsonIgnore]
         public int UserId { get; internal set; }
 
-        public List<StockMarketUserAlertTypeCountContract> AlertTypeCounts { get; internal set; }
+        public List<StockMarketUserAlertTypeCountContract> AlertTypeCounts { get; internal set; } = new List<StockMarketUserAlertTypeCountContract>();
 
         public UserContract User => IUserMemoryCache.Users[UserId];
     }

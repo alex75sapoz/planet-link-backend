@@ -1,9 +1,6 @@
-﻿using Library.Location.Contract;
-using Library.Location.Entity;
-
-namespace Library.Location
+﻿namespace Library.Location
 {
-    internal static class LocationMapper
+    static class LocationMapper
     {
         public static LocationCountryContract MapToCountryContract(this LocationCountryEntity src) => new()
         {

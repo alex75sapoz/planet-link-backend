@@ -30,6 +30,6 @@ namespace Library.StockMarket.Contract
         public StockMarketQuoteContract Quote => IStockMarketMemoryCache.StockMarketQuotes[QuoteId];
         public UserContract User => IUserMemoryCache.Users[UserId];
         public StockMarketAlertTypeContract Type => IStockMarketMemoryCache.StockMarketAlertTypes[AlertTypeId];
-        public StockMarketAlertCompletedTypeContract CompletedType => AlertCompletedTypeId.HasValue ? IStockMarketMemoryCache.StockMarketAlertCompletedTypes[AlertCompletedTypeId.Value] : null;
+        public StockMarketAlertCompletedTypeContract? CompletedType => AlertCompletedTypeId.HasValue ? IStockMarketMemoryCache.StockMarketAlertCompletedTypes[AlertCompletedTypeId.Value] : null;
     }
 }

@@ -6,21 +6,16 @@ namespace Library.Programming.Entity
 {
     public class ProgrammingTechnologyStackEntity
     {
-        public ProgrammingTechnologyStackEntity()
-        {
-            Projects = new HashSet<ProgrammingProjectEntity>();
-        }
-
         public int TechnologyStackId { get; internal set; }
-        public string Name { get; internal set; }
+        public string Name { get; internal set; } = default!;
 
-        public virtual ICollection<ProgrammingProjectEntity> Projects { get; internal set; }
+        public virtual ICollection<ProgrammingProjectEntity> Projects { get; internal set; } = new HashSet<ProgrammingProjectEntity>();
     }
 }
 
 namespace Library.Programming.Entity.Configuration
 {
-    internal class ProgrammingTechnologyStackEntityConfiguration : IEntityTypeConfiguration<ProgrammingTechnologyStackEntity>
+    class ProgrammingTechnologyStackEntityConfiguration : IEntityTypeConfiguration<ProgrammingTechnologyStackEntity>
     {
         public void Configure(EntityTypeBuilder<ProgrammingTechnologyStackEntity> entity)
         {

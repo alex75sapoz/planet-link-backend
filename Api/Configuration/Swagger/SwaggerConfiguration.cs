@@ -1,8 +1,8 @@
 ﻿namespace Api.Configuration.Swagger
 {
-    internal class SwaggerConfiguration
+    class SwaggerConfiguration
     {
-        public string Path { get; set; }
-        public string Title { get; set; }
+        public string Path { get; set; } = default!;
+        public string Title { get; set; } = default!;
     }
 }
