@@ -52,5 +52,12 @@ namespace Api.Controller
                     job.Value.NextStartOn
                 })
             }));
+
+        [HttpGet("/loaderio-e8407914fce8f536494aa3ceee55b53c")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetVerification()
+        {
+            return await Task.FromResult(Ok("loaderio-e8407914fce8f536494aa3ceee55b53c"));
+        }
     }
 }
