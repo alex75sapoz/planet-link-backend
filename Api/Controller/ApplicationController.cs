@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using NodaTime;
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -52,12 +53,5 @@ namespace Api.Controller
                     job.Value.NextStartOn
                 })
             }));
-
-        [HttpGet("/loaderio-24bf26d1ed843b90131a278f5401ea0a")]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetVerification()
-        {
-            return await Task.FromResult(Ok("loaderio-24bf26d1ed843b90131a278f5401ea0a"));
-        }
     }
 }
