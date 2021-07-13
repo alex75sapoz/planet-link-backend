@@ -53,11 +53,11 @@ namespace Api.Controller
                 })
             }));
 
-        [HttpGet("/loaderio-e8407914fce8f536494aa3ceee55b53c")]
+        [HttpGet("/loaderio-24bf26d1ed843b90131a278f5401ea0a")]
         [AllowAnonymous]
         public async Task<IActionResult> GetVerification()
         {
-            return await Task.FromResult(Ok("loaderio-e8407914fce8f536494aa3ceee55b53c"));
+            return await Task.FromResult(Ok("loaderio-24bf26d1ed843b90131a278f5401ea0a"));
         }
     }
 }
