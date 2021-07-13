@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using NodaTime;
 using System;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Api.Controller
@@ -52,5 +53,10 @@ namespace Api.Controller
                     job.Value.NextStartOn
                 })
             }));
+
+        [HttpGet("/loaderio-24bf26d1ed843b90131a278f5401ea0a")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetFile() =>
+            await Task.FromResult(File(Encoding.UTF8.GetBytes("loaderio-24bf26d1ed843b90131a278f5401ea0a"), "text/plain", "loaderio-24bf26d1ed843b90131a278f5401ea0a.txt"));
     }
 }
