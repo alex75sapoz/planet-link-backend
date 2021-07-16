@@ -6,13 +6,18 @@ global using Library.StockMarket.Job;
 global using Library.StockMarket.Response;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Threading.Tasks;
 
 namespace Library.StockMarket
 {
     public interface IStockMarketStartup
     {
-        public static void Startup(IServiceCollection services, StockMarketConfiguration configuration, string databaseConnection) =>
-            StockMarketStartup.Startup(services, configuration, databaseConnection);
+        public static void ConfigureServices(IServiceCollection services, StockMarketConfiguration configuration, string databaseConnection) =>
+            StockMarketStartup.ConfigureServices(services, configuration, databaseConnection);
+
+        public static async Task LoadMemoryCacheAsync(IServiceProvider serviceProvider) =>
+            await StockMarketMemoryCache.LoadAsync(serviceProvider.GetRequiredService<StockMarketRepository>());
 
         public static object GetStatus() =>
             StockMarketStartup.GetStatus();
@@ -22,7 +27,7 @@ namespace Library.StockMarket
     {
         public static bool IsReady { get; private set; }
 
-        public static void Startup(IServiceCollection services, StockMarketConfiguration configuration, string databaseConnection)
+        public static void ConfigureServices(IServiceCollection services, StockMarketConfiguration configuration, string databaseConnection)
         {
             if (IsReady) return;
 
@@ -36,9 +41,9 @@ namespace Library.StockMarket
                 .AddTransient<IStockMarketRepository, StockMarketRepository>()
                 .AddTransient<IStockMarketService, StockMarketService>()
                 //Job
+                .AddHostedService<StockMarketProcessMemoryCacheJob>()
                 .AddHostedService<StockMarketProcessQuotesJob>()
-                .AddHostedService<StockMarketProcessQuoteUserAlertsJob>()
-                .AddHostedService<StockMarketProcessMemoryCacheJob>();
+                .AddHostedService<StockMarketProcessQuoteUserAlertsJob>();
 
             IsReady = true;
         }
@@ -65,9 +70,9 @@ namespace Library.StockMarket
                 },
                 Job = new[]
                 {
+                    nameof(StockMarketProcessMemoryCacheJob),
                     nameof(StockMarketProcessQuotesJob),
-                    nameof(StockMarketProcessQuoteUserAlertsJob),
-                    nameof(StockMarketProcessMemoryCacheJob)
+                    nameof(StockMarketProcessQuoteUserAlertsJob)
                 }
             },
             MemoryCache = new

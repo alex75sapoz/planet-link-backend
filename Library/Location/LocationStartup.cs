@@ -1,16 +1,20 @@
 ﻿global using Library.Base;
 global using Library.Location.Contract;
 global using Library.Location.Entity;
-global using Library.Location.Job;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Threading.Tasks;
 
 namespace Library.Location
 {
     public interface ILocationStartup
     {
-        public static void Startup(IServiceCollection services, LocationConfiguration configuration, string databaseConnection) =>
-            LocationStartup.Startup(services, configuration, databaseConnection);
+        public static void ConfigureServices(IServiceCollection services, LocationConfiguration configuration, string databaseConnection) =>
+            LocationStartup.ConfigureServices(services, configuration, databaseConnection);
+
+        public static async Task LoadMemoryCacheAsync(IServiceProvider serviceProvider) =>
+            await LocationMemoryCache.LoadAsync(serviceProvider.GetRequiredService<LocationRepository>());
 
         public static object GetStatus() =>
             LocationStartup.GetStatus();
@@ -20,7 +24,7 @@ namespace Library.Location
     {
         public static bool IsReady { get; private set; }
 
-        public static void Startup(IServiceCollection services, LocationConfiguration configuration, string databaseConnection)
+        public static void ConfigureServices(IServiceCollection services, LocationConfiguration configuration, string databaseConnection)
         {
             if (IsReady) return;
 
@@ -32,9 +36,7 @@ namespace Library.Location
                 .AddSingleton(configuration)
                 //Public
                 .AddTransient<ILocationRepository, LocationRepository>()
-                .AddTransient<ILocationService, LocationService>()
-                //Job
-                .AddHostedService<LocationProcessMemoryCacheJob>();
+                .AddTransient<ILocationService, LocationService>();
 
             IsReady = true;
         }
@@ -58,10 +60,6 @@ namespace Library.Location
                     nameof(ILocationRepository),
                     nameof(ILocationService),
                     nameof(ILocationMemoryCache)
-                },
-                Job = new[]
-                {
-                    nameof(LocationProcessMemoryCacheJob)
                 }
             },
             MemoryCache = new

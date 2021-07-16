@@ -57,17 +57,13 @@ namespace Api.Configuration.Authentication
             if (userTypeId == (int)AuthenticationUserType.Guest)
                 return GetGuestAuthenticateResult(timezone);
 
-            //Step 4 - Memory Cache
-            if (!IUserMemoryCache.IsReady)
-                return AuthenticateResult.Fail($"MemoryCache is not ready");
-
-            //Step 5 - Token or Code/Subdomain/Page
+            //Step 4 - Token or Code/Subdomain/Page
             if (!Request.Headers.TryGetValue(ApiHeader.Token, out StringValues token) & (!Request.Headers.TryGetValue(ApiHeader.Code, out StringValues code) | !Request.Headers.TryGetValue(ApiHeader.Subdomain, out StringValues subdomain) | !Request.Headers.TryGetValue(ApiHeader.Page, out StringValues page)))
                 return AuthenticateResult.Fail($"{ApiHeader.Token} or {ApiHeader.Code}/{ApiHeader.Page} is required");
             else if (token != StringValues.Empty && code != StringValues.Empty)
                 return AuthenticateResult.Fail($"{ApiHeader.Token} and {ApiHeader.Code} both cannot have a value");
 
-            //Step 6 - Check if route is Authenticate
+            //Step 5 - Check if route is Authenticate
             if (Request.Path.StartsWithSegments(Options.AuthenticateUrlSegment))
             {
                 try
@@ -85,7 +81,7 @@ namespace Api.Configuration.Authentication
             }
 
 
-            //Step 7 - Validate
+            //Step 6 - Validate
             if (code != StringValues.Empty || page != StringValues.Empty)
                 return AuthenticateResult.Fail($"{nameof(code)} is not allowed in this controller");
 

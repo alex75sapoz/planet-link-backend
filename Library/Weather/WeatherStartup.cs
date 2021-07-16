@@ -1,17 +1,22 @@
 ﻿global using Library.Base;
 global using Library.Weather.Contract;
 global using Library.Weather.Entity;
-global using Library.Weather.Job;
 global using Library.Weather.Response;
+global using Library.Weather.Job;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Threading.Tasks;
 
 namespace Library.Weather
 {
     public interface IWeatherStartup
     {
-        public static void Startup(IServiceCollection services, WeatherConfiguration configuration, string databaseConnection) =>
-            WeatherStartup.Startup(services, configuration, databaseConnection);
+        public static void ConfigureServices(IServiceCollection services, WeatherConfiguration configuration, string databaseConnection) =>
+            WeatherStartup.ConfigureServices(services, configuration, databaseConnection);
+
+        public static async Task LoadMemoryCacheAsync(IServiceProvider serviceProvider) =>
+            await WeatherMemoryCache.LoadAsync(serviceProvider.GetRequiredService<WeatherRepository>());
 
         public static object GetStatus() =>
             WeatherStartup.GetStatus();
@@ -21,7 +26,7 @@ namespace Library.Weather
     {
         public static bool IsReady { get; private set; }
 
-        public static void Startup(IServiceCollection services, WeatherConfiguration configuration, string databaseConnection)
+        public static void ConfigureServices(IServiceCollection services, WeatherConfiguration configuration, string databaseConnection)
         {
             if (IsReady) return;
 

@@ -48,7 +48,7 @@ namespace Library.User
             ),
             _ => throw new BadRequestException($"{nameof(userTypeId)} is invalid")
         }).Select(user => user.Value)
-          .Take(_configuration.Limit.SearchStocktwitsLimit)
+          .Take(_configuration.Limit.SearchUsersLimit)
           .ToList();
 
 

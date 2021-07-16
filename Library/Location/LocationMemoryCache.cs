@@ -7,8 +7,6 @@ namespace Library.Location
 {
     public interface ILocationMemoryCache
     {
-        public static bool IsReady => LocationMemoryCache.IsReady;
-
         public static IReadOnlyDictionary<int, LocationCountryContract> LocationCountries => LocationMemoryCache.LocationCountries;
         public static IReadOnlyDictionary<int, LocationStateContract> LocationStates => LocationMemoryCache.LocationStates;
         public static IReadOnlyDictionary<int, LocationCityContract> LocationCities => LocationMemoryCache.LocationCities;
@@ -22,32 +20,22 @@ namespace Library.Location
         public static readonly ConcurrentDictionary<int, LocationStateContract> LocationStates = new();
         public static readonly ConcurrentDictionary<int, LocationCityContract> LocationCities = new();
 
-        public static async Task RefreshAsync(LocationRepository repository)
+        public static async Task LoadAsync(LocationRepository repository)
         {
-            var countries = (await repository.GetCountriesAsync()).Select(countryEntity => countryEntity.MapToCountryContract()).ToDictionary(country => country.CountryId);
-            var states = (await repository.GetStatesAsync()).Select(stateEntity => stateEntity.MapToStateContract()).ToDictionary(state => state.StateId);
-            var cities = (await repository.GetCitiesAsync()).Select(cityEntity => cityEntity.MapToCityContract()).ToDictionary(city => city.CityId);
+            if (IsReady) return;
 
-            //Countries
+            var countries = (await repository.GetCountriesAsync()).Select(countryEntity => countryEntity.MapToCountryContract()).ToList();
+            var states = (await repository.GetStatesAsync()).Select(stateEntity => stateEntity.MapToStateContract()).ToList();
+            var cities = (await repository.GetCitiesAsync()).Select(cityEntity => cityEntity.MapToCityContract()).ToList();
+
             foreach (var country in countries)
-                LocationCountries[country.Key] = country.Value;
+                LocationCountries[country.CountryId] = country;
 
-            foreach (var country in LocationCountries.Where(country => !countries.ContainsKey(country.Key)).ToList())
-                LocationCountries.TryRemove(country);
-
-            //States
             foreach (var state in states)
-                LocationStates[state.Key] = state.Value;
+                LocationStates[state.StateId] = state;
 
-            foreach (var state in LocationStates.Where(state => !states.ContainsKey(state.Key)).ToList())
-                LocationStates.TryRemove(state);
-
-            //Cities
             foreach (var city in cities)
-                LocationCities[city.Key] = city.Value;
-
-            foreach (var city in LocationCities.Where(city => !cities.ContainsKey(city.Key)).ToList())
-                LocationCities.TryRemove(city);
+                LocationCities[city.CityId] = city;
 
             IsReady = true;
         }

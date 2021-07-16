@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 
 namespace Api.Controller
 {
-    [Authorization(Requirement.LocationMemoryCache)]
     public class LocationController : ApiController<ILocationService>
     {
         public LocationController(ILocationService service) : base(service) { }

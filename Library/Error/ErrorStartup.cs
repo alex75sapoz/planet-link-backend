@@ -9,8 +9,8 @@ namespace Library.Error
 {
     public interface IErrorStartup
     {
-        public static void Startup(IServiceCollection services, ErrorConfiguration configuration, string databaseConnection) =>
-            ErrorStartup.Startup(services, configuration, databaseConnection);
+        public static void ConfigureServices(IServiceCollection services, ErrorConfiguration configuration, string databaseConnection) =>
+            ErrorStartup.ConfigureServices(services, configuration, databaseConnection);
 
         public static object GetStatus() =>
             ErrorStartup.GetStatus();
@@ -20,7 +20,7 @@ namespace Library.Error
     {
         public static bool IsReady { get; private set; }
 
-        public static void Startup(IServiceCollection services, ErrorConfiguration configuration, string databaseConnection)
+        public static void ConfigureServices(IServiceCollection services, ErrorConfiguration configuration, string databaseConnection)
         {
             if (IsReady) return;
 

@@ -8,8 +8,6 @@ namespace Library.StockMarket
 {
     public interface IStockMarketMemoryCache
     {
-        public static bool IsReady => StockMarketMemoryCache.IsReady;
-
         public static IReadOnlyDictionary<int, StockMarketExchangeContract> StockMarketExchanges => StockMarketMemoryCache.StockMarketExchanges;
         public static IReadOnlyDictionary<int, StockMarketTimeframeContract> StockMarketTimeframes => StockMarketMemoryCache.StockMarketTimeframes;
         public static IReadOnlyDictionary<int, StockMarketAlertTypeContract> StockMarketAlertTypes => StockMarketMemoryCache.StockMarketAlertTypes;
@@ -33,74 +31,52 @@ namespace Library.StockMarket
         public static readonly ConcurrentDictionary<int, StockMarketQuoteUserAlertContract> StockMarketQuoteUserAlerts = new();
         public static readonly ConcurrentDictionary<int, StockMarketQuoteUserEmotionContract> StockMarketQuoteUserEmotions = new();
 
-        public static async Task RefreshAsync(StockMarketRepository repository)
+        public static async Task LoadAsync(StockMarketRepository repository)
         {
-            var exchanges = (await repository.GetExchangesAsync()).Select(exchangeEntity => exchangeEntity.MaptToExchangeContract()).ToDictionary(exchange => exchange.ExchangeId);
-            var timeframes = (await repository.GetTimeframesAsync()).Select(timeframeEntity => timeframeEntity.MaptToTimeframeContract()).ToDictionary(timeframe => timeframe.TimeframeId);
-            var alertTypes = (await repository.GetAlertTypesAsync()).Select(alertTypeEntity => alertTypeEntity.MaptToAlertTypeContract()).ToDictionary(alertType => alertType.AlertTypeId);
-            var alertCompletedTypes = (await repository.GetAlertCompletedTypesAsync()).Select(alertCompletedTypeEntity => alertCompletedTypeEntity.MaptToAlertCompletedTypeContract()).ToDictionary(alertCompletedType => alertCompletedType.AlertCompletedTypeId);
-            var emotions = (await repository.GetEmotionsAsync()).Select(emotionEntity => emotionEntity.MapToEmotionContract()).ToDictionary(emotion => emotion.EmotionId);
-            var quotes = (await repository.GetQuotesAsync()).Select(quoteEntity => quoteEntity.MapToQuoteContract()).ToDictionary(quote => quote.QuoteId);
-            var quoteUserAlerts = (await repository.GetQuoteUserAlertsAsync()).Select(quoteUserAlertEntity => quoteUserAlertEntity.MapToQuoteUserAlertContract()).ToDictionary(quoteUserAlert => quoteUserAlert.QuoteUserAlertId);
-            var quoteUserEmotions = (await repository.GetQuoteUserEmotionsAsync(DateTimeOffset.Now.AddDays(-1))).Select(quoteUserEmotionEntity => quoteUserEmotionEntity.MapToQuoteUserEmotionContract()).ToDictionary(quoteUserEmotion => quoteUserEmotion.QuoteUserEmotionId);
+            if (IsReady) return;
 
-            //Exchanges
+            var exchanges = (await repository.GetExchangesAsync()).Select(exchangeEntity => exchangeEntity.MaptToExchangeContract()).ToList();
+            var timeframes = (await repository.GetTimeframesAsync()).Select(timeframeEntity => timeframeEntity.MaptToTimeframeContract()).ToList();
+            var alertTypes = (await repository.GetAlertTypesAsync()).Select(alertTypeEntity => alertTypeEntity.MaptToAlertTypeContract()).ToList();
+            var alertCompletedTypes = (await repository.GetAlertCompletedTypesAsync()).Select(alertCompletedTypeEntity => alertCompletedTypeEntity.MaptToAlertCompletedTypeContract()).ToList();
+            var emotions = (await repository.GetEmotionsAsync()).Select(emotionEntity => emotionEntity.MapToEmotionContract()).ToList();
+            var quotes = (await repository.GetQuotesAsync()).Select(quoteEntity => quoteEntity.MapToQuoteContract()).ToList();
+            var quoteUserAlerts = (await repository.GetQuoteUserAlertsAsync()).Select(quoteUserAlertEntity => quoteUserAlertEntity.MapToQuoteUserAlertContract()).ToList();
+            var quoteUserEmotions = (await repository.GetQuoteUserEmotionsAsync(DateTimeOffset.Now.AddDays(-1))).Select(quoteUserEmotionEntity => quoteUserEmotionEntity.MapToQuoteUserEmotionContract()).ToList();
+
             foreach (var exchange in exchanges)
-                StockMarketExchanges[exchange.Key] = exchange.Value;
+                StockMarketExchanges[exchange.ExchangeId] = exchange;
 
-            foreach (var exchange in StockMarketExchanges.Where(exchange => !exchanges.ContainsKey(exchange.Key)).ToList())
-                StockMarketExchanges.TryRemove(exchange);
-
-            //Timeframes
             foreach (var timeframe in timeframes)
-                StockMarketTimeframes[timeframe.Key] = timeframe.Value;
+                StockMarketTimeframes[timeframe.TimeframeId] = timeframe;
 
-            foreach (var timeframe in StockMarketTimeframes.Where(timeframe => !timeframes.ContainsKey(timeframe.Key)).ToList())
-                StockMarketTimeframes.TryRemove(timeframe);
-
-            //AlertTypes
             foreach (var alertType in alertTypes)
-                StockMarketAlertTypes[alertType.Key] = alertType.Value;
+                StockMarketAlertTypes[alertType.AlertTypeId] = alertType;
 
-            foreach (var alertType in StockMarketAlertTypes.Where(alertType => !alertTypes.ContainsKey(alertType.Key)).ToList())
-                StockMarketAlertTypes.TryRemove(alertType);
-
-            //AlertCompletedTypes
             foreach (var alertCompletedType in alertCompletedTypes)
-                StockMarketAlertCompletedTypes[alertCompletedType.Key] = alertCompletedType.Value;
+                StockMarketAlertCompletedTypes[alertCompletedType.AlertCompletedTypeId] = alertCompletedType;
 
-            foreach (var alertCompletedType in StockMarketAlertCompletedTypes.Where(alertCompletedType => !alertCompletedTypes.ContainsKey(alertCompletedType.Key)).ToList())
-                StockMarketAlertCompletedTypes.TryRemove(alertCompletedType);
-
-            //Emotions
             foreach (var emotion in emotions)
-                StockMarketEmotions[emotion.Key] = emotion.Value;
+                StockMarketEmotions[emotion.EmotionId] = emotion;
 
-            foreach (var emotion in StockMarketEmotions.Where(emotion => !emotions.ContainsKey(emotion.Key)).ToList())
-                StockMarketEmotions.TryRemove(emotion);
-
-            //Quotes
             foreach (var quote in quotes)
-                StockMarketQuotes[quote.Key] = quote.Value;
+                StockMarketQuotes[quote.QuoteId] = quote;
 
-            foreach (var quote in StockMarketQuotes.Where(quote => !quotes.ContainsKey(quote.Key)).ToList())
-                StockMarketQuotes.TryRemove(quote);
-
-            //QuoteUserAlerts
             foreach (var quoteUserAlert in quoteUserAlerts)
-                StockMarketQuoteUserAlerts[quoteUserAlert.Key] = quoteUserAlert.Value;
+                StockMarketQuoteUserAlerts[quoteUserAlert.QuoteUserAlertId] = quoteUserAlert;
 
-            foreach (var quoteUserAlert in StockMarketQuoteUserAlerts.Where(quoteUserAlert => !quoteUserAlerts.ContainsKey(quoteUserAlert.Key)).ToList())
-                StockMarketQuoteUserAlerts.TryRemove(quoteUserAlert);
-
-            //QuoteUserEmotions
             foreach (var quoteUserEmotion in quoteUserEmotions)
-                StockMarketQuoteUserEmotions[quoteUserEmotion.Key] = quoteUserEmotion.Value;
-
-            foreach (var quoteUserEmotion in StockMarketQuoteUserEmotions.Where(quoteUserEmotion => !quoteUserEmotions.ContainsKey(quoteUserEmotion.Key)).ToList())
-                StockMarketQuoteUserEmotions.TryRemove(quoteUserEmotion);
+                StockMarketQuoteUserEmotions[quoteUserEmotion.QuoteUserEmotionId] = quoteUserEmotion;
 
             IsReady = true;
+        }
+
+        public static async Task TrimAsync(StockMarketRepository repository)
+        {
+            foreach (var quoteUserEmotion in StockMarketQuoteUserEmotions.Where(quoteUserEmotion => quoteUserEmotion.Value.CreatedOn < DateTimeOffset.Now.AddDays(-1)).ToList())
+                StockMarketQuoteUserEmotions.TryRemove(quoteUserEmotion);
+
+            await Task.CompletedTask;
         }
     }
 }

@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 
 namespace Api.Controller
 {
-    [Authorization(Requirement.StockMarketMemoryCache), Authorization(Requirement.UserMemoryCache)]
     public class StockMarketController : ApiController<IStockMarketService>
     {
         public StockMarketController(IStockMarketService service) : base(service) { }

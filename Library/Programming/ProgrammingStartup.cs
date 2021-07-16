@@ -1,16 +1,20 @@
 ﻿global using Library.Base;
 global using Library.Programming.Contract;
 global using Library.Programming.Entity;
-global using Library.Programming.Job;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Threading.Tasks;
 
 namespace Library.Programming
 {
     public interface IProgrammingStartup
     {
-        public static void Startup(IServiceCollection services, ProgrammingConfiguration configuration, string databaseConnection) =>
-            ProgrammingStartup.Startup(services, configuration, databaseConnection);
+        public static void ConfigureServices(IServiceCollection services, ProgrammingConfiguration configuration, string databaseConnection) =>
+            ProgrammingStartup.ConfigureServices(services, configuration, databaseConnection);
+
+        public static async Task LoadMemoryCacheAsync(IServiceProvider serviceProvider) =>
+            await ProgrammingMemoryCache.LoadAsync(serviceProvider.GetRequiredService<ProgrammingRepository>());
 
         public static object GetStatus() =>
             ProgrammingStartup.GetStatus();
@@ -20,7 +24,7 @@ namespace Library.Programming
     {
         public static bool IsReady { get; private set; }
 
-        public static void Startup(IServiceCollection services, ProgrammingConfiguration configuration, string databaseConnection)
+        public static void ConfigureServices(IServiceCollection services, ProgrammingConfiguration configuration, string databaseConnection)
         {
             if (IsReady) return;
 
@@ -32,9 +36,7 @@ namespace Library.Programming
                 .AddSingleton(configuration)
                 //Public
                 .AddTransient<IProgrammingRepository, ProgrammingRepository>()
-                .AddTransient<IProgrammingService, ProgrammingService>()
-                //Job
-                .AddHostedService<ProgrammingProcessMemoryCacheJob>();
+                .AddTransient<IProgrammingService, ProgrammingService>();
 
             IsReady = true;
         }
@@ -58,10 +60,6 @@ namespace Library.Programming
                     nameof(IProgrammingRepository),
                     nameof(IProgrammingService),
                     nameof(IProgrammingMemoryCache)
-                },
-                Job = new[]
-                {
-                    nameof(ProgrammingProcessMemoryCacheJob)
                 }
             },
             MemoryCache = new

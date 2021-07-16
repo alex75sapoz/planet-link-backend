@@ -8,10 +8,11 @@
         public UserDefault Default { get; set; } = default!;
         public UserGoogleApi GoogleApi { get; set; } = default!;
         public UserStocktwitsApi StocktwitsApi { get; set; } = default!;
+        public UserFitbitApi FitbitApi { get; set; } = default!;
 
         public class UserLimit
         {
-            public int SearchStocktwitsLimit { get; set; }
+            public int SearchUsersLimit { get; set; }
         }
 
         public class UserDuration
@@ -41,7 +42,13 @@
         public class UserStocktwitsApi
         {
             public string Server { get; set; } = default!;
-            public string RedirectUrl { get; set; } = default!;
+            public string AuthenticationKey { get; set; } = default!;
+            public string AuthenticationSecretKey { get; set; } = default!;
+        }
+
+        public class UserFitbitApi
+        {
+            public string Server { get; set; } = default!;
             public string AuthenticationKey { get; set; } = default!;
             public string AuthenticationSecretKey { get; set; } = default!;
         }

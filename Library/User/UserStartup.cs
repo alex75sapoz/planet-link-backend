@@ -2,17 +2,21 @@
 global using Library.User.Contract;
 global using Library.User.Entity;
 global using Library.User.Enum;
-global using Library.User.Job;
 global using Library.User.Response;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Threading.Tasks;
 
 namespace Library.User
 {
     public interface IUserStartup
     {
-        public static void Startup(IServiceCollection services, UserConfiguration configuration, string databaseConnection) =>
-            UserStartup.Startup(services, configuration, databaseConnection);
+        public static void ConfigureServices(IServiceCollection services, UserConfiguration configuration, string databaseConnection) =>
+            UserStartup.ConfigureServices(services, configuration, databaseConnection);
+
+        public static async Task LoadMemoryCacheAsync(IServiceProvider serviceProvider) =>
+            await UserMemoryCache.LoadAsync(serviceProvider.GetRequiredService<UserRepository>());
 
         public static object GetStatus() =>
             UserStartup.GetStatus();
@@ -22,7 +26,7 @@ namespace Library.User
     {
         public static bool IsReady { get; private set; }
 
-        public static void Startup(IServiceCollection services, UserConfiguration configuration, string databaseConnection)
+        public static void ConfigureServices(IServiceCollection services, UserConfiguration configuration, string databaseConnection)
         {
             if (IsReady) return;
 
@@ -34,9 +38,7 @@ namespace Library.User
                 .AddSingleton(configuration)
                 //Public
                 .AddTransient<IUserRepository, UserRepository>()
-                .AddTransient<IUserService, UserService>()
-                //Job
-                .AddHostedService<UserProcessMemoryCacheJob>();
+                .AddTransient<IUserService, UserService>();
 
             IsReady = true;
         }
@@ -60,10 +62,6 @@ namespace Library.User
                     nameof(IUserRepository),
                     nameof(IUserService),
                     nameof(IUserMemoryCache)
-                },
-                Job = new[]
-                {
-                    nameof(UserProcessMemoryCacheJob)
                 }
             },
             MemoryCache = new
