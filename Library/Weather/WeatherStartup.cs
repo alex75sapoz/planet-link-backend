@@ -1,8 +1,8 @@
 ﻿global using Library.Base;
 global using Library.Weather.Contract;
 global using Library.Weather.Entity;
-global using Library.Weather.Response;
 global using Library.Weather.Job;
+global using Library.Weather.Response;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;

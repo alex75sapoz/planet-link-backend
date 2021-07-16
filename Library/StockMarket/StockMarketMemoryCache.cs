@@ -71,7 +71,9 @@ namespace Library.StockMarket
             IsReady = true;
         }
 
+#pragma warning disable IDE0060 // Remove unused parameter
         public static async Task TrimAsync(StockMarketRepository repository)
+#pragma warning restore IDE0060 // Remove unused parameter
         {
             foreach (var quoteUserEmotion in StockMarketQuoteUserEmotions.Where(quoteUserEmotion => quoteUserEmotion.Value.CreatedOn < DateTimeOffset.Now.AddDays(-1)).ToList())
                 StockMarketQuoteUserEmotions.TryRemove(quoteUserEmotion);
