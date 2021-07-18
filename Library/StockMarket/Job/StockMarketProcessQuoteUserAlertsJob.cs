@@ -27,9 +27,9 @@ namespace Library.StockMarket.Job
         protected override async Task ErrorAsync(Exception exception)
         {
             using var scope = _serviceProvider.CreateScope();
-            var errorService = scope.ServiceProvider.GetRequiredService<IApplicationService>();
+            var applicationService = scope.ServiceProvider.GetRequiredService<IApplicationService>();
 
-            await errorService.CreateErrorProcessingAsync(new ApplicationErrorProcessingCreateContract
+            await applicationService.CreateErrorProcessingAsync(new ApplicationErrorProcessingCreateContract
             (
                 className: nameof(StockMarketProcessQuotesJob),
                 classMethodName: nameof(StockMarketProcessQuotesJob.StartAsync),
