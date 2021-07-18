@@ -10,6 +10,6 @@ namespace Library.StockMarket.Contract
         public int SelectionsToday { get; internal set; }
         public int LimitToday { get; internal set; }
 
-        public StockMarketEmotionContract? Emotion => EmotionId.HasValue ? IStockMarketMemoryCache.StockMarketEmotions[EmotionId.Value] : null;
+        public StockMarketEmotionContract? Emotion => EmotionId.HasValue ? IStockMarketMemoryCache.Emotions[EmotionId.Value] : null;
     }
 }

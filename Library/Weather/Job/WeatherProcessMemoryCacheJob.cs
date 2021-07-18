@@ -1,5 +1,5 @@
-﻿using Library.Error;
-using Library.Error.Contract;
+﻿using Library.Application;
+using Library.Application.Contract;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
@@ -27,9 +27,9 @@ namespace Library.Weather.Job
         protected override async Task ErrorAsync(Exception exception)
         {
             using var scope = _serviceProvider.CreateScope();
-            var errorService = scope.ServiceProvider.GetRequiredService<IErrorService>();
+            var errorService = scope.ServiceProvider.GetRequiredService<IApplicationService>();
 
-            await errorService.CreateErrorProcessingAsync(new ErrorProcessingCreateContract
+            await errorService.CreateErrorProcessingAsync(new ApplicationErrorProcessingCreateContract
             (
                 className: nameof(WeatherProcessMemoryCacheJob),
                 classMethodName: nameof(WeatherProcessMemoryCacheJob.StartAsync),

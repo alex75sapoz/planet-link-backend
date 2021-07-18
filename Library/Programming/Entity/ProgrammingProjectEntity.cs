@@ -17,7 +17,7 @@ namespace Library.Programming.Entity
         public bool IsImportant { get; internal set; }
         public DateTimeOffset CreatedOn { get; internal set; }
 
-        public virtual ProgrammingProjectTypeEntity Type { get; internal set; } = default!;
+        public virtual ProgrammingProjectTypeEntity ProjectType { get; internal set; } = default!;
         public virtual ProgrammingJobEntity Job { get; internal set; } = default!;
         public virtual ProgrammingTechnologyStackEntity TechnologyStack { get; internal set; } = default!;
         public virtual ICollection<ProgrammingProjectLanguageEntity> ProjectLanguages { get; internal set; } = new HashSet<ProgrammingProjectLanguageEntity>();
@@ -30,10 +30,10 @@ namespace Library.Programming.Entity.Configuration
     {
         public void Configure(EntityTypeBuilder<ProgrammingProjectEntity> entity)
         {
-            entity.ToTable(nameof(ProgrammingContext.ProgrammingProjects));
+            entity.ToTable(nameof(Programming) + nameof(ProgrammingContext.Projects));
             entity.HasKey(project => project.ProjectId);
 
-            entity.HasOne(project => project.Type).WithMany(type => type.Projects).HasForeignKey(project => project.ProjectTypeId).IsRequired(true);
+            entity.HasOne(project => project.ProjectType).WithMany(projectType => projectType.Projects).IsRequired(true);
             entity.HasOne(project => project.Job).WithMany(job => job.Projects).IsRequired(true);
             entity.HasOne(project => project.TechnologyStack).WithMany(technologyStack => technologyStack.Projects).IsRequired(true);
 

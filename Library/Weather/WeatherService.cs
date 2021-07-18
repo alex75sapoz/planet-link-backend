@@ -1,5 +1,5 @@
-﻿using Library.Location;
-using Library.User;
+﻿using Library.Account;
+using Library.Location;
 using Microsoft.Extensions.Caching.Memory;
 using NodaTime;
 using RestSharp;
@@ -23,21 +23,21 @@ namespace Library.Weather
 
     class WeatherService : BaseService<WeatherConfiguration, WeatherRepository>, IWeatherService
     {
-        public WeatherService(WeatherConfiguration configuration, WeatherRepository repository, ILocationService locationService, IUserService userService, IMemoryCache cache) : base(configuration, repository, cache)
+        public WeatherService(WeatherConfiguration configuration, WeatherRepository repository, ILocationService locationService, IAccountService accountService, IMemoryCache cache) : base(configuration, repository, cache)
         {
             _locationService = locationService;
-            _userService = userService;
+            _accountService = accountService;
             _openWeatherApi = new RestClient(_configuration.OpenWeatherApi.Server);
         }
 
         private readonly ILocationService _locationService;
-        private readonly IUserService _userService;
+        private readonly IAccountService _accountService;
         private readonly IRestClient _openWeatherApi;
 
         #region Get
 
         public WeatherEmotionContract GetEmotion(int emotionId) =>
-            WeatherMemoryCache.WeatherEmotions.TryGetValue(emotionId, out WeatherEmotionContract? emotion)
+            WeatherMemoryCache.Emotions.TryGetValue(emotionId, out WeatherEmotionContract? emotion)
                 ? emotion
                 : throw new BadRequestException($"{nameof(emotionId)} is invalid");
 
@@ -79,7 +79,7 @@ namespace Library.Weather
         {
             var city = _locationService.GetCity(cityId);
 
-            return WeatherMemoryCache.WeatherCityUserEmotions.GetCityUserEmotionsAtTimezoneToday(timezone)
+            return WeatherMemoryCache.CityUserEmotions.GetCityUserEmotionsAtTimezoneToday(timezone)
                 .GroupBy(cityUserEmotion => cityUserEmotion.EmotionId)
                 .Select(cityUserEmotionGroup => new WeatherCityEmotionCountContract()
                 {
@@ -92,10 +92,10 @@ namespace Library.Weather
 
         public WeatherCityUserConfigurationContract GetCityUserConfiguration(int userId, int cityId, DateTimeZone timezone)
         {
-            var user = _userService.GetUser(userId);
+            var user = _accountService.GetUser(userId);
             var city = _locationService.GetCity(cityId);
 
-            var cityUserEmotions = WeatherMemoryCache.WeatherCityUserEmotions.GetCityUserEmotionsAtTimezoneToday(timezone, userId);
+            var cityUserEmotions = WeatherMemoryCache.CityUserEmotions.GetCityUserEmotionsAtTimezoneToday(timezone, userId);
 
             return new WeatherCityUserConfigurationContract()
             {
@@ -107,7 +107,7 @@ namespace Library.Weather
 
         public WeatherConfigurationContract GetConfiguration() => new()
         {
-            Emotions = WeatherMemoryCache.WeatherEmotions.Select(emotion => emotion.Value).ToList()
+            Emotions = WeatherMemoryCache.Emotions.Select(emotion => emotion.Value).ToList()
         };
 
         #endregion
@@ -116,11 +116,11 @@ namespace Library.Weather
 
         public async Task<WeatherCityUserEmotionContract> CreateCityUserEmotionAsync(int userId, int cityId, int emotionId, DateTimeZone timezone)
         {
-            var user = _userService.GetUser(userId);
+            var user = _accountService.GetUser(userId);
             var city = _locationService.GetCity(cityId);
             var emotion = GetEmotion(emotionId);
 
-            var cityUserEmotions = WeatherMemoryCache.WeatherCityUserEmotions.GetCityUserEmotionsAtTimezoneToday(timezone, userId);
+            var cityUserEmotions = WeatherMemoryCache.CityUserEmotions.GetCityUserEmotionsAtTimezoneToday(timezone, userId);
 
             if (cityUserEmotions.Any(cityUserEmotion => cityUserEmotion.CityId == city.CityId))
                 throw new BadRequestException("You already selected an emotion");
@@ -136,7 +136,7 @@ namespace Library.Weather
                 CreatedOn = DateTimeOffset.Now.AtTimezone(timezone)
             })).MapToCityUserEmotionContract();
 
-            WeatherMemoryCache.WeatherCityUserEmotions.TryAdd(cityUserEmotion.CityUserEmotionId, cityUserEmotion);
+            WeatherMemoryCache.CityUserEmotions.TryAdd(cityUserEmotion.CityUserEmotionId, cityUserEmotion);
 
             return cityUserEmotion;
         }

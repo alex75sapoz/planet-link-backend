@@ -9,6 +9,6 @@ namespace Library.StockMarket.Contract
 
         public int Count { get; internal set; }
         public decimal Points { get; internal set; }
-        public StockMarketAlertTypeContract Type => IStockMarketMemoryCache.StockMarketAlertTypes[AlertTypeId];
+        public StockMarketAlertTypeContract AlertType => IStockMarketMemoryCache.AlertTypes[AlertTypeId];
     }
 }

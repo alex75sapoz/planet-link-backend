@@ -1,4 +1,4 @@
-﻿using Library.User.Enum;
+﻿using Library.Account.Enum;
 
 namespace Api.Configuration.Authentication
 {

@@ -9,9 +9,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Base\Library.Base.csproj" />
-    <ProjectReference Include="..\Error\Library.Error.csproj" />
+    <ProjectReference Include="..\Error\Library.Application.csproj" />
     <ProjectReference Include="..\Location\Library.Location.csproj" />
-    <ProjectReference Include="..\User\Library.User.csproj" />
+    <ProjectReference Include="..\User\Library.Account.csproj" />
   </ItemGroup>
 
 </Project>

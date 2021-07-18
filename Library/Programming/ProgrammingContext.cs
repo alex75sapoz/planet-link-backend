@@ -6,11 +6,11 @@ namespace Library.Programming
     {
         public ProgrammingContext(DbContextOptions<ProgrammingContext> options) : base(options) { }
 
-        public DbSet<ProgrammingLanguageEntity> ProgrammingLanguages { get; set; } = default!;
-        public DbSet<ProgrammingTechnologyStackEntity> ProgrammingTechnologyStacks { get; set; } = default!;
-        public DbSet<ProgrammingJobEntity> ProgrammingJobs { get; set; } = default!;
-        public DbSet<ProgrammingProjectTypeEntity> ProgrammingProjectTypes { get; set; } = default!;
-        public DbSet<ProgrammingProjectEntity> ProgrammingProjects { get; set; } = default!;
-        public DbSet<ProgrammingProjectLanguageEntity> ProgrammingProjectLanguages { get; set; } = default!;
+        public DbSet<ProgrammingLanguageEntity> Languages { get; set; } = default!;
+        public DbSet<ProgrammingTechnologyStackEntity> TechnologyStacks { get; set; } = default!;
+        public DbSet<ProgrammingJobEntity> Jobs { get; set; } = default!;
+        public DbSet<ProgrammingProjectTypeEntity> ProjectTypes { get; set; } = default!;
+        public DbSet<ProgrammingProjectEntity> Projects { get; set; } = default!;
+        public DbSet<ProgrammingProjectLanguageEntity> ProjectLanguages { get; set; } = default!;
     }
 }

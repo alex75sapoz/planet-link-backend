@@ -1,5 +1,5 @@
-﻿using Library.User;
-using Library.User.Contract;
+﻿using Library.Account;
+using Library.Account.Contract;
 using System;
 using System.Text.Json.Serialization;
 
@@ -17,8 +17,8 @@ namespace Library.StockMarket.Contract
         public int QuoteUserEmotionId { get; internal set; }
         public DateTimeOffset CreatedOn { get; internal set; }
 
-        public StockMarketQuoteContract Quote => IStockMarketMemoryCache.StockMarketQuotes[QuoteId];
-        public UserContract User => IUserMemoryCache.Users[UserId];
-        public StockMarketEmotionContract Emotion => IStockMarketMemoryCache.StockMarketEmotions[EmotionId];
+        public StockMarketQuoteContract Quote => IStockMarketMemoryCache.Quotes[QuoteId];
+        public AccountUserContract User => IAccountMemoryCache.Users[UserId];
+        public StockMarketEmotionContract Emotion => IStockMarketMemoryCache.Emotions[EmotionId];
     }
 }

@@ -19,7 +19,7 @@ namespace Library.Programming.Entity.Configuration
     {
         public void Configure(EntityTypeBuilder<ProgrammingLanguageEntity> entity)
         {
-            entity.ToTable(nameof(ProgrammingContext.ProgrammingLanguages));
+            entity.ToTable(nameof(Programming) + nameof(ProgrammingContext.Languages));
             entity.HasKey(language => language.LanguageId);
 
             entity.HasMany(language => language.ProjectLanguages).WithOne(projectLanguage => projectLanguage.Language);

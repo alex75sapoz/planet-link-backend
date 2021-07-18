@@ -22,8 +22,8 @@ namespace Library.StockMarket.Entity
         public DateTimeOffset? CompletedOn { get; internal set; }
 
         public virtual StockMarketQuoteEntity Quote { get; internal set; } = default!;
-        public virtual StockMarketAlertTypeEntity Type { get; internal set; } = default!;
-        public virtual StockMarketAlertCompletedTypeEntity? CompletedType { get; internal set; }
+        public virtual StockMarketAlertTypeEntity AlertType { get; internal set; } = default!;
+        public virtual StockMarketAlertCompletedTypeEntity? AlertCompletedType { get; internal set; }
     }
 }
 
@@ -33,7 +33,7 @@ namespace Library.StockMarket.Entity.Configuration
     {
         public void Configure(EntityTypeBuilder<StockMarketQuoteUserAlertEntity> entity)
         {
-            entity.ToTable(nameof(StockMarketContext.StockMarketQuoteUserAlerts));
+            entity.ToTable(nameof(StockMarket) + nameof(StockMarketContext.QuoteUserAlerts));
             entity.HasKey(quoteUserAlert => quoteUserAlert.QuoteUserAlertId);
 
             entity.Property(quoteUserAlert => quoteUserAlert.Buy).HasPrecision(18, 6);
@@ -41,9 +41,9 @@ namespace Library.StockMarket.Entity.Configuration
             entity.Property(quoteUserAlert => quoteUserAlert.StopLoss).HasPrecision(18, 6);
             entity.Property(quoteUserAlert => quoteUserAlert.CompletedSell).HasPrecision(18, 6);
 
-            entity.HasOne(quoteUserAlert => quoteUserAlert.Quote).WithMany(quote => quote.UserAlerts).IsRequired(true);
-            entity.HasOne(quoteUserAlert => quoteUserAlert.Type).WithMany(type => type.QuoteUserAlerts).HasForeignKey(quoteUserAlert => quoteUserAlert.AlertTypeId).IsRequired(true);
-            entity.HasOne(quoteUserAlert => quoteUserAlert.CompletedType).WithMany(completedType => completedType!.QuoteUserAlerts).HasForeignKey(quoteUserAlert => quoteUserAlert.AlertCompletedTypeId).IsRequired(false);
+            entity.HasOne(quoteUserAlert => quoteUserAlert.Quote).WithMany(quote => quote.QuoteUserAlerts).IsRequired(true);
+            entity.HasOne(quoteUserAlert => quoteUserAlert.AlertType).WithMany(alertType => alertType.QuoteUserAlerts).IsRequired(true);
+            entity.HasOne(quoteUserAlert => quoteUserAlert.AlertCompletedType).WithMany(alertCompletedType => alertCompletedType!.QuoteUserAlerts).IsRequired(false);
         }
     }
 }

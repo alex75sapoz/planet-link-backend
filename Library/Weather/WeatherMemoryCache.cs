@@ -8,16 +8,16 @@ namespace Library.Weather
 {
     public interface IWeatherMemoryCache
     {
-        public static IReadOnlyDictionary<int, WeatherEmotionContract> WeatherEmotions => WeatherMemoryCache.WeatherEmotions;
-        public static IReadOnlyDictionary<int, WeatherCityUserEmotionContract> WeatherCityUserEmotions => WeatherMemoryCache.WeatherCityUserEmotions;
+        public static IReadOnlyDictionary<int, WeatherEmotionContract> Emotions => WeatherMemoryCache.Emotions;
+        public static IReadOnlyDictionary<int, WeatherCityUserEmotionContract> CityUserEmotions => WeatherMemoryCache.CityUserEmotions;
     }
 
     static class WeatherMemoryCache
     {
         public static bool IsReady { get; private set; }
 
-        public static readonly ConcurrentDictionary<int, WeatherEmotionContract> WeatherEmotions = new();
-        public static readonly ConcurrentDictionary<int, WeatherCityUserEmotionContract> WeatherCityUserEmotions = new();
+        public static readonly ConcurrentDictionary<int, WeatherEmotionContract> Emotions = new();
+        public static readonly ConcurrentDictionary<int, WeatherCityUserEmotionContract> CityUserEmotions = new();
 
         public static async Task LoadAsync(WeatherRepository repository)
         {
@@ -27,18 +27,18 @@ namespace Library.Weather
             var cityUserEmotions = (await repository.GetCityUserEmotionsAsync(DateTimeOffset.Now.AddDays(-1))).Select(cityUserEmotionEntity => cityUserEmotionEntity.MapToCityUserEmotionContract()).ToList();
 
             foreach (var emotion in emotions)
-                WeatherEmotions[emotion.EmotionId] = emotion;
+                Emotions[emotion.EmotionId] = emotion;
 
             foreach (var cityUserEmotion in cityUserEmotions)
-                WeatherCityUserEmotions[cityUserEmotion.CityUserEmotionId] = cityUserEmotion;
+                CityUserEmotions[cityUserEmotion.CityUserEmotionId] = cityUserEmotion;
 
             IsReady = true;
         }
 
         public static async Task TrimAsync(WeatherRepository repository)
         {
-            foreach (var cityUserEmotion in WeatherCityUserEmotions.Where(cityUserEmotion => cityUserEmotion.Value.CreatedOn < DateTimeOffset.Now.AddDays(-1)).ToList())
-                WeatherCityUserEmotions.TryRemove(cityUserEmotion);
+            foreach (var cityUserEmotion in CityUserEmotions.Where(cityUserEmotion => cityUserEmotion.Value.CreatedOn < DateTimeOffset.Now.AddDays(-1)).ToList())
+                CityUserEmotions.TryRemove(cityUserEmotion);
 
             await Task.CompletedTask;
         }

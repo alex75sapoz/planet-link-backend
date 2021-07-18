@@ -19,10 +19,10 @@ namespace Library.Programming.Entity.Configuration
     {
         public void Configure(EntityTypeBuilder<ProgrammingJobEntity> entity)
         {
-            entity.ToTable(nameof(ProgrammingContext.ProgrammingJobs));
+            entity.ToTable(nameof(Programming) + nameof(ProgrammingContext.Jobs));
             entity.HasKey(job => job.JobId);
 
-            entity.HasMany(job => job.Projects).WithOne(project => project.Job).HasForeignKey(project => project.JobId).IsRequired(true);
+            entity.HasMany(job => job.Projects).WithOne(project => project.Job).IsRequired(true);
         }
     }
 }

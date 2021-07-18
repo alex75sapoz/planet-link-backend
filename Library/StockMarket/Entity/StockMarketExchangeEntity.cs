@@ -20,7 +20,7 @@ namespace Library.StockMarket.Entity.Configuration
     {
         public void Configure(EntityTypeBuilder<StockMarketExchangeEntity> entity)
         {
-            entity.ToTable(nameof(StockMarketContext.StockMarketExchanges));
+            entity.ToTable(nameof(StockMarket) + nameof(StockMarketContext.Exchanges));
             entity.HasKey(exchange => exchange.ExchangeId);
 
             entity.HasMany(exchange => exchange.Quotes).WithOne(quote => quote.Exchange);

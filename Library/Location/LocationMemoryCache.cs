@@ -7,18 +7,18 @@ namespace Library.Location
 {
     public interface ILocationMemoryCache
     {
-        public static IReadOnlyDictionary<int, LocationCountryContract> LocationCountries => LocationMemoryCache.LocationCountries;
-        public static IReadOnlyDictionary<int, LocationStateContract> LocationStates => LocationMemoryCache.LocationStates;
-        public static IReadOnlyDictionary<int, LocationCityContract> LocationCities => LocationMemoryCache.LocationCities;
+        public static IReadOnlyDictionary<int, LocationCountryContract> LocationCountries => LocationMemoryCache.Countries;
+        public static IReadOnlyDictionary<int, LocationStateContract> LocationStates => LocationMemoryCache.States;
+        public static IReadOnlyDictionary<int, LocationCityContract> LocationCities => LocationMemoryCache.Cities;
     }
 
     static class LocationMemoryCache
     {
         public static bool IsReady { get; private set; }
 
-        public static readonly ConcurrentDictionary<int, LocationCountryContract> LocationCountries = new();
-        public static readonly ConcurrentDictionary<int, LocationStateContract> LocationStates = new();
-        public static readonly ConcurrentDictionary<int, LocationCityContract> LocationCities = new();
+        public static readonly ConcurrentDictionary<int, LocationCountryContract> Countries = new();
+        public static readonly ConcurrentDictionary<int, LocationStateContract> States = new();
+        public static readonly ConcurrentDictionary<int, LocationCityContract> Cities = new();
 
         public static async Task LoadAsync(LocationRepository repository)
         {
@@ -29,13 +29,13 @@ namespace Library.Location
             var cities = (await repository.GetCitiesAsync()).Select(cityEntity => cityEntity.MapToCityContract()).ToList();
 
             foreach (var country in countries)
-                LocationCountries[country.CountryId] = country;
+                Countries[country.CountryId] = country;
 
             foreach (var state in states)
-                LocationStates[state.StateId] = state;
+                States[state.StateId] = state;
 
             foreach (var city in cities)
-                LocationCities[city.CityId] = city;
+                Cities[city.CityId] = city;
 
             IsReady = true;
         }

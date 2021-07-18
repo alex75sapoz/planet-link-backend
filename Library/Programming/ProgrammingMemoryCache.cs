@@ -7,22 +7,22 @@ namespace Library.Programming
 {
     public interface IProgrammingMemoryCache
     {
-        public static IReadOnlyDictionary<int, ProgrammingLanguageContract> ProgrammingLanguages => ProgrammingMemoryCache.ProgrammingLanguages;
-        public static IReadOnlyDictionary<int, ProgrammingJobContract> ProgrammingJobs => ProgrammingMemoryCache.ProgrammingJobs;
-        public static IReadOnlyDictionary<int, ProgrammingTechnologyStackContract> ProgrammingTechnologyStacks => ProgrammingMemoryCache.ProgrammingTechnologyStacks;
-        public static IReadOnlyDictionary<int, ProgrammingProjectTypeContract> ProgrammingProjectTypes => ProgrammingMemoryCache.ProgrammingProjectTypes;
-        public static IReadOnlyDictionary<int, ProgrammingProjectContract> ProgrammingProjects => ProgrammingMemoryCache.ProgrammingProjects;
+        public static IReadOnlyDictionary<int, ProgrammingLanguageContract> Languages => ProgrammingMemoryCache.Languages;
+        public static IReadOnlyDictionary<int, ProgrammingJobContract> Jobs => ProgrammingMemoryCache.Jobs;
+        public static IReadOnlyDictionary<int, ProgrammingTechnologyStackContract> TechnologyStacks => ProgrammingMemoryCache.TechnologyStacks;
+        public static IReadOnlyDictionary<int, ProgrammingProjectTypeContract> ProjectTypes => ProgrammingMemoryCache.ProjectTypes;
+        public static IReadOnlyDictionary<int, ProgrammingProjectContract> Projects => ProgrammingMemoryCache.Projects;
     }
 
     static class ProgrammingMemoryCache
     {
         public static bool IsReady { get; private set; }
 
-        public static readonly ConcurrentDictionary<int, ProgrammingLanguageContract> ProgrammingLanguages = new();
-        public static readonly ConcurrentDictionary<int, ProgrammingJobContract> ProgrammingJobs = new();
-        public static readonly ConcurrentDictionary<int, ProgrammingTechnologyStackContract> ProgrammingTechnologyStacks = new();
-        public static readonly ConcurrentDictionary<int, ProgrammingProjectTypeContract> ProgrammingProjectTypes = new();
-        public static readonly ConcurrentDictionary<int, ProgrammingProjectContract> ProgrammingProjects = new();
+        public static readonly ConcurrentDictionary<int, ProgrammingLanguageContract> Languages = new();
+        public static readonly ConcurrentDictionary<int, ProgrammingJobContract> Jobs = new();
+        public static readonly ConcurrentDictionary<int, ProgrammingTechnologyStackContract> TechnologyStacks = new();
+        public static readonly ConcurrentDictionary<int, ProgrammingProjectTypeContract> ProjectTypes = new();
+        public static readonly ConcurrentDictionary<int, ProgrammingProjectContract> Projects = new();
 
         public static async Task LoadAsync(ProgrammingRepository repository)
         {
@@ -35,19 +35,19 @@ namespace Library.Programming
             var projects = (await repository.GetProjectsAsync()).Select(projectEntity => projectEntity.MapToProjectContract()).ToList();
 
             foreach (var language in languages)
-                ProgrammingLanguages[language.LanguageId] = language;
+                Languages[language.LanguageId] = language;
 
             foreach (var job in jobs)
-                ProgrammingJobs[job.JobId] = job;
+                Jobs[job.JobId] = job;
 
             foreach (var technologyStack in technologyStacks)
-                ProgrammingTechnologyStacks[technologyStack.TechnologyStackId] = technologyStack;
+                TechnologyStacks[technologyStack.TechnologyStackId] = technologyStack;
 
             foreach (var projectType in projectTypes)
-                ProgrammingProjectTypes[projectType.ProjectTypeId] = projectType;
+                ProjectTypes[projectType.ProjectTypeId] = projectType;
 
             foreach (var project in projects)
-                ProgrammingProjects[project.ProjectId] = project;
+                Projects[project.ProjectId] = project;
 
             IsReady = true;
         }

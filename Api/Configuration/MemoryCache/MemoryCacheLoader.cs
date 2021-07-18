@@ -1,7 +1,7 @@
-﻿using Library.Location;
+﻿using Library.Account;
+using Library.Location;
 using Library.Programming;
 using Library.StockMarket;
-using Library.User;
 using Library.Weather;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -23,7 +23,7 @@ namespace Api.Configuration.MemoryCache
             using var scope = _serviceProvider.CreateScope();
 
             await Task.WhenAll(
-                IUserStartup.LoadMemoryCacheAsync(scope.ServiceProvider),
+                IAccountStartup.LoadMemoryCacheAsync(scope.ServiceProvider),
                 ILocationStartup.LoadMemoryCacheAsync(scope.ServiceProvider),
                 IWeatherStartup.LoadMemoryCacheAsync(scope.ServiceProvider),
                 IStockMarketStartup.LoadMemoryCacheAsync(scope.ServiceProvider),

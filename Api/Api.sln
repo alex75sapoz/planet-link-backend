@@ -5,9 +5,9 @@ VisualStudioVersion = 16.0.31112.23
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api", "Api.csproj", "{C3D2DE8D-CDD4-40EF-8537-B82FF2A48987}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Library.User", "..\Library\User\Library.User.csproj", "{E649E5D2-6207-4F52-A214-1E02A274517F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Library.Account", "..\Library\User\Library.Account.csproj", "{E649E5D2-6207-4F52-A214-1E02A274517F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Library.Error", "..\Library\Error\Library.Error.csproj", "{ED53EA6A-F832-4B18-A773-DE86B76C70CB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Library.Application", "..\Library\Error\Library.Application.csproj", "{ED53EA6A-F832-4B18-A773-DE86B76C70CB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Library.Location", "..\Library\Location\Library.Location.csproj", "{6E7C3302-AAF3-4894-B692-0B36F893013D}"
 EndProject

@@ -15,11 +15,11 @@ namespace Library.Location.Entity
 
 namespace Library.Location.Entity.Configuration
 {
-    class SubContinentEntityConfiguration : IEntityTypeConfiguration<LocationSubContinentEntity>
+    class LocationSubContinentEntityConfiguration : IEntityTypeConfiguration<LocationSubContinentEntity>
     {
         public void Configure(EntityTypeBuilder<LocationSubContinentEntity> entity)
         {
-            entity.ToTable(nameof(LocationContext.LocationSubContinents));
+            entity.ToTable(nameof(Location) + nameof(LocationContext.SubContinents));
             entity.HasKey(subContinent => subContinent.SubContinentId);
 
             entity.HasMany(subContinent => subContinent.Countries).WithOne(country => country.SubContinent);

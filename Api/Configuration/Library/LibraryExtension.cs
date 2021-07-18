@@ -1,8 +1,8 @@
-﻿using Library.Error;
+﻿using Library.Account;
+using Library.Application;
 using Library.Location;
 using Library.Programming;
 using Library.StockMarket;
-using Library.User;
 using Library.Weather;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,8 +15,8 @@ namespace Api.Configuration.Library
         {
             configuration = configuration.GetSection($"{nameof(Api)}.{nameof(Library)}");
 
-            IErrorStartup.ConfigureServices(services, new ErrorConfiguration(), databaseConfiguration.Connection);
-            IUserStartup.ConfigureServices(services, configuration.GetSection(nameof(UserConfiguration)).Get<UserConfiguration>(), databaseConfiguration.Connection);
+            IApplicationStartup.ConfigureServices(services, new ApplicationConfiguration(), databaseConfiguration.Connection);
+            IAccountStartup.ConfigureServices(services, configuration.GetSection(nameof(AccountConfiguration)).Get<AccountConfiguration>(), databaseConfiguration.Connection);
             ILocationStartup.ConfigureServices(services, configuration.GetSection(nameof(LocationConfiguration)).Get<LocationConfiguration>(), databaseConfiguration.Connection);
             IWeatherStartup.ConfigureServices(services, configuration.GetSection(nameof(WeatherConfiguration)).Get<WeatherConfiguration>(), databaseConfiguration.Connection);
             IStockMarketStartup.ConfigureServices(services, configuration.GetSection(nameof(StockMarketConfiguration)).Get<StockMarketConfiguration>(), databaseConfiguration.Connection);

@@ -22,7 +22,7 @@ namespace Library.StockMarket.Entity.Configuration
     {
         public void Configure(EntityTypeBuilder<StockMarketQuoteUserEmotionEntity> entity)
         {
-            entity.ToTable(nameof(StockMarketContext.StockMarketQuoteUserEmotions));
+            entity.ToTable(nameof(StockMarket) + nameof(StockMarketContext.QuoteUserEmotions));
             entity.HasKey(quoteUserEmotion => quoteUserEmotion.QuoteUserEmotionId);
 
             entity.HasOne(quoteUserEmotion => quoteUserEmotion.Emotion).WithMany(emotion => emotion.QuoteUserEmotions).IsRequired(true);

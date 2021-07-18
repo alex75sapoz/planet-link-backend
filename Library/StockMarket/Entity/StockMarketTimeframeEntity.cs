@@ -19,7 +19,7 @@ namespace Library.StockMarket.Entity.Configuration
     {
         public void Configure(EntityTypeBuilder<StockMarketTimeframeEntity> entity)
         {
-            entity.ToTable(nameof(StockMarketContext.StockMarketTimeframes));
+            entity.ToTable(nameof(StockMarket) + nameof(StockMarketContext.Timeframes));
             entity.HasKey(timeframe => timeframe.TimeframeId);
         }
     }

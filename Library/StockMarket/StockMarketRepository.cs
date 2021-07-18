@@ -24,19 +24,19 @@ namespace Library.StockMarket
         public StockMarketRepository(StockMarketContext context) : base(context) { }
 
         public async Task<List<StockMarketQuoteEntity>> GetQuotesAsync() =>
-            await _context.StockMarketQuotes
+            await _context.Quotes
                 .ToListAsync();
 
         public async Task<List<StockMarketExchangeEntity>> GetExchangesAsync() =>
-            await _context.StockMarketExchanges
+            await _context.Exchanges
                 .ToListAsync();
 
         public async Task<List<StockMarketTimeframeEntity>> GetTimeframesAsync() =>
-            await _context.StockMarketTimeframes
+            await _context.Timeframes
                 .ToListAsync();
 
         public async Task<List<StockMarketQuoteUserAlertEntity>> GetQuoteUserAlertsAsync(int? alertTypeId = null, List<int>? quoteUserAlertIds = null) =>
-            await _context.StockMarketQuoteUserAlerts
+            await _context.QuoteUserAlerts
                 .Include(quoteUserAlert => quoteUserAlert.Quote)
                 .Where(quoteUserAlert =>
                     (!alertTypeId.HasValue || quoteUserAlert.AlertTypeId == alertTypeId) &&
@@ -45,25 +45,25 @@ namespace Library.StockMarket
                 .ToListAsync();
 
         public async Task<List<StockMarketAlertTypeEntity>> GetAlertTypesAsync() =>
-            await _context.StockMarketAlertTypes
+            await _context.AlertTypes
                 .ToListAsync();
 
         public async Task<List<StockMarketAlertCompletedTypeEntity>> GetAlertCompletedTypesAsync() =>
-            await _context.StockMarketAlertCompletedTypes
+            await _context.AlertCompletedTypes
                 .ToListAsync();
 
         public async Task<StockMarketQuoteUserAlertEntity> GetQuoteUserAlertAsync(int quoteUserAlertId) =>
-            await _context.StockMarketQuoteUserAlerts
+            await _context.QuoteUserAlerts
                 .Include(quoteUserAlert => quoteUserAlert.Quote)
                 .SingleOrDefaultAsync(quoteUserAlert => quoteUserAlert.QuoteUserAlertId == quoteUserAlertId);
 
         public async Task<List<StockMarketQuoteUserEmotionEntity>> GetQuoteUserEmotionsAsync(DateTimeOffset from) =>
-            await _context.StockMarketQuoteUserEmotions
+            await _context.QuoteUserEmotions
                 .Where(quoteUserEmotion => quoteUserEmotion.CreatedOn >= from)
                 .ToListAsync();
 
         public async Task<List<StockMarketEmotionEntity>> GetEmotionsAsync() =>
-            await _context.StockMarketEmotions
+            await _context.Emotions
                 .ToListAsync();
     }
 }

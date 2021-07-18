@@ -8,28 +8,28 @@ namespace Library.StockMarket
 {
     public interface IStockMarketMemoryCache
     {
-        public static IReadOnlyDictionary<int, StockMarketExchangeContract> StockMarketExchanges => StockMarketMemoryCache.StockMarketExchanges;
-        public static IReadOnlyDictionary<int, StockMarketTimeframeContract> StockMarketTimeframes => StockMarketMemoryCache.StockMarketTimeframes;
-        public static IReadOnlyDictionary<int, StockMarketAlertTypeContract> StockMarketAlertTypes => StockMarketMemoryCache.StockMarketAlertTypes;
-        public static IReadOnlyDictionary<int, StockMarketAlertCompletedTypeContract> StockMarketAlertCompletedTypes => StockMarketMemoryCache.StockMarketAlertCompletedTypes;
-        public static IReadOnlyDictionary<int, StockMarketEmotionContract> StockMarketEmotions => StockMarketMemoryCache.StockMarketEmotions;
-        public static IReadOnlyDictionary<int, StockMarketQuoteContract> StockMarketQuotes => StockMarketMemoryCache.StockMarketQuotes;
-        public static IReadOnlyDictionary<int, StockMarketQuoteUserAlertContract> StockMarketQuoteUserAlerts => StockMarketMemoryCache.StockMarketQuoteUserAlerts;
-        public static IReadOnlyDictionary<int, StockMarketQuoteUserEmotionContract> StockMarketQuoteUserEmotions => StockMarketMemoryCache.StockMarketQuoteUserEmotions;
+        public static IReadOnlyDictionary<int, StockMarketExchangeContract> Exchanges => StockMarketMemoryCache.Exchanges;
+        public static IReadOnlyDictionary<int, StockMarketTimeframeContract> Timeframes => StockMarketMemoryCache.Timeframes;
+        public static IReadOnlyDictionary<int, StockMarketAlertTypeContract> AlertTypes => StockMarketMemoryCache.AlertTypes;
+        public static IReadOnlyDictionary<int, StockMarketAlertCompletedTypeContract> AlertCompletedTypes => StockMarketMemoryCache.AlertCompletedTypes;
+        public static IReadOnlyDictionary<int, StockMarketEmotionContract> Emotions => StockMarketMemoryCache.Emotions;
+        public static IReadOnlyDictionary<int, StockMarketQuoteContract> Quotes => StockMarketMemoryCache.Quotes;
+        public static IReadOnlyDictionary<int, StockMarketQuoteUserAlertContract> QuoteUserAlerts => StockMarketMemoryCache.QuoteUserAlerts;
+        public static IReadOnlyDictionary<int, StockMarketQuoteUserEmotionContract> QuoteUserEmotions => StockMarketMemoryCache.QuoteUserEmotions;
     }
 
     static class StockMarketMemoryCache
     {
         public static bool IsReady { get; private set; }
 
-        public static readonly ConcurrentDictionary<int, StockMarketExchangeContract> StockMarketExchanges = new();
-        public static readonly ConcurrentDictionary<int, StockMarketTimeframeContract> StockMarketTimeframes = new();
-        public static readonly ConcurrentDictionary<int, StockMarketAlertTypeContract> StockMarketAlertTypes = new();
-        public static readonly ConcurrentDictionary<int, StockMarketAlertCompletedTypeContract> StockMarketAlertCompletedTypes = new();
-        public static readonly ConcurrentDictionary<int, StockMarketEmotionContract> StockMarketEmotions = new();
-        public static readonly ConcurrentDictionary<int, StockMarketQuoteContract> StockMarketQuotes = new();
-        public static readonly ConcurrentDictionary<int, StockMarketQuoteUserAlertContract> StockMarketQuoteUserAlerts = new();
-        public static readonly ConcurrentDictionary<int, StockMarketQuoteUserEmotionContract> StockMarketQuoteUserEmotions = new();
+        public static readonly ConcurrentDictionary<int, StockMarketExchangeContract> Exchanges = new();
+        public static readonly ConcurrentDictionary<int, StockMarketTimeframeContract> Timeframes = new();
+        public static readonly ConcurrentDictionary<int, StockMarketAlertTypeContract> AlertTypes = new();
+        public static readonly ConcurrentDictionary<int, StockMarketAlertCompletedTypeContract> AlertCompletedTypes = new();
+        public static readonly ConcurrentDictionary<int, StockMarketEmotionContract> Emotions = new();
+        public static readonly ConcurrentDictionary<int, StockMarketQuoteContract> Quotes = new();
+        public static readonly ConcurrentDictionary<int, StockMarketQuoteUserAlertContract> QuoteUserAlerts = new();
+        public static readonly ConcurrentDictionary<int, StockMarketQuoteUserEmotionContract> QuoteUserEmotions = new();
 
         public static async Task LoadAsync(StockMarketRepository repository)
         {
@@ -45,28 +45,28 @@ namespace Library.StockMarket
             var quoteUserEmotions = (await repository.GetQuoteUserEmotionsAsync(DateTimeOffset.Now.AddDays(-1))).Select(quoteUserEmotionEntity => quoteUserEmotionEntity.MapToQuoteUserEmotionContract()).ToList();
 
             foreach (var exchange in exchanges)
-                StockMarketExchanges[exchange.ExchangeId] = exchange;
+                Exchanges[exchange.ExchangeId] = exchange;
 
             foreach (var timeframe in timeframes)
-                StockMarketTimeframes[timeframe.TimeframeId] = timeframe;
+                Timeframes[timeframe.TimeframeId] = timeframe;
 
             foreach (var alertType in alertTypes)
-                StockMarketAlertTypes[alertType.AlertTypeId] = alertType;
+                AlertTypes[alertType.AlertTypeId] = alertType;
 
             foreach (var alertCompletedType in alertCompletedTypes)
-                StockMarketAlertCompletedTypes[alertCompletedType.AlertCompletedTypeId] = alertCompletedType;
+                AlertCompletedTypes[alertCompletedType.AlertCompletedTypeId] = alertCompletedType;
 
             foreach (var emotion in emotions)
-                StockMarketEmotions[emotion.EmotionId] = emotion;
+                Emotions[emotion.EmotionId] = emotion;
 
             foreach (var quote in quotes)
-                StockMarketQuotes[quote.QuoteId] = quote;
+                Quotes[quote.QuoteId] = quote;
 
             foreach (var quoteUserAlert in quoteUserAlerts)
-                StockMarketQuoteUserAlerts[quoteUserAlert.QuoteUserAlertId] = quoteUserAlert;
+                QuoteUserAlerts[quoteUserAlert.QuoteUserAlertId] = quoteUserAlert;
 
             foreach (var quoteUserEmotion in quoteUserEmotions)
-                StockMarketQuoteUserEmotions[quoteUserEmotion.QuoteUserEmotionId] = quoteUserEmotion;
+                QuoteUserEmotions[quoteUserEmotion.QuoteUserEmotionId] = quoteUserEmotion;
 
             IsReady = true;
         }
@@ -75,8 +75,8 @@ namespace Library.StockMarket
         public static async Task TrimAsync(StockMarketRepository repository)
 #pragma warning restore IDE0060 // Remove unused parameter
         {
-            foreach (var quoteUserEmotion in StockMarketQuoteUserEmotions.Where(quoteUserEmotion => quoteUserEmotion.Value.CreatedOn < DateTimeOffset.Now.AddDays(-1)).ToList())
-                StockMarketQuoteUserEmotions.TryRemove(quoteUserEmotion);
+            foreach (var quoteUserEmotion in QuoteUserEmotions.Where(quoteUserEmotion => quoteUserEmotion.Value.CreatedOn < DateTimeOffset.Now.AddDays(-1)).ToList())
+                QuoteUserEmotions.TryRemove(quoteUserEmotion);
 
             await Task.CompletedTask;
         }

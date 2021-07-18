@@ -1,5 +1,5 @@
-﻿using Library.User;
-using Library.User.Contract;
+﻿using Library.Account;
+using Library.Account.Contract;
 using System;
 using System.Text.Json.Serialization;
 
@@ -27,9 +27,9 @@ namespace Library.StockMarket.Contract
         public decimal? CompletedSellPoints => CompletedSell.HasValue ? StockMarketExtension.GetChangePercent(from: Buy, CompletedSell.Value) : CompletedSell;
         public DateTimeOffset? CompletedOn { get; internal set; }
 
-        public StockMarketQuoteContract Quote => IStockMarketMemoryCache.StockMarketQuotes[QuoteId];
-        public UserContract User => IUserMemoryCache.Users[UserId];
-        public StockMarketAlertTypeContract Type => IStockMarketMemoryCache.StockMarketAlertTypes[AlertTypeId];
-        public StockMarketAlertCompletedTypeContract? CompletedType => AlertCompletedTypeId.HasValue ? IStockMarketMemoryCache.StockMarketAlertCompletedTypes[AlertCompletedTypeId.Value] : null;
+        public StockMarketQuoteContract Quote => IStockMarketMemoryCache.Quotes[QuoteId];
+        public AccountUserContract User => IAccountMemoryCache.Users[UserId];
+        public StockMarketAlertTypeContract AlertType => IStockMarketMemoryCache.AlertTypes[AlertTypeId];
+        public StockMarketAlertCompletedTypeContract? AlertCompletedType => AlertCompletedTypeId.HasValue ? IStockMarketMemoryCache.AlertCompletedTypes[AlertCompletedTypeId.Value] : null;
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Api.Controller;
-using Library.User;
-using Library.User.Contract;
+using Library.Account;
+using Library.Account.Contract;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -15,10 +15,10 @@ namespace Api.Configuration.Authentication
 {
     class AuthenticationHandler : AuthenticationHandler<AuthenticationScheme>
     {
-        public AuthenticationHandler(IOptionsMonitor<AuthenticationScheme> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock, IUserService userService) : base(options, logger, encoder, clock) =>
-            _userService = userService;
+        public AuthenticationHandler(IOptionsMonitor<AuthenticationScheme> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock, IAccountService accountService) : base(options, logger, encoder, clock) =>
+            _accountService = accountService;
 
-        private readonly IUserService _userService;
+        private readonly IAccountService _accountService;
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
@@ -69,10 +69,10 @@ namespace Api.Configuration.Authentication
                 try
                 {
                     if (token != StringValues.Empty)
-                        return GetUserSessionAuthenticateResult(await _userService.AuthenticateTokenAsync(userTypeId.Value, token, timezone), timezone);
+                        return GetUserSessionAuthenticateResult(await _accountService.AuthenticateUserTokenAsync(userTypeId.Value, token, timezone), timezone);
 
                     if (code != StringValues.Empty)
-                        return GetUserSessionAuthenticateResult(await _userService.AuthenticateCodeAsync(userTypeId.Value, code, subdomain, page, timezone), timezone);
+                        return GetUserSessionAuthenticateResult(await _accountService.AuthenticateUserCodeAsync(userTypeId.Value, code, subdomain, page, timezone), timezone);
                 }
                 catch (System.Exception exception)
                 {
@@ -87,7 +87,7 @@ namespace Api.Configuration.Authentication
 
             try
             {
-                return GetUserSessionAuthenticateResult(_userService.GetSession(userTypeId.Value, token), timezone);
+                return GetUserSessionAuthenticateResult(_accountService.GetUserSession(userTypeId.Value, token), timezone);
             }
             catch (System.Exception exception)
             {
@@ -108,7 +108,7 @@ namespace Api.Configuration.Authentication
                 new Claim(nameof(AuthenticationResult.Timezone), timezone.Id)
             })), Scheme.Name));
 
-        private AuthenticateResult GetUserSessionAuthenticateResult(UserSessionContract userSession, DateTimeZone timezone) =>
+        private AuthenticateResult GetUserSessionAuthenticateResult(AccountUserSessionContract userSession, DateTimeZone timezone) =>
             AuthenticateResult.Success(new AuthenticationTicket(new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
             {
                 new Claim(nameof(AuthenticationResult.IsAuthenticated), bool.TrueString),

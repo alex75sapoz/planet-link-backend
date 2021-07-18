@@ -12,7 +12,7 @@ namespace Library.StockMarket.Entity
         public string Symbol { get; internal set; } = default!;
 
         public virtual StockMarketExchangeEntity Exchange { get; internal set; } = default!;
-        public virtual ICollection<StockMarketQuoteUserAlertEntity> UserAlerts { get; internal set; } = new HashSet<StockMarketQuoteUserAlertEntity>();
+        public virtual ICollection<StockMarketQuoteUserAlertEntity> QuoteUserAlerts { get; internal set; } = new HashSet<StockMarketQuoteUserAlertEntity>();
     }
 }
 
@@ -22,12 +22,12 @@ namespace Library.StockMarket.Entity.Configuration
     {
         public void Configure(EntityTypeBuilder<StockMarketQuoteEntity> entity)
         {
-            entity.ToTable(nameof(StockMarketContext.StockMarketQuotes));
+            entity.ToTable(nameof(StockMarket) + nameof(StockMarketContext.Quotes));
             entity.HasKey(quote => quote.QuoteId);
 
             entity.HasOne(quote => quote.Exchange).WithMany(exchange => exchange.Quotes).IsRequired(true);
 
-            entity.HasMany(quote => quote.UserAlerts).WithOne(quoteUserAlert => quoteUserAlert.Quote);
+            entity.HasMany(quote => quote.QuoteUserAlerts).WithOne(quoteUserAlert => quoteUserAlert.Quote);
         }
     }
 }

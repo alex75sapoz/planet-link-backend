@@ -1,6 +1,6 @@
-﻿using Library.Base;
-using Library.Error;
-using Library.Error.Contract;
+﻿using Library.Application;
+using Library.Application.Contract;
+using Library.Base;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,11 +33,11 @@ namespace Api.Configuration.Exception
             }
 
             using var scope = context.RequestServices.CreateScope();
-            var errorService = scope.ServiceProvider.GetRequiredService<IErrorService>();
+            var errorService = scope.ServiceProvider.GetRequiredService<IApplicationService>();
 
             var authenticationResult = new AuthenticationResult(context.User);
 
-            await errorService.CreateErrorRequestAsync(new ErrorRequestCreateContract
+            await errorService.CreateErrorRequestAsync(new ApplicationErrorRequestCreateContract
             (
                 method: context.Request.Method,
                 path: context.Request.Path,

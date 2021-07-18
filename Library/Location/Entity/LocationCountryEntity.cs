@@ -25,11 +25,11 @@ namespace Library.Location.Entity
 
 namespace Library.Location.Entity.Configuration
 {
-    class CountryEntityConfiguration : IEntityTypeConfiguration<LocationCountryEntity>
+    class LocationCountryEntityConfiguration : IEntityTypeConfiguration<LocationCountryEntity>
     {
         public void Configure(EntityTypeBuilder<LocationCountryEntity> entity)
         {
-            entity.ToTable(nameof(LocationContext.LocationCountries));
+            entity.ToTable(nameof(Location) + nameof(LocationContext.Countries));
             entity.HasKey(country => country.CountryId);
 
             entity.HasOne(country => country.Continent).WithMany(continent => continent.Countries).IsRequired(true);

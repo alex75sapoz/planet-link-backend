@@ -19,7 +19,7 @@ namespace Library.Location.Entity.Configuration
     {
         public void Configure(EntityTypeBuilder<LocationAreaCodeEntity> entity)
         {
-            entity.ToTable(nameof(LocationContext.LocationAreaCodes));
+            entity.ToTable(nameof(Location) + nameof(LocationContext.AreaCodes));
             entity.HasKey(areaCode => areaCode.AreaCodeId);
 
             entity.HasMany(areaCode => areaCode.CountryAreaCodes).WithOne(countryAreaCode => countryAreaCode.AreaCode);
