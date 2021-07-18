@@ -80,7 +80,6 @@ namespace Api.Configuration.Authentication
                 }
             }
 
-
             //Step 6 - Validate
             if (code != StringValues.Empty || page != StringValues.Empty)
                 return AuthenticateResult.Fail($"{nameof(code)} is not allowed in this controller");
