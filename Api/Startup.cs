@@ -98,8 +98,7 @@ namespace Api
             application.UseEndpoint(_endpointConfiguration);
 
             //Swagger
-            if (_environment.IsDevelopment())
-                application.UseSwagger(_swaggerConfiguration);
+            application.UseSwagger(_swaggerConfiguration);
         }
     }
 }

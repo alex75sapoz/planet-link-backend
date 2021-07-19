@@ -23,7 +23,7 @@ namespace Api.Configuration.Authentication
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             //Swagger is publicly available
-            if (Options.IsDevelopment && Request.Path.StartsWithSegments(Options.SwaggerUrlSegment))
+            if (Request.Path.StartsWithSegments(Options.SwaggerUrlSegment))
                 return GetSwaggerAuthenticateResult();
 
             //Step 1 - TimezoneId
