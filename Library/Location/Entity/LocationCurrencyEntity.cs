@@ -18,11 +18,11 @@ namespace Library.Location.Entity
 
 namespace Library.Location.Entity.Configuration
 {
-    public class CurrencyEntityConfiguration : IEntityTypeConfiguration<LocationCurrencyEntity>
+    public class LocationCurrencyEntityConfiguration : IEntityTypeConfiguration<LocationCurrencyEntity>
     {
         public void Configure(EntityTypeBuilder<LocationCurrencyEntity> entity)
         {
-            entity.ToTable(nameof(LocationContext.LocationCurrencies));
+            entity.ToTable(nameof(Location) + nameof(LocationContext.Currencies));
             entity.HasKey(currency => currency.CurrencyId);
 
             entity.HasMany(currency => currency.CountryCurrencies).WithOne(countryCurrency => countryCurrency.Currency);

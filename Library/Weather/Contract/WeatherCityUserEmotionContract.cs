@@ -1,7 +1,7 @@
-﻿using Library.Location;
+﻿using Library.Account;
+using Library.Account.Contract;
+using Library.Location;
 using Library.Location.Contract;
-using Library.User;
-using Library.User.Contract;
 using System;
 using System.Text.Json.Serialization;
 
@@ -20,7 +20,7 @@ namespace Library.Weather.Contract
         public DateTimeOffset CreatedOn { get; internal set; }
 
         public LocationCityContract City => ILocationMemoryCache.LocationCities[CityId];
-        public UserContract User => IUserMemoryCache.Users[UserId];
-        public WeatherEmotionContract Emotion => IWeatherMemoryCache.WeatherEmotions[EmotionId];
+        public AccountUserContract User => IAccountMemoryCache.Users[UserId];
+        public WeatherEmotionContract Emotion => IWeatherMemoryCache.Emotions[EmotionId];
     }
 }

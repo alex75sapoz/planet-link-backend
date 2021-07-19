@@ -19,10 +19,10 @@ namespace Library.StockMarket.Entity.Configuration
     {
         public void Configure(EntityTypeBuilder<StockMarketAlertCompletedTypeEntity> entity)
         {
-            entity.ToTable(nameof(StockMarketContext.StockMarketAlertCompletedTypes));
-            entity.HasKey(completedType => completedType.AlertCompletedTypeId);
+            entity.ToTable(nameof(StockMarket) + nameof(StockMarketContext.AlertCompletedTypes));
+            entity.HasKey(alertCompletedType => alertCompletedType.AlertCompletedTypeId);
 
-            entity.HasMany(completedType => completedType.QuoteUserAlerts).WithOne(quoteUserAlert => quoteUserAlert.CompletedType!).HasForeignKey(quoteUserAlert => quoteUserAlert.AlertCompletedTypeId);
+            entity.HasMany(alertCompletedType => alertCompletedType.QuoteUserAlerts).WithOne(quoteUserAlert => quoteUserAlert.AlertCompletedType!);
         }
     }
 }

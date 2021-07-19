@@ -22,7 +22,7 @@ namespace Library.Location
         #region Search
 
         public List<LocationCountryContract> SearchCountries(string keyword) =>
-            LocationMemoryCache.LocationCountries
+            LocationMemoryCache.Countries
                 .Where(country =>
                     country.Value.ThreeLetterCode.StartsWith(keyword, StringComparison.OrdinalIgnoreCase) ||
                     country.Value.Name.StartsWith(keyword, StringComparison.OrdinalIgnoreCase)
@@ -32,7 +32,7 @@ namespace Library.Location
                 .ToList();
 
         public List<LocationCityContract> SearchCities(string keyword) =>
-            LocationMemoryCache.LocationCities
+            LocationMemoryCache.Cities
                 .Where(city => city.Value.Name.StartsWith(keyword, StringComparison.OrdinalIgnoreCase))
                 .OrderByDescending(city => city.Value.IsCapital)
                 .Take(_configuration.Limit.SearchCitiesLimit)
@@ -44,12 +44,12 @@ namespace Library.Location
         #region Get
 
         public LocationCountryContract GetCountry(int countryId) =>
-            LocationMemoryCache.LocationCountries.TryGetValue(countryId, out LocationCountryContract? country)
+            LocationMemoryCache.Countries.TryGetValue(countryId, out LocationCountryContract? country)
                 ? country
                 : throw new BadRequestException($"{nameof(countryId)} is invalid");
 
         public LocationCityContract GetCity(int cityId) =>
-            LocationMemoryCache.LocationCities.TryGetValue(cityId, out LocationCityContract? city)
+            LocationMemoryCache.Cities.TryGetValue(cityId, out LocationCityContract? city)
                 ? city
                 : throw new BadRequestException($"{nameof(cityId)} is invalid");
 
@@ -58,7 +58,7 @@ namespace Library.Location
             var point = new Point(new Coordinate((double)coordinates.latitude, (double)coordinates.longitude)) { SRID = _configuration.Default.SpatialReferenceId };
             var coordinateLookup = LocationExtension.GetCoordinatesLookup(coordinates);
 
-            return LocationMemoryCache.LocationCities
+            return LocationMemoryCache.Cities
                 .Where(city => city.Value.CoordinatesLookup == coordinateLookup)
                 .OrderBy(city => new Point(new Coordinate((double)city.Value.Latitude, (double)city.Value.Longitude)) { SRID = _configuration.Default.SpatialReferenceId }.Distance(point))
                 .First().Value;

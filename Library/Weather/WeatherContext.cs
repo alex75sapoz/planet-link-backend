@@ -6,7 +6,7 @@ namespace Library.Weather
     {
         public WeatherContext(DbContextOptions<WeatherContext> options) : base(options) { }
 
-        public DbSet<WeatherEmotionEntity> WeatherEmotions { get; set; } = default!;
-        public DbSet<WeatherCityUserEmotionEntity> WeatherCityUserEmotions { get; set; } = default!;
+        public DbSet<WeatherEmotionEntity> Emotions { get; set; } = default!;
+        public DbSet<WeatherCityUserEmotionEntity> CityUserEmotions { get; set; } = default!;
     }
 }

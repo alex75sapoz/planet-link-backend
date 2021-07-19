@@ -17,12 +17,12 @@ namespace Library.Weather
         public WeatherRepository(WeatherContext context) : base(context) { }
 
         public async Task<List<WeatherCityUserEmotionEntity>> GetCityUserEmotionsAsync(DateTimeOffset from) =>
-            await _context.WeatherCityUserEmotions
+            await _context.CityUserEmotions
                 .Where(quoteUserEmotion => quoteUserEmotion.CreatedOn >= from)
                 .ToListAsync();
 
         public async Task<List<WeatherEmotionEntity>> GetEmotionsAsync() =>
-            await _context.WeatherEmotions
+            await _context.Emotions
                 .ToListAsync();
     }
 }

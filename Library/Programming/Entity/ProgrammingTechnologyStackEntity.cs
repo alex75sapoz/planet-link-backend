@@ -19,7 +19,7 @@ namespace Library.Programming.Entity.Configuration
     {
         public void Configure(EntityTypeBuilder<ProgrammingTechnologyStackEntity> entity)
         {
-            entity.ToTable(nameof(ProgrammingContext.ProgrammingTechnologyStacks));
+            entity.ToTable(nameof(Programming) + nameof(ProgrammingContext.TechnologyStacks));
             entity.HasKey(technologyStack => technologyStack.TechnologyStackId);
 
             entity.HasMany(technologyStack => technologyStack.Projects).WithOne(project => project.TechnologyStack);

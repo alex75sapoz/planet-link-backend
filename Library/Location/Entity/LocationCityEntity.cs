@@ -24,11 +24,11 @@ namespace Library.Location.Entity
 
 namespace Library.Location.Entity.Configuration
 {
-    class CityEntityConfiguration : IEntityTypeConfiguration<LocationCityEntity>
+    class LocationCityEntityConfiguration : IEntityTypeConfiguration<LocationCityEntity>
     {
         public void Configure(EntityTypeBuilder<LocationCityEntity> entity)
         {
-            entity.ToTable(nameof(LocationContext.LocationCities));
+            entity.ToTable(nameof(Location) + nameof(LocationContext.Cities));
             entity.HasKey(city => city.CityId);
 
             entity.Property(city => city.Latitude).HasPrecision(18, 6);

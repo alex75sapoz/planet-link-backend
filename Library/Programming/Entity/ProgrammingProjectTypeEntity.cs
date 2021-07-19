@@ -19,10 +19,10 @@ namespace Library.Programming.Entity.Configuration
     {
         public void Configure(EntityTypeBuilder<ProgrammingProjectTypeEntity> entity)
         {
-            entity.ToTable(nameof(ProgrammingContext.ProgrammingProjectTypes));
+            entity.ToTable(nameof(Programming) + nameof(ProgrammingContext.ProjectTypes));
             entity.HasKey(projectType => projectType.ProjectTypeId);
 
-            entity.HasMany(projectType => projectType.Projects).WithOne(project => project.Type).HasForeignKey(project => project.ProjectTypeId);
+            entity.HasMany(projectType => projectType.Projects).WithOne(project => project.ProjectType);
         }
     }
 }

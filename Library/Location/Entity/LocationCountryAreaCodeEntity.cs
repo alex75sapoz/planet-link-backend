@@ -16,11 +16,11 @@ namespace Library.Location.Entity
 
 namespace Library.Location.Entity.Configuration
 {
-    class CountryAreaCodeEntityConfiguration : IEntityTypeConfiguration<LocationCountryAreaCodeEntity>
+    class LocationCountryAreaCodeEntityConfiguration : IEntityTypeConfiguration<LocationCountryAreaCodeEntity>
     {
         public void Configure(EntityTypeBuilder<LocationCountryAreaCodeEntity> entity)
         {
-            entity.ToTable(nameof(LocationContext.LocationCountryAreaCodes));
+            entity.ToTable(nameof(Location) + nameof(LocationContext.CountryAreaCodes));
             entity.HasKey(countryAreaCode => countryAreaCode.CountryAreaCodeId);
 
             entity.HasOne(countryAreaCode => countryAreaCode.Country).WithMany(country => country.CountryAreaCodes).IsRequired(true);

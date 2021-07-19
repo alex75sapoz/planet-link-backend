@@ -1,5 +1,5 @@
-﻿using Library.Error;
-using Library.Error.Contract;
+﻿using Library.Application;
+using Library.Application.Contract;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
@@ -10,7 +10,7 @@ namespace Library.Weather.Job
     {
         public WeatherProcessMemoryCacheJob(IServiceProvider serviceProvider) : base(serviceProvider,
         (
-            delay: TimeSpan.Zero,
+            delay: TimeSpan.FromDays(1),
             interval: TimeSpan.FromDays(1),
             state: JobState.Finished
         ))
@@ -21,15 +21,15 @@ namespace Library.Weather.Job
             using var scope = _serviceProvider.CreateScope();
             var repository = scope.ServiceProvider.GetRequiredService<WeatherRepository>();
 
-            await WeatherMemoryCache.RefreshAsync(repository);
+            await WeatherMemoryCache.TrimAsync(repository);
         }
 
         protected override async Task ErrorAsync(Exception exception)
         {
             using var scope = _serviceProvider.CreateScope();
-            var errorService = scope.ServiceProvider.GetRequiredService<IErrorService>();
+            var applicationService = scope.ServiceProvider.GetRequiredService<IApplicationService>();
 
-            await errorService.CreateErrorProcessingAsync(new ErrorProcessingCreateContract
+            await applicationService.CreateErrorProcessingAsync(new ApplicationErrorProcessingCreateContract
             (
                 className: nameof(WeatherProcessMemoryCacheJob),
                 classMethodName: nameof(WeatherProcessMemoryCacheJob.StartAsync),

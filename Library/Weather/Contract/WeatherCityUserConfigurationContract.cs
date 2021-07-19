@@ -10,6 +10,6 @@ namespace Library.Weather.Contract
         public int SelectionsToday { get; internal set; }
         public int LimitToday { get; internal set; }
 
-        public WeatherEmotionContract? Emotion => EmotionId.HasValue ? IWeatherMemoryCache.WeatherEmotions[EmotionId.Value] : null;
+        public WeatherEmotionContract? Emotion => EmotionId.HasValue ? IWeatherMemoryCache.Emotions[EmotionId.Value] : null;
     }
 }

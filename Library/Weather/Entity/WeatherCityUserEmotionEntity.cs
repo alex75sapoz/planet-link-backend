@@ -22,7 +22,7 @@ namespace Library.Weather.Entity.Configuration
     {
         public void Configure(EntityTypeBuilder<WeatherCityUserEmotionEntity> entity)
         {
-            entity.ToTable(nameof(WeatherContext.WeatherCityUserEmotions));
+            entity.ToTable(nameof(Weather) + nameof(WeatherContext.CityUserEmotions));
             entity.HasKey(cityUserEmotion => cityUserEmotion.CityUserEmotionId);
 
             entity.HasOne(cityUserEmotion => cityUserEmotion.Emotion).WithMany(emotion => emotion.CityUserEmotions).IsRequired(true);

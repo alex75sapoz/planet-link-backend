@@ -18,24 +18,24 @@ namespace Library.Programming
         public ProgrammingRepository(ProgrammingContext context) : base(context) { }
 
         public async Task<List<ProgrammingProjectTypeEntity>> GetProjectTypesAsync() =>
-            await _context.ProgrammingProjectTypes
+            await _context.ProjectTypes
                 .ToListAsync();
 
         public async Task<List<ProgrammingJobEntity>> GetJobsAsync() =>
-            await _context.ProgrammingJobs
+            await _context.Jobs
                 .ToListAsync();
 
         public async Task<List<ProgrammingLanguageEntity>> GetLanguagesAsync() =>
-            await _context.ProgrammingLanguages
+            await _context.Languages
                 .ToListAsync();
 
         public async Task<List<ProgrammingTechnologyStackEntity>> GetTechnologyStacksAsync() =>
-            await _context.ProgrammingTechnologyStacks
+            await _context.TechnologyStacks
                 .ToListAsync();
 
         public async Task<List<ProgrammingProjectEntity>> GetProjectsAsync() =>
-            await _context.ProgrammingProjects
-                .Include(project => project.Type)
+            await _context.Projects
+                .Include(project => project.ProjectType)
                 .Include(project => project.Job)
                 .Include(project => project.TechnologyStack)
                 .Include(project => project.ProjectLanguages)

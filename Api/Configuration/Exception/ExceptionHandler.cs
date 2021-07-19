@@ -1,6 +1,6 @@
-﻿using Library.Base;
-using Library.Error;
-using Library.Error.Contract;
+﻿using Library.Application;
+using Library.Application.Contract;
+using Library.Base;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,13 +18,13 @@ namespace Api.Configuration.Exception
             string exceptionMessage;
             int statusCodeId;
 
-            if (exception is BaseException libraryException)
+            if (exception is BaseException baseException)
             {
-                statusCodeId = (int)libraryException.StatusCode;
-                exceptionMessage = libraryException.GetFullMessage();
+                statusCodeId = (int)baseException.StatusCode;
+                exceptionMessage = baseException.GetFullMessage();
 
-                if (libraryException.InternalMessage is not null)
-                    exceptionMessage += $", {libraryException.InternalMessage}";
+                if (baseException.InternalMessage is not null)
+                    exceptionMessage += $", {baseException.InternalMessage}";
             }
             else
             {
@@ -33,11 +33,11 @@ namespace Api.Configuration.Exception
             }
 
             using var scope = context.RequestServices.CreateScope();
-            var errorService = scope.ServiceProvider.GetRequiredService<IErrorService>();
+            var applicationService = scope.ServiceProvider.GetRequiredService<IApplicationService>();
 
             var authenticationResult = new AuthenticationResult(context.User);
 
-            await errorService.CreateErrorRequestAsync(new ErrorRequestCreateContract
+            await applicationService.CreateErrorRequestAsync(new ApplicationErrorRequestCreateContract
             (
                 method: context.Request.Method,
                 path: context.Request.Path,

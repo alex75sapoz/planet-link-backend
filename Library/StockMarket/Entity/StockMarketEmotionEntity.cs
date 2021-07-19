@@ -20,7 +20,7 @@ namespace Library.StockMarket.Entity.Configuration
     {
         public void Configure(EntityTypeBuilder<StockMarketEmotionEntity> entity)
         {
-            entity.ToTable(nameof(StockMarketContext.StockMarketEmotions));
+            entity.ToTable(nameof(StockMarket) + nameof(StockMarketContext.Emotions));
             entity.HasKey(emotion => emotion.EmotionId);
 
             entity.HasMany(emotion => emotion.QuoteUserEmotions).WithOne(quoteUserEmotion => quoteUserEmotion.Emotion);

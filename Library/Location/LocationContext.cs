@@ -6,16 +6,16 @@ namespace Library.Location
     {
         public LocationContext(DbContextOptions<LocationContext> options) : base(options) { }
 
-        public DbSet<LocationCityEntity> LocationCities { get; set; } = default!;
-        public DbSet<LocationContinentEntity> LocationContinents { get; set; } = default!;
-        public DbSet<LocationAreaCodeEntity> LocationAreaCodes { get; set; } = default!;
-        public DbSet<LocationCurrencyEntity> LocationCurrencies { get; set; } = default!;
-        public DbSet<LocationLanguageEntity> LocationLanguages { get; set; } = default!;
-        public DbSet<LocationCountryAreaCodeEntity> LocationCountryAreaCodes { get; set; } = default!;
-        public DbSet<LocationCountryCurrencyEntity> LocationCountryCurrencies { get; set; } = default!;
-        public DbSet<LocationCountryEntity> LocationCountries { get; set; } = default!;
-        public DbSet<LocationCountryLanguageEntity> LocationCountryLanguages { get; set; } = default!;
-        public DbSet<LocationStateEntity> LocationStates { get; set; } = default!;
-        public DbSet<LocationSubContinentEntity> LocationSubContinents { get; set; } = default!;
+        public DbSet<LocationCityEntity> Cities { get; set; } = default!;
+        public DbSet<LocationContinentEntity> Continents { get; set; } = default!;
+        public DbSet<LocationAreaCodeEntity> AreaCodes { get; set; } = default!;
+        public DbSet<LocationCurrencyEntity> Currencies { get; set; } = default!;
+        public DbSet<LocationLanguageEntity> Languages { get; set; } = default!;
+        public DbSet<LocationCountryAreaCodeEntity> CountryAreaCodes { get; set; } = default!;
+        public DbSet<LocationCountryCurrencyEntity> CountryCurrencies { get; set; } = default!;
+        public DbSet<LocationCountryEntity> Countries { get; set; } = default!;
+        public DbSet<LocationCountryLanguageEntity> CountryLanguages { get; set; } = default!;
+        public DbSet<LocationStateEntity> States { get; set; } = default!;
+        public DbSet<LocationSubContinentEntity> SubContinents { get; set; } = default!;
     }
 }

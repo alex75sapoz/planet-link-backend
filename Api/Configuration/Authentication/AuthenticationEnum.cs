@@ -1,4 +1,4 @@
-﻿using Library.User.Enum;
+﻿using Library.Account.Enum;
 
 namespace Api.Configuration.Authentication
 {
@@ -6,6 +6,7 @@ namespace Api.Configuration.Authentication
     {
         Guest = 0,
         Google = UserType.Google,
-        Stocktwits = UserType.Stocktwits
+        Stocktwits = UserType.Stocktwits,
+        Fitbit = UserType.Fitbit
     }
 }

@@ -1,8 +1,7 @@
-﻿using Library.Error;
+﻿using Library.Application;
 using Library.Location;
 using Library.Programming;
 using Library.StockMarket;
-using Library.User;
 using Library.Weather;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -11,7 +10,6 @@ using Microsoft.Extensions.Hosting;
 using NodaTime;
 using System;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Api.Controller
@@ -32,16 +30,15 @@ namespace Api.Controller
                 Server = new
                 {
                     Time = DateTimeOffset.Now,
-                    TimezoneId = DateTimeZoneProviders.Tzdb.GetSystemDefault().Id,
-                    TotalMemoryAllocated = $"{GC.GetTotalMemory(false) / 1000000} MB"
+                    TimezoneId = DateTimeZoneProviders.Tzdb.GetSystemDefault().Id
                 },
                 Library = new
                 {
-                    Error = IErrorStartup.GetStatus(),
+                    Application = IApplicationStartup.GetStatus(),
                     Location = ILocationStartup.GetStatus(),
                     Programming = IProgrammingStartup.GetStatus(),
                     StockMarket = IStockMarketStartup.GetStatus(),
-                    User = IUserStartup.GetStatus(),
+                    Account = IApplicationStartup.GetStatus(),
                     Weather = IWeatherStartup.GetStatus()
                 },
                 Jobs = Library.Base.ILibraryMemoryCache.Jobs.Select(job => new
@@ -53,10 +50,5 @@ namespace Api.Controller
                     job.Value.NextStartOn
                 })
             }));
-
-        [HttpGet("/loaderio-24bf26d1ed843b90131a278f5401ea0a")]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetFile() =>
-            await Task.FromResult(File(Encoding.UTF8.GetBytes("loaderio-24bf26d1ed843b90131a278f5401ea0a"), "text/plain", "loaderio-24bf26d1ed843b90131a278f5401ea0a.txt"));
     }
 }

@@ -17,7 +17,7 @@ namespace Library.Programming
         #region Search
 
         public List<ProgrammingProjectContract> SearchProjects(int? projectTypeId, int? languageId, int? jobId, int? technologyStackId) =>
-            ProgrammingMemoryCache.ProgrammingProjects.Where(project =>
+            ProgrammingMemoryCache.Projects.Where(project =>
                 (!projectTypeId.HasValue || project.Value.ProjectTypeId == projectTypeId) &&
                 (!languageId.HasValue || project.Value.LanguageIds.Contains(languageId.Value)) &&
                 (!jobId.HasValue || project.Value.JobId == jobId) &&
@@ -33,10 +33,10 @@ namespace Library.Programming
 
         public ProgrammingConfigurationContract GetConfiguration() => new()
         {
-            Languages = ProgrammingMemoryCache.ProgrammingLanguages.Values.ToList(),
-            Jobs = ProgrammingMemoryCache.ProgrammingJobs.Values.ToList(),
-            TechnologyStacks = ProgrammingMemoryCache.ProgrammingTechnologyStacks.Values.ToList(),
-            ProjectTypes = ProgrammingMemoryCache.ProgrammingProjectTypes.Values.ToList()
+            Languages = ProgrammingMemoryCache.Languages.Values.ToList(),
+            Jobs = ProgrammingMemoryCache.Jobs.Values.ToList(),
+            TechnologyStacks = ProgrammingMemoryCache.TechnologyStacks.Values.ToList(),
+            ProjectTypes = ProgrammingMemoryCache.ProjectTypes.Values.ToList()
         };
 
         #endregion
