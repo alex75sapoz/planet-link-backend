@@ -41,9 +41,9 @@ namespace Library.StockMarket.Entity.Configuration
             entity.Property(quoteUserAlert => quoteUserAlert.StopLoss).HasPrecision(18, 6);
             entity.Property(quoteUserAlert => quoteUserAlert.CompletedSell).HasPrecision(18, 6);
 
-            entity.HasOne(quoteUserAlert => quoteUserAlert.Quote).WithMany(quote => quote.QuoteUserAlerts).IsRequired(true);
-            entity.HasOne(quoteUserAlert => quoteUserAlert.AlertType).WithMany(alertType => alertType.QuoteUserAlerts).IsRequired(true);
-            entity.HasOne(quoteUserAlert => quoteUserAlert.AlertCompletedType).WithMany(alertCompletedType => alertCompletedType!.QuoteUserAlerts).IsRequired(false);
+            entity.HasOne(quoteUserAlert => quoteUserAlert.Quote).WithMany(quote => quote.QuoteUserAlerts);
+            entity.HasOne(quoteUserAlert => quoteUserAlert.AlertType).WithMany(alertType => alertType.QuoteUserAlerts);
+            entity.HasOne(quoteUserAlert => quoteUserAlert.AlertCompletedType).WithMany(alertCompletedType => alertCompletedType!.QuoteUserAlerts);
         }
     }
 }

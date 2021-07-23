@@ -26,11 +26,11 @@ namespace Library.Application.Entity.Configuration
             entity.ToTable(nameof(Application) + nameof(ApplicationContext.Errors));
             entity.HasKey(error => error.ErrorId);
 
-            entity.HasOne(error => error.Processing).WithOne(errorProcessing => errorProcessing!.Error).IsRequired(false);
-            entity.HasOne(error => error.Request).WithOne(errorRequest => errorRequest!.Error).IsRequired(false);
-            entity.HasOne(error => error.Authentication).WithOne(errorAuthentication => errorAuthentication!.Error).IsRequired(false);
+            entity.HasOne(error => error.Processing).WithOne(errorProcessing => errorProcessing!.Error);
+            entity.HasOne(error => error.Request).WithOne(errorRequest => errorRequest!.Error);
+            entity.HasOne(error => error.Authentication).WithOne(errorAuthentication => errorAuthentication!.Error);
 
-            entity.HasOne(error => error.ErrorType).WithMany(errorType => errorType.Errors).IsRequired(true);
+            entity.HasOne(error => error.ErrorType).WithMany(errorType => errorType.Errors);
         }
     }
 }

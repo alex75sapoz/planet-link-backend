@@ -23,8 +23,8 @@ namespace Library.Programming.Entity.Configuration
             entity.ToTable(nameof(Programming) + nameof(ProgrammingContext.ProjectLanguages));
             entity.HasKey(projectLanguage => projectLanguage.ProjectLanguageId);
 
-            entity.HasOne(projectLanguage => projectLanguage.Project).WithMany(project => project.ProjectLanguages).IsRequired(true);
-            entity.HasOne(projectLanguage => projectLanguage.Language).WithMany(language => language.ProjectLanguages).IsRequired(true);
+            entity.HasOne(projectLanguage => projectLanguage.Project).WithMany(project => project.ProjectLanguages);
+            entity.HasOne(projectLanguage => projectLanguage.Language).WithMany(language => language.ProjectLanguages);
         }
     }
 }

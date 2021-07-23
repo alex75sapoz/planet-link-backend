@@ -32,8 +32,8 @@ namespace Library.Location.Entity.Configuration
             entity.ToTable(nameof(Location) + nameof(LocationContext.Countries));
             entity.HasKey(country => country.CountryId);
 
-            entity.HasOne(country => country.Continent).WithMany(continent => continent.Countries).IsRequired(true);
-            entity.HasOne(country => country.SubContinent).WithMany(subContinent => subContinent.Countries).IsRequired(true);
+            entity.HasOne(country => country.Continent).WithMany(continent => continent.Countries);
+            entity.HasOne(country => country.SubContinent).WithMany(subContinent => subContinent.Countries);
 
             entity.HasMany(country => country.Cities).WithOne(city => city.Country);
             entity.HasMany(country => country.CountryCurrencies).WithOne(countryCurrency => countryCurrency.Country);

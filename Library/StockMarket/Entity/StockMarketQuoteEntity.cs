@@ -25,7 +25,7 @@ namespace Library.StockMarket.Entity.Configuration
             entity.ToTable(nameof(StockMarket) + nameof(StockMarketContext.Quotes));
             entity.HasKey(quote => quote.QuoteId);
 
-            entity.HasOne(quote => quote.Exchange).WithMany(exchange => exchange.Quotes).IsRequired(true);
+            entity.HasOne(quote => quote.Exchange).WithMany(exchange => exchange.Quotes);
 
             entity.HasMany(quote => quote.QuoteUserAlerts).WithOne(quoteUserAlert => quoteUserAlert.Quote);
         }

@@ -29,10 +29,10 @@ namespace Library.Account.Entity.Configuration
             entity.ToTable(nameof(Account) + nameof(AccountContext.Users));
             entity.HasKey(user => user.UserId);
 
-            entity.HasOne(user => user.Google).WithOne(google => google!.User).IsRequired(false);
-            entity.HasOne(user => user.Stocktwits).WithOne(google => google!.User).IsRequired(false);
+            entity.HasOne(user => user.Google).WithOne(google => google!.User);
+            entity.HasOne(user => user.Stocktwits).WithOne(google => google!.User);
 
-            entity.HasOne(user => user.UserType).WithMany(userType => userType.Users).IsRequired(true);
+            entity.HasOne(user => user.UserType).WithMany(userType => userType.Users);
 
             entity.HasMany(user => user.UserSessions).WithOne(userSession => userSession.User);
         }

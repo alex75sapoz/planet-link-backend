@@ -23,8 +23,8 @@ namespace Library.Location.Entity.Configuration
             entity.ToTable(nameof(Location) + nameof(LocationContext.CountryAreaCodes));
             entity.HasKey(countryAreaCode => countryAreaCode.CountryAreaCodeId);
 
-            entity.HasOne(countryAreaCode => countryAreaCode.Country).WithMany(country => country.CountryAreaCodes).IsRequired(true);
-            entity.HasOne(countryAreaCode => countryAreaCode.Country).WithMany(country => country.CountryAreaCodes).IsRequired(true);
+            entity.HasOne(countryAreaCode => countryAreaCode.Country).WithMany(country => country.CountryAreaCodes);
+            entity.HasOne(countryAreaCode => countryAreaCode.Country).WithMany(country => country.CountryAreaCodes);
         }
     }
 }

@@ -29,7 +29,7 @@ namespace Library.Account.Entity.Configuration
             entity.ToTable(nameof(Account) + nameof(AccountContext.UsersStocktwits));
             entity.HasKey(userStocktwtits => userStocktwtits.UserId);
 
-            entity.HasOne(userStocktwtits => userStocktwtits.User).WithOne(user => user.Stocktwits!).IsRequired(true);
+            entity.HasOne(userStocktwtits => userStocktwtits.User).WithOne(user => user.Stocktwits!);
         }
     }
 }

@@ -27,7 +27,7 @@ namespace Library.Account.Entity.Configuration
             entity.ToTable(nameof(Account) + nameof(AccountContext.UserSessions));
             entity.HasKey(userSession => userSession.UserSessionId);
 
-            entity.HasOne(userSession => userSession.User).WithMany(user => user.UserSessions).IsRequired(true);
+            entity.HasOne(userSession => userSession.User).WithMany(user => user.UserSessions);
         }
     }
 }

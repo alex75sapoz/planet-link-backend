@@ -22,7 +22,7 @@ namespace Library.Account.Entity.Configuration
             entity.ToTable(nameof(Account) + nameof(AccountContext.UsersGoogle));
             entity.HasKey(userGoogle => userGoogle.UserId);
 
-            entity.HasOne(userGoogle => userGoogle.User).WithOne(user => user.Google!).IsRequired(true);
+            entity.HasOne(userGoogle => userGoogle.User).WithOne(user => user.Google!);
         }
     }
 }

@@ -33,9 +33,9 @@ namespace Library.Programming.Entity.Configuration
             entity.ToTable(nameof(Programming) + nameof(ProgrammingContext.Projects));
             entity.HasKey(project => project.ProjectId);
 
-            entity.HasOne(project => project.ProjectType).WithMany(projectType => projectType.Projects).IsRequired(true);
-            entity.HasOne(project => project.Job).WithMany(job => job.Projects).IsRequired(true);
-            entity.HasOne(project => project.TechnologyStack).WithMany(technologyStack => technologyStack.Projects).IsRequired(true);
+            entity.HasOne(project => project.ProjectType).WithMany(projectType => projectType.Projects);
+            entity.HasOne(project => project.Job).WithMany(job => job.Projects);
+            entity.HasOne(project => project.TechnologyStack).WithMany(technologyStack => technologyStack.Projects);
 
             entity.HasMany(project => project.ProjectLanguages).WithOne(projectLanguage => projectLanguage.Project);
         }
