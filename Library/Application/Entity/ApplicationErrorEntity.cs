@@ -13,6 +13,7 @@ namespace Library.Application.Entity
         public virtual ApplicationErrorTypeEntity ErrorType { get; internal set; } = default!;
         public virtual ApplicationErrorProcessingEntity? Processing { get; internal set; }
         public virtual ApplicationErrorRequestEntity? Request { get; internal set; }
+        public virtual ApplicationErrorAuthenticationEntity? Authentication { get; internal set; }
     }
 }
 
@@ -27,6 +28,7 @@ namespace Library.Application.Entity.Configuration
 
             entity.HasOne(error => error.Processing).WithOne(errorProcessing => errorProcessing!.Error).IsRequired(false);
             entity.HasOne(error => error.Request).WithOne(errorRequest => errorRequest!.Error).IsRequired(false);
+            entity.HasOne(error => error.Authentication).WithOne(errorAuthentication => errorAuthentication!.Error).IsRequired(false);
 
             entity.HasOne(error => error.ErrorType).WithMany(errorType => errorType.Errors).IsRequired(true);
         }

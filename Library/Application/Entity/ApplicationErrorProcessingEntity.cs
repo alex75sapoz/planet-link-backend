@@ -25,7 +25,7 @@ namespace Library.Application.Entity.Configuration
             entity.ToTable(nameof(Application) + nameof(ApplicationContext.ErrorsProcessing));
             entity.HasKey(errorProcessing => errorProcessing.ErrorId);
 
-            entity.HasOne(errorProcessing => errorProcessing.Error).WithOne(error => error.Processing!).IsRequired(true);
+            entity.HasOne(errorProcessing => errorProcessing.Error).WithOne(error => error.Processing!);
         }
     }
 }

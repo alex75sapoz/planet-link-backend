@@ -18,7 +18,7 @@ namespace Api.Configuration.Swagger
         {
             if (context.SchemaRepository.TryLookupByType(typeof(AuthenticationUserType), out OpenApiSchema userTypeSchema))
             {
-                var userTypeParameter = new OpenApiParameter()
+                var userTypeParameter = new OpenApiParameter
                 {
                     Name = ApiHeader.UserTypeId,
                     Required = true,
@@ -27,11 +27,11 @@ namespace Api.Configuration.Swagger
                     In = ParameterLocation.Header
                 };
 
-                var timezoneParameter = new OpenApiParameter()
+                var timezoneParameter = new OpenApiParameter
                 {
                     Name = ApiHeader.TimezoneId,
                     Required = true,
-                    Schema = new OpenApiSchema()
+                    Schema = new OpenApiSchema
                     {
                         Type = nameof(String).ToLower(),
                         Nullable = false,
@@ -40,11 +40,11 @@ namespace Api.Configuration.Swagger
                     In = ParameterLocation.Header
                 };
 
-                var tokenParameter = new OpenApiParameter()
+                var tokenParameter = new OpenApiParameter
                 {
                     Name = ApiHeader.Token,
                     Required = false,
-                    Schema = new OpenApiSchema()
+                    Schema = new OpenApiSchema
                     {
                         Type = nameof(String).ToLower(),
                         Nullable = true
@@ -52,11 +52,11 @@ namespace Api.Configuration.Swagger
                     In = ParameterLocation.Header
                 };
 
-                var codeParameter = new OpenApiParameter()
+                var codeParameter = new OpenApiParameter
                 {
                     Name = ApiHeader.Code,
                     Required = false,
-                    Schema = new OpenApiSchema()
+                    Schema = new OpenApiSchema
                     {
                         Type = nameof(String).ToLower(),
                         Nullable = true
@@ -64,11 +64,11 @@ namespace Api.Configuration.Swagger
                     In = ParameterLocation.Header
                 };
 
-                var pageParameter = new OpenApiParameter()
+                var pageParameter = new OpenApiParameter
                 {
                     Name = ApiHeader.Page,
                     Required = false,
-                    Schema = new OpenApiSchema()
+                    Schema = new OpenApiSchema
                     {
                         Type = nameof(String).ToLower(),
                         Nullable = true

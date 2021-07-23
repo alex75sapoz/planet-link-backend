@@ -32,4 +32,9 @@ namespace Library.Base
 
         public InternalServerException(string message, string internalMessage) : base(HttpStatusCode.InternalServerError, message, internalMessage) { }
     }
+
+    public class UnauthorizedException : BaseException
+    {
+        public UnauthorizedException(string message) : base(HttpStatusCode.Unauthorized, message) { }
+    }
 }

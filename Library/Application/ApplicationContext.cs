@@ -10,5 +10,6 @@ namespace Library.Application
         public DbSet<ApplicationErrorEntity> Errors { get; set; } = default!;
         public DbSet<ApplicationErrorRequestEntity> ErrorsRequest { get; set; } = default!;
         public DbSet<ApplicationErrorProcessingEntity> ErrorsProcessing { get; set; } = default!;
+        public DbSet<ApplicationErrorAuthenticationEntity> ErrorsAuthentication { get; set; } = default!;
     }
 }

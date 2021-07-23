@@ -311,7 +311,7 @@ namespace Library.StockMarket
 
             return StockMarketMemoryCache.QuoteUserEmotions.GetQuoteUserEmotionsAtTimezoneToday(timezone)
                 .GroupBy(quoteUserEmotion => quoteUserEmotion.EmotionId)
-                .Select(quoteUserEmotionGroup => new StockMarketQuoteEmotionCountContract()
+                .Select(quoteUserEmotionGroup => new StockMarketQuoteEmotionCountContract
                 {
                     EmotionId = quoteUserEmotionGroup.Key,
                     QuoteCount = quoteUserEmotionGroup.Where(quoteUserEmotion => quoteUserEmotion.QuoteId == quote.QuoteId).Count(),
@@ -327,7 +327,7 @@ namespace Library.StockMarket
 
             var quoteUserEmotions = StockMarketMemoryCache.QuoteUserEmotions.GetQuoteUserEmotionsAtTimezoneToday(timezone, userId);
 
-            return new StockMarketQuoteUserConfigurationContract()
+            return new StockMarketQuoteUserConfigurationContract
             {
                 EmotionId = quoteUserEmotions.SingleOrDefault(quoteUserEmotion => quoteUserEmotion.QuoteId == quote.QuoteId)?.EmotionId,
                 SelectionsToday = quoteUserEmotions.Count,
@@ -361,12 +361,12 @@ namespace Library.StockMarket
             if (user.UserTypeId != (int)UserType.Stocktwits)
                 throw new BadRequestException($"{nameof(userId)} is not of {nameof(UserType.Stocktwits)} type");
 
-            return new StockMarketUserContract()
+            return new StockMarketUserContract
             {
                 AlertTypeCounts = StockMarketMemoryCache.QuoteUserAlerts
                     .Where(quoteUserAlert => quoteUserAlert.Value.UserId == user.UserId)
                     .GroupBy(quoteUserAlert => quoteUserAlert.Value.AlertTypeId)
-                    .Select(alertTypeGroup => new StockMarketUserAlertTypeCountContract()
+                    .Select(alertTypeGroup => new StockMarketUserAlertTypeCountContract
                     {
                         AlertTypeId = alertTypeGroup.Key,
                         Count = alertTypeGroup.Count(),
@@ -441,7 +441,7 @@ namespace Library.StockMarket
             if (StockMarketExtension.GetChangePercent(from: price.Current, to: alert.stopLoss) < _configuration.Limit.CreateQuoteUserAlertStopLossPointsLimit)
                 throw new BadRequestException($"{nameof(alert.stopLoss)} points must be less than 50");
 
-            var quoteUserAlert = (await _repository.AddAndSaveChangesAsync(new StockMarketQuoteUserAlertEntity()
+            var quoteUserAlert = (await _repository.AddAndSaveChangesAsync(new StockMarketQuoteUserAlertEntity
             {
                 QuoteId = quote.QuoteId,
                 UserId = user.UserId,
@@ -552,7 +552,7 @@ namespace Library.StockMarket
                     !string.IsNullOrWhiteSpace(quoteData.quoteResponse.Name) &&
                     !string.IsNullOrWhiteSpace(quoteData.quoteResponse.Symbol) &&
                     financialModelingPrepExchanges.ContainsKey(quoteData.quoteResponse.Exchange))
-                .Select(quoteData => new StockMarketQuoteEntity()
+                .Select(quoteData => new StockMarketQuoteEntity
                 {
                     ExchangeId = financialModelingPrepExchanges[quoteData.quoteResponse.Exchange].ExchangeId,
                     Symbol = quoteData.quoteResponse.Symbol,

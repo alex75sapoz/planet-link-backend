@@ -81,7 +81,7 @@ namespace Library.Weather
 
             return WeatherMemoryCache.CityUserEmotions.GetCityUserEmotionsAtTimezoneToday(timezone)
                 .GroupBy(cityUserEmotion => cityUserEmotion.EmotionId)
-                .Select(cityUserEmotionGroup => new WeatherCityEmotionCountContract()
+                .Select(cityUserEmotionGroup => new WeatherCityEmotionCountContract
                 {
                     EmotionId = cityUserEmotionGroup.Key,
                     CityCount = cityUserEmotionGroup.Where(cityUserEmotion => cityUserEmotion.CityId == city.CityId).Count(),
@@ -97,7 +97,7 @@ namespace Library.Weather
 
             var cityUserEmotions = WeatherMemoryCache.CityUserEmotions.GetCityUserEmotionsAtTimezoneToday(timezone, userId);
 
-            return new WeatherCityUserConfigurationContract()
+            return new WeatherCityUserConfigurationContract
             {
                 EmotionId = cityUserEmotions.SingleOrDefault(cityUserEmotion => cityUserEmotion.CityId == city.CityId)?.EmotionId,
                 SelectionsToday = cityUserEmotions.Count,
@@ -128,7 +128,7 @@ namespace Library.Weather
             if (cityUserEmotions.Count >= _configuration.Limit.CreateCityUserEmotionLimit)
                 throw new BadRequestException("You have reached your daily limit. Come back tomorrow!");
 
-            var cityUserEmotion = (await _repository.AddAndSaveChangesAsync(new WeatherCityUserEmotionEntity()
+            var cityUserEmotion = (await _repository.AddAndSaveChangesAsync(new WeatherCityUserEmotionEntity
             {
                 CityId = city.CityId,
                 UserId = user.UserId,
@@ -157,27 +157,27 @@ namespace Library.Weather
                     return false;
 
                 if (response.Wind is null)
-                    response.Wind = new WeatherWindResponse()
+                    response.Wind = new WeatherWindResponse
                     {
                         Degrees = 0,
                         Speed = 0
                     };
 
                 if (response.Cloud is null)
-                    response.Cloud = new WeatherCloudResponse()
+                    response.Cloud = new WeatherCloudResponse
                     {
                         Cloudiness = 0
                     };
 
                 if (response.Rain is null)
-                    response.Rain = new WeatherRainResponse()
+                    response.Rain = new WeatherRainResponse
                     {
                         OneHourVolume = 0,
                         ThreeHourVolume = 0
                     };
 
                 if (response.Snow is null)
-                    response.Snow = new WeatherSnowResponse()
+                    response.Snow = new WeatherSnowResponse
                     {
                         OneHourVolume = 0,
                         ThreeHourVolume = 0
@@ -200,27 +200,27 @@ namespace Library.Weather
                 response.Forecasts.ForEach(forecast =>
                 {
                     if (forecast.Cloud is null)
-                        forecast.Cloud = new WeatherCloudResponse()
+                        forecast.Cloud = new WeatherCloudResponse
                         {
                             Cloudiness = 0
                         };
 
                     if (forecast.Wind is null)
-                        forecast.Wind = new WeatherWindResponse()
+                        forecast.Wind = new WeatherWindResponse
                         {
                             Degrees = 0,
                             Speed = 0
                         };
 
                     if (forecast.Rain is null)
-                        forecast.Rain = new WeatherRainResponse()
+                        forecast.Rain = new WeatherRainResponse
                         {
                             OneHourVolume = 0,
                             ThreeHourVolume = 0
                         };
 
                     if (forecast.Snow is null)
-                        forecast.Snow = new WeatherSnowResponse()
+                        forecast.Snow = new WeatherSnowResponse
                         {
                             OneHourVolume = 0,
                             ThreeHourVolume = 0

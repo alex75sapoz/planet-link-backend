@@ -29,7 +29,7 @@ namespace Library.Application.Entity.Configuration
             entity.ToTable(nameof(Application) + nameof(ApplicationContext.ErrorsRequest));
             entity.HasKey(errorRequest => errorRequest.ErrorId);
 
-            entity.HasOne(errorRequest => errorRequest.Error).WithOne(error => error.Request!).IsRequired(true);
+            entity.HasOne(errorRequest => errorRequest.Error).WithOne(error => error.Request!);
         }
     }
 }

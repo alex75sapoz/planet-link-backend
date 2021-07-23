@@ -3,7 +3,6 @@ using Library.Location;
 using Library.Programming;
 using Library.StockMarket;
 using Library.Weather;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
@@ -22,7 +21,6 @@ namespace Api.Controller
         private readonly IWebHostEnvironment _environment;
 
         [HttpGet("Status")]
-        [AllowAnonymous]
         public async Task<IActionResult> GetStatusAsync() =>
             Ok(await Task.FromResult(new
             {
