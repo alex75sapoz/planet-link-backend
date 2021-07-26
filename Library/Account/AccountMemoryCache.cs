@@ -10,6 +10,7 @@ namespace Library.Account
         public static IReadOnlyDictionary<int, AccountUserContract> Users => AccountMemoryCache.Users;
         public static IReadOnlyDictionary<int, AccountUserSessionContract> UserSessions => AccountMemoryCache.UserSessions;
         public static IReadOnlyDictionary<int, AccountUserTypeContract> UserTypes => AccountMemoryCache.UserTypes;
+        public static IReadOnlyDictionary<int, AccountUserGenderContract> UserGenders => AccountMemoryCache.UserGenders;
     }
 
     static class AccountMemoryCache
@@ -17,6 +18,7 @@ namespace Library.Account
         public static bool IsReady { get; private set; }
 
         public static readonly ConcurrentDictionary<int, AccountUserTypeContract> UserTypes = new();
+        public static readonly ConcurrentDictionary<int, AccountUserGenderContract> UserGenders = new();
         public static readonly ConcurrentDictionary<int, AccountUserContract> Users = new();
         public static readonly ConcurrentDictionary<int, AccountUserSessionContract> UserSessions = new();
 
@@ -25,11 +27,15 @@ namespace Library.Account
             if (IsReady) return;
 
             var userTypes = (await repository.GetUserTypesAsync()).Select(userTypeEntity => userTypeEntity.MapToUserTypeContract()).ToList();
+            var userGenders = (await repository.GetUserGendersAsync()).Select(userGenderEntity => userGenderEntity.MapToUserGenderContract()).ToList();
             var users = (await repository.GetUsersAsync()).Select(userEntity => userEntity.MapToUserContract()).ToList();
             var userSessions = (await repository.GetUserSessionsAsync()).Select(userSessionEntity => userSessionEntity.MapToUserSessionContract()).ToList();
 
             foreach (var userType in userTypes)
                 UserTypes[userType.UserTypeId] = userType;
+
+            foreach (var userGender in userGenders)
+                UserGenders[userGender.UserGenderId] = userGender;
 
             foreach (var user in users)
                 Users[user.UserId] = user;

@@ -72,8 +72,8 @@ namespace Library.Weather
             },
             MemoryCache = new
             {
-                TotalEmotions = WeatherMemoryCache.Emotions.Count,
-                TotalCityUserEmotions = WeatherMemoryCache.CityUserEmotions.Count
+                TotalEmotions = IWeatherMemoryCache.Emotions.Count,
+                TotalCityUserEmotions = IWeatherMemoryCache.CityUserEmotions.Count
             }
         };
     }

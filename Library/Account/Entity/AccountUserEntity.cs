@@ -16,6 +16,7 @@ namespace Library.Account.Entity
         public virtual AccountUserTypeEntity UserType { get; internal set; } = default!;
         public virtual AccountUserGoogleEntity? Google { get; internal set; }
         public virtual AccountUserStocktwitsEntity? Stocktwits { get; internal set; }
+        public virtual AccountUserFitbitEntity? Fitbit { get; internal set; }
         public virtual ICollection<AccountUserSessionEntity> UserSessions { get; internal set; } = new HashSet<AccountUserSessionEntity>();
     }
 }
@@ -31,6 +32,7 @@ namespace Library.Account.Entity.Configuration
 
             entity.HasOne(user => user.Google).WithOne(google => google!.User);
             entity.HasOne(user => user.Stocktwits).WithOne(google => google!.User);
+            entity.HasOne(user => user.Fitbit).WithOne(fitbit => fitbit!.User);
 
             entity.HasOne(user => user.UserType).WithMany(userType => userType.Users);
 

@@ -55,6 +55,8 @@ namespace Api.Configuration.Authentication
                 "1" => (int)AuthenticationUserType.Google,
                 nameof(AuthenticationUserType.Stocktwits) => (int)AuthenticationUserType.Stocktwits,
                 "2" => (int)AuthenticationUserType.Stocktwits,
+                nameof(AuthenticationUserType.Fitbit) => (int)AuthenticationUserType.Fitbit,
+                "3" => (int)AuthenticationUserType.Fitbit,
                 _ => null
             };
             if (userTypeId is null) return await GetUnauthorizedResult($"{ApiHeader.UserTypeId} is invalid");

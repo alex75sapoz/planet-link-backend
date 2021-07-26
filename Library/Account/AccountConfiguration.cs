@@ -24,6 +24,7 @@
         {
             public int GoogleUpdateThresholdInHours { get; set; }
             public int StocktwitsUpdateThresholdInHours { get; set; }
+            public int FitbitUpdateThresholdInHours { get; set; }
         }
 
         public class AccountDefault
@@ -48,7 +49,8 @@
 
         public class AccountFitbitApi
         {
-            public string Server { get; set; } = default!;
+            public string AuthenticationServer { get; set; } = default!;
+            public string TokenServer { get; set; } = default!;
             public string AuthenticationKey { get; set; } = default!;
             public string AuthenticationSecretKey { get; set; } = default!;
         }

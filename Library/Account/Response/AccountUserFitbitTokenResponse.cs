@@ -2,11 +2,8 @@
 
 namespace Library.Account.Response
 {
-    class AccountUserGoogleRefreshTokenResponse
+    class AccountUserFitbitTokenResponse
     {
-        [DeserializeAs(Name = "id_token")]
-        public string UserJsonWebToken { get; set; } = default!;
-
         [DeserializeAs(Name = "access_token")]
         public string Token { get; set; } = default!;
 
@@ -14,6 +11,12 @@ namespace Library.Account.Response
         public int TokenDurationInSeconds { get; set; }
 
         [DeserializeAs(Name = "refresh_token")]
-        public string? RefreshToken { get; set; }
+        public string RefreshToken { get; set; } = default!;
+
+        [DeserializeAs(Name = "token_type")]
+        public string TokenType { get; set; } = default!;
+
+        [DeserializeAs(Name = "user_id")]
+        public string UserId { get; set; } = default!;
     }
 }

@@ -7,9 +7,9 @@ namespace Library.Location
 {
     public interface ILocationMemoryCache
     {
-        public static IReadOnlyDictionary<int, LocationCountryContract> LocationCountries => LocationMemoryCache.Countries;
-        public static IReadOnlyDictionary<int, LocationStateContract> LocationStates => LocationMemoryCache.States;
-        public static IReadOnlyDictionary<int, LocationCityContract> LocationCities => LocationMemoryCache.Cities;
+        public static IReadOnlyDictionary<int, LocationCountryContract> Countries => LocationMemoryCache.Countries;
+        public static IReadOnlyDictionary<int, LocationStateContract> States => LocationMemoryCache.States;
+        public static IReadOnlyDictionary<int, LocationCityContract> Cities => LocationMemoryCache.Cities;
     }
 
     static class LocationMemoryCache

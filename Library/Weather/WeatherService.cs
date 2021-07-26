@@ -37,7 +37,7 @@ namespace Library.Weather
         #region Get
 
         public WeatherEmotionContract GetEmotion(int emotionId) =>
-            WeatherMemoryCache.Emotions.TryGetValue(emotionId, out WeatherEmotionContract? emotion)
+            IWeatherMemoryCache.Emotions.TryGetValue(emotionId, out WeatherEmotionContract? emotion)
                 ? emotion
                 : throw new BadRequestException($"{nameof(emotionId)} is invalid");
 
@@ -79,7 +79,7 @@ namespace Library.Weather
         {
             var city = _locationService.GetCity(cityId);
 
-            return WeatherMemoryCache.CityUserEmotions.GetCityUserEmotionsAtTimezoneToday(timezone)
+            return IWeatherMemoryCache.CityUserEmotions.GetCityUserEmotionsAtTimezoneToday(timezone)
                 .GroupBy(cityUserEmotion => cityUserEmotion.EmotionId)
                 .Select(cityUserEmotionGroup => new WeatherCityEmotionCountContract
                 {
@@ -95,7 +95,7 @@ namespace Library.Weather
             var user = _accountService.GetUser(userId);
             var city = _locationService.GetCity(cityId);
 
-            var cityUserEmotions = WeatherMemoryCache.CityUserEmotions.GetCityUserEmotionsAtTimezoneToday(timezone, userId);
+            var cityUserEmotions = IWeatherMemoryCache.CityUserEmotions.GetCityUserEmotionsAtTimezoneToday(timezone, userId);
 
             return new WeatherCityUserConfigurationContract
             {
@@ -107,7 +107,7 @@ namespace Library.Weather
 
         public WeatherConfigurationContract GetConfiguration() => new()
         {
-            Emotions = WeatherMemoryCache.Emotions.Select(emotion => emotion.Value).ToList()
+            Emotions = IWeatherMemoryCache.Emotions.Select(emotion => emotion.Value).ToList()
         };
 
         #endregion
@@ -120,7 +120,7 @@ namespace Library.Weather
             var city = _locationService.GetCity(cityId);
             var emotion = GetEmotion(emotionId);
 
-            var cityUserEmotions = WeatherMemoryCache.CityUserEmotions.GetCityUserEmotionsAtTimezoneToday(timezone, userId);
+            var cityUserEmotions = IWeatherMemoryCache.CityUserEmotions.GetCityUserEmotionsAtTimezoneToday(timezone, userId);
 
             if (cityUserEmotions.Any(cityUserEmotion => cityUserEmotion.CityId == city.CityId))
                 throw new BadRequestException("You already selected an emotion");

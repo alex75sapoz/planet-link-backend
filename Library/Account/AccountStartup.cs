@@ -66,9 +66,10 @@ namespace Library.Account
             },
             MemoryCache = new
             {
-                TotalUserTypes = AccountMemoryCache.UserTypes.Count,
-                TotalUserSessions = AccountMemoryCache.UserSessions.Count,
-                TotalUsers = AccountMemoryCache.Users.Count,
+                TotalUserTypes = IAccountMemoryCache.UserTypes.Count,
+                TotalUserGenders = IAccountMemoryCache.UserGenders.Count,
+                TotalUserSessions = IAccountMemoryCache.UserSessions.Count,
+                TotalUsers = IAccountMemoryCache.Users.Count,
             }
         };
     }

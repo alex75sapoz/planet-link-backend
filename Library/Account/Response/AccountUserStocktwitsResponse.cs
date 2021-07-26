@@ -3,7 +3,7 @@ using System;
 
 namespace Library.Account.Response
 {
-    class StocktwitsUserResponseRoot
+    class AccountUserStocktwitsRootResponse
     {
         public AccountUserStocktwitsResponse User { get; set; } = default!;
     }

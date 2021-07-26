@@ -64,11 +64,11 @@ namespace Library.Programming
             },
             MemoryCache = new
             {
-                TotalJobs = ProgrammingMemoryCache.Jobs.Count,
-                TotalLanguages = ProgrammingMemoryCache.Languages.Count,
-                TotalProjects = ProgrammingMemoryCache.Projects.Count,
-                TotalProjectTypes = ProgrammingMemoryCache.ProjectTypes.Count,
-                TotalTechnologyStacks = ProgrammingMemoryCache.TechnologyStacks.Count,
+                TotalJobs = IProgrammingMemoryCache.Jobs.Count,
+                TotalLanguages = IProgrammingMemoryCache.Languages.Count,
+                TotalProjects = IProgrammingMemoryCache.Projects.Count,
+                TotalProjectTypes = IProgrammingMemoryCache.ProjectTypes.Count,
+                TotalTechnologyStacks = IProgrammingMemoryCache.TechnologyStacks.Count,
             }
         };
     }

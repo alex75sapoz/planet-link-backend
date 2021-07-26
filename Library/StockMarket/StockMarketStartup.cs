@@ -77,14 +77,14 @@ namespace Library.StockMarket
             },
             MemoryCache = new
             {
-                TotalAlertCompletedTypes = StockMarketMemoryCache.AlertCompletedTypes.Count,
-                TotalAlertTypes = StockMarketMemoryCache.AlertTypes.Count,
-                TotalEmotions = StockMarketMemoryCache.Emotions.Count,
-                TotalExchanges = StockMarketMemoryCache.Exchanges.Count,
-                TotalQuotes = StockMarketMemoryCache.Quotes.Count,
-                TotalQuoteUserAlerts = StockMarketMemoryCache.QuoteUserAlerts.Count,
-                TotalQuoteUserEmotions = StockMarketMemoryCache.QuoteUserEmotions.Count,
-                TotalTimeframes = StockMarketMemoryCache.Timeframes.Count
+                TotalAlertCompletedTypes = IStockMarketMemoryCache.AlertCompletedTypes.Count,
+                TotalAlertTypes = IStockMarketMemoryCache.AlertTypes.Count,
+                TotalEmotions = IStockMarketMemoryCache.Emotions.Count,
+                TotalExchanges = IStockMarketMemoryCache.Exchanges.Count,
+                TotalQuotes = IStockMarketMemoryCache.Quotes.Count,
+                TotalQuoteUserAlerts = IStockMarketMemoryCache.QuoteUserAlerts.Count,
+                TotalQuoteUserEmotions = IStockMarketMemoryCache.QuoteUserEmotions.Count,
+                TotalTimeframes = IStockMarketMemoryCache.Timeframes.Count
             }
         };
     }

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Library.Account
@@ -28,27 +29,35 @@ namespace Library.Account
             _googleAuthenticationApi = new RestClient(_configuration.GoogleApi.AuthenticationServer);
             _googleTokenApi = new RestClient(_configuration.GoogleApi.TokenServer);
             _stocktwitsApi = new RestClient(_configuration.StocktwitsApi.Server);
+            _fitbitAuthenticationApi = new RestClient(_configuration.FitbitApi.AuthenticationServer);
+            _fitbitTokenApi = new RestClient(_configuration.FitbitApi.TokenServer);
         }
 
         private readonly IRestClient _googleAuthenticationApi;
         private readonly IRestClient _googleTokenApi;
         private readonly IRestClient _stocktwitsApi;
+        private readonly IRestClient _fitbitAuthenticationApi;
+        private readonly IRestClient _fitbitTokenApi;
 
         #region Search
 
         public List<AccountUserContract> SearchUsers(string keyword, int userTypeId) => (userTypeId switch
         {
-            (int)UserType.Google => AccountMemoryCache.Users.Where(user =>
+            (int)UserType.Google => IAccountMemoryCache.Users.Where(user =>
                 user.Value.UserTypeId == userTypeId &&
                 user.Value.Google!.Username.StartsWith(keyword, StringComparison.OrdinalIgnoreCase)
             ),
-            (int)UserType.Stocktwits => AccountMemoryCache.Users.Where(user =>
+            (int)UserType.Stocktwits => IAccountMemoryCache.Users.Where(user =>
                 user.Value.UserTypeId == userTypeId &&
                 user.Value.Stocktwits!.Username.StartsWith(keyword, StringComparison.OrdinalIgnoreCase)
             ),
+            (int)UserType.Fitbit => IAccountMemoryCache.Users.Where(user =>
+                user.Value.UserTypeId == userTypeId &&
+                user.Value.Fitbit!.FullName.StartsWith(keyword, StringComparison.OrdinalIgnoreCase)
+            ),
             _ => throw new BadRequestException($"{nameof(userTypeId)} is invalid")
-        }).Select(user => user.Value)
-          .Take(_configuration.Limit.SearchUsersLimit)
+        }).Take(_configuration.Limit.SearchUsersLimit)
+          .Select(user => user.Value)
           .ToList();
 
 
@@ -60,16 +69,17 @@ namespace Library.Account
         {
             (int)UserType.Google => GetUserGoogleConsentUrlResponse(subdomain, page),
             (int)UserType.Stocktwits => GetUserStocktwitsConsentUrlResponse(subdomain, page),
+            (int)UserType.Fitbit => GetUserFitbitConsentUrlResponse(subdomain, page),
             _ => throw new BadRequestException($"{nameof(userTypeId)} is invalid")
         };
 
         public AccountUserContract GetUser(int userId) =>
-            AccountMemoryCache.Users.TryGetValue(userId, out AccountUserContract? user)
+            IAccountMemoryCache.Users.TryGetValue(userId, out AccountUserContract? user)
                 ? user
                 : throw new BadRequestException($"{nameof(userId)} is invalid");
 
         public AccountUserSessionContract GetUserSession(int userSessionId, bool isExpiredSessionValid = false) =>
-            AccountMemoryCache.UserSessions.TryGetValue(userSessionId, out AccountUserSessionContract? userSession)
+            IAccountMemoryCache.UserSessions.TryGetValue(userSessionId, out AccountUserSessionContract? userSession)
                 ? isExpiredSessionValid || !userSession.IsExpired
                       ? userSession
                       : throw new BadRequestException($"{nameof(userSessionId)} is expired")
@@ -77,13 +87,12 @@ namespace Library.Account
 
         public AccountUserSessionContract GetUserSession(int userTypeId, string token, bool isExpiredSessionValid = false)
         {
-            var userSession = AccountMemoryCache.UserSessions.SingleOrDefault(userSession =>
+            var userSession = IAccountMemoryCache.UserSessions.SingleOrDefault(userSession =>
                 userSession.Value.Token == token &&
                 userSession.Value.User.UserTypeId == userTypeId
             ).Value ?? throw new BadRequestException($"{nameof(userTypeId)}/{nameof(token)} is invalid");
 
-            if (!isExpiredSessionValid && userSession.IsExpired)
-                throw new BadRequestException($"{nameof(token)} is expired");
+            if (!isExpiredSessionValid && userSession.IsExpired) throw new BadRequestException($"{nameof(token)} is expired");
 
             return userSession;
         }
@@ -98,86 +107,149 @@ namespace Library.Account
 
             if (userTypeId == (int)UserType.Google)
             {
-                if (userSession.IsExpired || userSession.IsAboutToExpire)
+                if (!userSession.IsExpired && !userSession.IsAboutToExpire)
+                    return userSession;
+
+                //Update database
+                var userSessionEntity = await _repository.GetUserSessionAsync(userSession.UserSessionId) ?? throw new BadRequestException($"{nameof(userSession.UserSessionId)} is invalid");
+                var userEntity = userSessionEntity.User;
+                var googleEntity = userEntity.Google!;
+
+                var googleRefreshTokenResponse = await GetUserGoogleRefreshTokenResponseAsync(userSessionEntity.RefreshToken);
+                var currentTime = DateTimeOffset.Now.AtTimezone(timezone);
+
+                userSessionEntity.RefreshToken = googleRefreshTokenResponse.RefreshToken ?? userSessionEntity.RefreshToken;
+                userSessionEntity.Token = googleRefreshTokenResponse.Token;
+                userSessionEntity.TokenExpiresOn = currentTime.AddSeconds(googleRefreshTokenResponse.TokenDurationInSeconds);
+                userSessionEntity.LastUpdatedOn = currentTime;
+
+                if ((currentTime - userEntity.LastUpdatedOn).TotalHours > _configuration.Threshold.GoogleUpdateThresholdInHours)
                 {
-                    var userSessionEntity = await _repository.GetUserSessionAsync(userSession.UserSessionId);
-
-                    if (userSessionEntity is null)
-                    {
-                        AccountMemoryCache.UserSessions.TryRemove(userSession.UserSessionId, out _);
-                        throw new BadRequestException($"user consent is required");
-                    }
-
-                    var googleRefreshTokenResponse = await GetUserGoogleRefreshTokenResponseAsync(userSession.RefreshToken);
                     var googleJsonWebToken = new JwtSecurityTokenHandler().ReadJwtToken(googleRefreshTokenResponse.UserJsonWebToken);
-                    var currentTime = DateTimeOffset.Now.AtTimezone(timezone);
 
-                    if ((currentTime - userSessionEntity.User.LastUpdatedOn).TotalHours > _configuration.Threshold.GoogleUpdateThresholdInHours)
-                    {
-                        userSessionEntity.User.Google!.Name = googleJsonWebToken.Payload.TryGetValue("name", out object? name) ? name.ToString()! : userSessionEntity.User.Google.Name;
-                        userSessionEntity.User.Google.Email = googleJsonWebToken.Payload.TryGetValue("email", out object? email) ? email.ToString()! : userSessionEntity.User.Google.Email;
-                        userSessionEntity.User.LastUpdatedOn = currentTime;
-                    }
+                    userEntity.LastUpdatedOn = currentTime;
 
-                    userSessionEntity.Token = googleRefreshTokenResponse.Token;
-                    userSessionEntity.TokenExpiresOn = currentTime.AddSeconds(googleRefreshTokenResponse.TokenDurationInSeconds);
-                    userSessionEntity.LastUpdatedOn = currentTime;
+                    if (googleJsonWebToken.Payload.TryGetValue("name", out object? name))
+                        googleEntity.Name = name.ToString()!;
 
-                    await _repository.SaveChangesAsync();
-
-                    userSession.User.Google!.Name = userSessionEntity.User.Google!.Name;
-                    userSession.User.Google.Username = userSessionEntity.User.Google.Email;
-                    userSession.Token = userSessionEntity.Token;
-                    userSession.TokenExpiresOn = userSessionEntity.TokenExpiresOn;
+                    if (googleJsonWebToken.Payload.TryGetValue("email", out object? email))
+                        googleEntity.Email = email.ToString()!;
                 }
+
+                await _repository.SaveChangesAsync();
+
+                //Update memory cache
+                var user = GetUser(userEntity.UserId);
+                var google = user.Google!;
+
+                userSession.Token = userSessionEntity.Token;
+                userSession.TokenExpiresOn = userSessionEntity.TokenExpiresOn;
+
+                google.Name = googleEntity.Name;
+                google.Username = googleEntity.Email;
 
                 return userSession;
             }
 
             if (userTypeId == (int)UserType.Stocktwits)
             {
-                if (userSession.IsExpired || userSession.IsAboutToExpire)
+                if (!userSession.IsExpired && !userSession.IsAboutToExpire)
+                    return userSession;
+
+                //Update database
+                var userSessionEntity = await _repository.GetUserSessionAsync(userSession.UserSessionId) ?? throw new BadRequestException($"{nameof(userSession.UserSessionId)} is invalid");
+                var userEntity = userSessionEntity.User;
+                var stocktwitsEntity = userEntity.Stocktwits!;
+
+                var currentTime = DateTimeOffset.Now.AtTimezone(timezone);
+
+                userSessionEntity.TokenExpiresOn = currentTime.AddHours(_configuration.Duration.StocktwitsTokenDurationInHours);
+                userSessionEntity.LastUpdatedOn = currentTime;
+
+                if ((currentTime - userEntity.LastUpdatedOn).TotalHours > _configuration.Threshold.StocktwitsUpdateThresholdInHours)
                 {
-                    var userSessionEntity = await _repository.GetUserSessionAsync(userSession.UserSessionId);
+                    var stocktwitsResponse = await GetUserStocktwitsResponseAsync(userSessionEntity.Token);
 
-                    if (userSessionEntity is null)
-                    {
-                        AccountMemoryCache.UserSessions.TryRemove(userSession.UserSessionId, out _);
-                        throw new BadRequestException("user consent is required");
-                    }
+                    userEntity.LastUpdatedOn = currentTime;
 
-                    var currentTime = DateTimeOffset.Now.AtTimezone(timezone);
-
-                    if ((currentTime - userSessionEntity.User.LastUpdatedOn).TotalHours > _configuration.Threshold.StocktwitsUpdateThresholdInHours)
-                    {
-                        var userStocktwitsResponse = await GetUserStocktwitsResponseAsync(userSession.Token);
-
-                        userSessionEntity.User.Stocktwits!.Name = userStocktwitsResponse.Name;
-                        userSessionEntity.User.Stocktwits.Username = userStocktwitsResponse.Username;
-                        userSessionEntity.User.Stocktwits.FollowersCount = userStocktwitsResponse.FollowersCount;
-                        userSessionEntity.User.Stocktwits.FollowingsCount = userStocktwitsResponse.FollowingsCount;
-                        userSessionEntity.User.Stocktwits.PostsCount = userStocktwitsResponse.PostsCount;
-                        userSessionEntity.User.Stocktwits.LikesCount = userStocktwitsResponse.LikesCount;
-                        userSessionEntity.User.Stocktwits.WatchlistQuotesCount = userStocktwitsResponse.WatchlistQuotesCount;
-                        userSessionEntity.User.Stocktwits.CreatedOn = userStocktwitsResponse.CreatedOn;
-                        userSessionEntity.User.LastUpdatedOn = currentTime;
-                    }
-
-                    userSessionEntity.TokenExpiresOn = currentTime.AddHours(_configuration.Duration.StocktwitsTokenDurationInHours);
-                    userSessionEntity.LastUpdatedOn = currentTime;
-
-                    await _repository.SaveChangesAsync();
-
-                    userSession.User.Stocktwits!.Name = userSessionEntity.User.Stocktwits!.Name;
-                    userSession.User.Stocktwits.Username = userSessionEntity.User.Stocktwits.Username;
-                    userSession.User.Stocktwits.FollowersCount = userSessionEntity.User.Stocktwits.FollowersCount;
-                    userSession.User.Stocktwits.FollowingsCount = userSessionEntity.User.Stocktwits.FollowingsCount;
-                    userSession.User.Stocktwits.PostsCount = userSessionEntity.User.Stocktwits.PostsCount;
-                    userSession.User.Stocktwits.LikesCount = userSessionEntity.User.Stocktwits.LikesCount;
-                    userSession.User.Stocktwits.WatchlistQuotesCount = userSessionEntity.User.Stocktwits.WatchlistQuotesCount;
-                    userSession.User.Stocktwits.CreatedOn = userSessionEntity.User.Stocktwits.CreatedOn;
-                    userSession.TokenExpiresOn = userSessionEntity.TokenExpiresOn;
+                    stocktwitsEntity.Name = stocktwitsResponse.Name;
+                    stocktwitsEntity.Username = stocktwitsResponse.Username;
+                    stocktwitsEntity.FollowersCount = stocktwitsResponse.FollowersCount;
+                    stocktwitsEntity.FollowingsCount = stocktwitsResponse.FollowingsCount;
+                    stocktwitsEntity.PostsCount = stocktwitsResponse.PostsCount;
+                    stocktwitsEntity.LikesCount = stocktwitsResponse.LikesCount;
+                    stocktwitsEntity.WatchlistQuotesCount = stocktwitsResponse.WatchlistQuotesCount;
+                    stocktwitsEntity.CreatedOn = stocktwitsResponse.CreatedOn;
                 }
+
+                await _repository.SaveChangesAsync();
+
+                //Update memory cache
+                var user = GetUser(userEntity.UserId);
+                var stocktwits = user.Stocktwits!;
+
+                userSession.Token = userSessionEntity.Token;
+                userSession.TokenExpiresOn = userSessionEntity.TokenExpiresOn;
+
+                stocktwits.Name = stocktwitsEntity.Name;
+                stocktwits.Username = stocktwitsEntity.Username;
+                stocktwits.FollowersCount = stocktwitsEntity.FollowersCount;
+                stocktwits.FollowingsCount = stocktwitsEntity.FollowingsCount;
+                stocktwits.PostsCount = stocktwitsEntity.PostsCount;
+                stocktwits.LikesCount = stocktwitsEntity.LikesCount;
+                stocktwits.WatchlistQuotesCount = stocktwitsEntity.WatchlistQuotesCount;
+                stocktwits.CreatedOn = stocktwitsEntity.CreatedOn;
+
+                return userSession;
+            }
+
+            if (userTypeId == (int)UserType.Fitbit)
+            {
+                if (!userSession.IsExpired && !userSession.IsAboutToExpire)
+                    return userSession;
+
+                //Update database
+                var userSessionEntity = await _repository.GetUserSessionAsync(userSession.UserSessionId) ?? throw new BadRequestException($"user consent is required");
+                var userEntity = userSessionEntity.User;
+                var fitbitEntity = userEntity.Fitbit!;
+
+                var fitbitRefreshTokenResponse = await GetUserFitbitRefreshTokenResponseAsync(userSessionEntity.RefreshToken);
+                var currentTime = DateTimeOffset.Now.AtTimezone(timezone);
+
+                userSessionEntity.RefreshToken = fitbitRefreshTokenResponse.RefreshToken ?? userSessionEntity.RefreshToken;
+                userSessionEntity.Token = fitbitRefreshTokenResponse.Token;
+                userSessionEntity.TokenExpiresOn = currentTime.AddSeconds(fitbitRefreshTokenResponse.TokenDurationInSeconds);
+                userSessionEntity.LastUpdatedOn = currentTime;
+
+                if ((currentTime - userEntity.LastUpdatedOn).TotalHours > _configuration.Threshold.FitbitUpdateThresholdInHours)
+                {
+                    var fitbitResponse = await GetUserFitbitResponseAsync(userSessionEntity.Token);
+
+                    userEntity.LastUpdatedOn = currentTime;
+
+                    fitbitEntity.FirstName = fitbitResponse.FirstName;
+                    fitbitEntity.LastName = fitbitResponse.LastName;
+                    fitbitEntity.AgeInYears = fitbitResponse.AgeInYears;
+                    fitbitEntity.HeightInCentimeters = fitbitResponse.HeightInCentimeters;
+                    fitbitEntity.UserGenderId = fitbitResponse.Gender.ToUserGenderId();
+                    fitbitEntity.CreatedOn = fitbitResponse.CreatedOn;
+                }
+
+                await _repository.SaveChangesAsync();
+
+                //Update memory cache
+                var user = GetUser(userEntity.UserId);
+                var fitbit = user.Fitbit!;
+
+                userSession.Token = userSessionEntity.Token;
+                userSession.TokenExpiresOn = userSessionEntity.TokenExpiresOn;
+
+                fitbit.FirstName = fitbitEntity.FirstName;
+                fitbit.LastName = fitbitEntity.LastName;
+                fitbit.AgeInYears = fitbitEntity.AgeInYears;
+                fitbit.HeightInCentimeters = fitbitEntity.HeightInCentimeters;
+                fitbit.UserGenderId = fitbitEntity.UserGenderId;
+                fitbit.CreatedOn = fitbitEntity.CreatedOn;
 
                 return userSession;
             }
@@ -191,13 +263,9 @@ namespace Library.Account
             {
                 var googleTokenResponse = await GetUserGoogleTokenResponseAsync(code, subdomain, page);
                 var googleJsonWebToken = new JwtSecurityTokenHandler().ReadJwtToken(googleTokenResponse.UserJsonWebToken);
-                var userEntity = await _repository.GetUserAsync((int)UserType.Google, googleJsonWebToken.Subject);
-
-                if (userEntity is null && string.IsNullOrWhiteSpace(googleTokenResponse.RefreshToken))
-                    throw new BadRequestException("user consent is required");
-
                 var currentTime = DateTimeOffset.Now.AtTimezone(timezone);
 
+                //Update database
                 var userSessionEntity = new AccountUserSessionEntity
                 {
                     Token = googleTokenResponse.Token,
@@ -206,61 +274,69 @@ namespace Library.Account
                     CreatedOn = currentTime,
                     LastUpdatedOn = currentTime
                 };
-
-                if (userEntity is null)
+                var userEntity = await _repository.GetUserAsync((int)UserType.Google, googleJsonWebToken.Subject) ?? await _repository.AddAndSaveChangesAsync(new AccountUserEntity
                 {
-                    userEntity = await _repository.AddAndSaveChangesAsync(new AccountUserEntity
+                    UserTypeId = (int)UserType.Google,
+                    ExternalUserId = googleJsonWebToken.Subject,
+                    CreatedOn = currentTime,
+                    LastUpdatedOn = currentTime,
+                    Google = new AccountUserGoogleEntity
                     {
-                        UserTypeId = (int)UserType.Google,
-                        ExternalUserId = googleJsonWebToken.Subject,
-                        CreatedOn = currentTime,
-                        LastUpdatedOn = currentTime,
-                        Google = new AccountUserGoogleEntity
-                        {
-                            Name = googleJsonWebToken.Payload.TryGetValue("name", out object? name) ? name.ToString()! : string.Empty,
-                            Email = googleJsonWebToken.Payload.TryGetValue("email", out object? email) ? email.ToString()! : string.Empty
-                        },
-                        UserSessions = new List<AccountUserSessionEntity>
-                        {
-                            userSessionEntity
-                        }
-                    });
-                }
-                else
+                        Name = googleJsonWebToken.Payload.TryGetValue("name", out object? googleName)
+                            ? googleName.ToString()!
+                            : string.Empty,
+                        Email = googleJsonWebToken.Payload.TryGetValue("email", out object? googleEmail)
+                            ? googleEmail.ToString()!
+                            : string.Empty
+                    },
+                    UserSessions = new List<AccountUserSessionEntity>
+                    {
+                        userSessionEntity
+                    }
+                });
+                var googleEntity = userEntity.Google!;
+
+                //Check for duplicate token
+                var duplicateUserSessionEntity = userEntity.UserSessions.FirstOrDefault(existingUserSessionEntity => existingUserSessionEntity.Token == userSessionEntity.Token);
+
+                if (duplicateUserSessionEntity is null)
+                    userEntity.UserSessions.Add(userSessionEntity);
+                else if (duplicateUserSessionEntity.UserSessionId != userSessionEntity.UserSessionId)
                 {
-                    if ((currentTime - userEntity.LastUpdatedOn).TotalHours > _configuration.Threshold.GoogleUpdateThresholdInHours)
-                    {
-                        userEntity.Google!.Name = googleJsonWebToken.Payload.TryGetValue("name", out object? name) ? name.ToString()! : userEntity.Google.Name;
-                        userEntity.Google.Email = googleJsonWebToken.Payload.TryGetValue("email", out object? email) ? email.ToString()! : userEntity.Google.Email;
-                        userEntity.LastUpdatedOn = currentTime;
-                    }
-
-                    var existingSessionEntity = userEntity.UserSessions.FirstOrDefault(userSession => userSession.Token == userSessionEntity.Token);
-
-                    if (existingSessionEntity is null)
-                        userEntity.UserSessions.Add(userSessionEntity);
-                    else
-                    {
-                        existingSessionEntity.Token = googleTokenResponse.Token;
-                        existingSessionEntity.RefreshToken = googleTokenResponse.RefreshToken;
-                        existingSessionEntity.TokenExpiresOn = currentTime.AddHours(_configuration.Duration.StocktwitsTokenDurationInHours);
-                        existingSessionEntity.LastUpdatedOn = currentTime;
-                        userSessionEntity = existingSessionEntity;
-                    }
-
-                    await _repository.SaveChangesAsync();
+                    duplicateUserSessionEntity.Token = userSessionEntity.Token;
+                    duplicateUserSessionEntity.RefreshToken = userSessionEntity.RefreshToken;
+                    duplicateUserSessionEntity.TokenExpiresOn = userSessionEntity.TokenExpiresOn;
+                    duplicateUserSessionEntity.LastUpdatedOn = userSessionEntity.LastUpdatedOn;
+                    userSessionEntity = duplicateUserSessionEntity;
                 }
 
-                AccountMemoryCache.Users.TryAdd(userEntity.UserId, userEntity.MapToUserContract());
+                //Check if user needs to be updated
+                if ((currentTime - userEntity.LastUpdatedOn).TotalHours > _configuration.Threshold.GoogleUpdateThresholdInHours)
+                {
+                    userEntity.LastUpdatedOn = currentTime;
+
+                    if (googleJsonWebToken.Payload.TryGetValue("name", out googleName))
+                        googleEntity.Name = googleName.ToString()!;
+
+                    if (googleJsonWebToken.Payload.TryGetValue("email", out googleEmail))
+                        googleEntity.Email = googleEmail.ToString()!;
+                }
+
+                await _repository.SaveChangesAsync();
+
+                //Update memory cache
                 AccountMemoryCache.UserSessions.TryAdd(userSessionEntity.UserSessionId, userSessionEntity.MapToUserSessionContract());
+                AccountMemoryCache.Users.TryAdd(userEntity.UserId, userEntity.MapToUserContract());
 
-                var userSession = AccountMemoryCache.UserSessions[userSessionEntity.UserSessionId];
+                var userSession = GetUserSession(userSessionEntity.UserSessionId);
+                var user = GetUser(userEntity.UserId);
+                var google = user.Google!;
 
-                userSession.User.Google!.Name = userEntity.Google!.Name;
-                userSession.User.Google.Username = userEntity.Google.Email;
                 userSession.Token = userSessionEntity.Token;
-                userSession.RefreshToken = userSessionEntity.RefreshToken;
                 userSession.TokenExpiresOn = userSessionEntity.TokenExpiresOn;
+
+                google.Name = googleEntity.Name;
+                google.Username = googleEntity.Email;
 
                 return userSession;
             }
@@ -268,9 +344,10 @@ namespace Library.Account
             if (userTypeId == (int)UserType.Stocktwits)
             {
                 var stocktwitsTokenResponse = await GetUserStocktwitsTokenResponseAsync(code, subdomain, page);
-                var userEntity = await _repository.GetUserAsync((int)UserType.Stocktwits, stocktwitsTokenResponse.UserId.ToString());
+                var stocktwitsResponse = await GetUserStocktwitsResponseAsync(stocktwitsTokenResponse.Token);
                 var currentTime = DateTimeOffset.Now.AtTimezone(timezone);
 
+                //Update database
                 var userSessionEntity = new AccountUserSessionEntity
                 {
                     Token = stocktwitsTokenResponse.Token,
@@ -279,82 +356,167 @@ namespace Library.Account
                     CreatedOn = currentTime,
                     LastUpdatedOn = currentTime
                 };
-
-                if (userEntity is null)
+                var userEntity = await _repository.GetUserAsync((int)UserType.Stocktwits, stocktwitsResponse.UserId.ToString()) ?? await _repository.AddAndSaveChangesAsync(new AccountUserEntity
                 {
-                    var userStocktwitsResponse = await GetUserStocktwitsResponseAsync(stocktwitsTokenResponse.Token);
-
-                    userEntity = await _repository.AddAndSaveChangesAsync(new AccountUserEntity
+                    UserTypeId = (int)UserType.Stocktwits,
+                    ExternalUserId = stocktwitsResponse.UserId.ToString(),
+                    CreatedOn = currentTime,
+                    LastUpdatedOn = currentTime,
+                    Stocktwits = new AccountUserStocktwitsEntity
                     {
-                        UserTypeId = (int)UserType.Stocktwits,
-                        ExternalUserId = stocktwitsTokenResponse.UserId.ToString(),
-                        CreatedOn = currentTime,
-                        LastUpdatedOn = currentTime,
-                        Stocktwits = new AccountUserStocktwitsEntity
-                        {
-                            Name = userStocktwitsResponse.Name,
-                            Username = userStocktwitsResponse.Username,
-                            FollowersCount = userStocktwitsResponse.FollowersCount,
-                            FollowingsCount = userStocktwitsResponse.FollowingsCount,
-                            PostsCount = userStocktwitsResponse.PostsCount,
-                            LikesCount = userStocktwitsResponse.LikesCount,
-                            WatchlistQuotesCount = userStocktwitsResponse.WatchlistQuotesCount,
-                            CreatedOn = userStocktwitsResponse.CreatedOn
-                        },
-                        UserSessions = new List<AccountUserSessionEntity>
-                        {
-                            userSessionEntity
-                        }
-                    });
-                }
-                else
+                        Name = stocktwitsResponse.Name,
+                        Username = stocktwitsResponse.Username,
+                        FollowersCount = stocktwitsResponse.FollowersCount,
+                        FollowingsCount = stocktwitsResponse.FollowingsCount,
+                        PostsCount = stocktwitsResponse.PostsCount,
+                        LikesCount = stocktwitsResponse.LikesCount,
+                        WatchlistQuotesCount = stocktwitsResponse.WatchlistQuotesCount,
+                        CreatedOn = stocktwitsResponse.CreatedOn
+                    },
+                    UserSessions = new List<AccountUserSessionEntity>
+                    {
+                        userSessionEntity
+                    }
+                });
+                var stocktwitsEntity = userEntity.Stocktwits!;
+
+                //Check for duplicate token
+                var duplicateUserSessionEntity = userEntity.UserSessions.FirstOrDefault(existingUserSessionEntity => existingUserSessionEntity.Token == userSessionEntity.Token);
+
+                if (duplicateUserSessionEntity is null)
+                    userEntity.UserSessions.Add(userSessionEntity);
+                else if (duplicateUserSessionEntity.UserSessionId != userSessionEntity.UserSessionId)
                 {
-                    if ((currentTime - userEntity.LastUpdatedOn).TotalHours > _configuration.Threshold.StocktwitsUpdateThresholdInHours)
-                    {
-                        var userStocktwitsResponse = await GetUserStocktwitsResponseAsync(stocktwitsTokenResponse.Token);
-                        userEntity.Stocktwits!.Name = userStocktwitsResponse.Name;
-                        userEntity.Stocktwits.Username = userStocktwitsResponse.Username;
-                        userEntity.Stocktwits.FollowersCount = userStocktwitsResponse.FollowersCount;
-                        userEntity.Stocktwits.FollowingsCount = userStocktwitsResponse.FollowingsCount;
-                        userEntity.Stocktwits.PostsCount = userStocktwitsResponse.PostsCount;
-                        userEntity.Stocktwits.LikesCount = userStocktwitsResponse.LikesCount;
-                        userEntity.Stocktwits.WatchlistQuotesCount = userStocktwitsResponse.WatchlistQuotesCount;
-                        userEntity.Stocktwits.CreatedOn = userStocktwitsResponse.CreatedOn;
-                        userEntity.LastUpdatedOn = currentTime;
-                    }
-
-                    var existingSession = userEntity.UserSessions.FirstOrDefault(userSession => userSession.Token == userSessionEntity.Token);
-
-                    if (existingSession is null)
-                        userEntity.UserSessions.Add(userSessionEntity);
-                    else
-                    {
-                        existingSession.Token = stocktwitsTokenResponse.Token;
-                        existingSession.RefreshToken = string.Empty;
-                        existingSession.TokenExpiresOn = currentTime.AddHours(_configuration.Duration.StocktwitsTokenDurationInHours);
-                        existingSession.LastUpdatedOn = currentTime;
-                        userSessionEntity = existingSession;
-                    }
-
-                    await _repository.SaveChangesAsync();
+                    duplicateUserSessionEntity.Token = userSessionEntity.Token;
+                    duplicateUserSessionEntity.RefreshToken = userSessionEntity.RefreshToken;
+                    duplicateUserSessionEntity.TokenExpiresOn = userSessionEntity.TokenExpiresOn;
+                    duplicateUserSessionEntity.LastUpdatedOn = userSessionEntity.LastUpdatedOn;
+                    userSessionEntity = duplicateUserSessionEntity;
                 }
 
-                AccountMemoryCache.Users.TryAdd(userEntity.UserId, userEntity.MapToUserContract());
+                //Check if user needs to be updated
+                if ((currentTime - userEntity.LastUpdatedOn).TotalHours > _configuration.Threshold.StocktwitsUpdateThresholdInHours)
+                {
+                    userEntity.LastUpdatedOn = currentTime;
+
+                    userEntity.Stocktwits!.Name = stocktwitsResponse.Name;
+                    userEntity.Stocktwits.Username = stocktwitsResponse.Username;
+                    userEntity.Stocktwits.FollowersCount = stocktwitsResponse.FollowersCount;
+                    userEntity.Stocktwits.FollowingsCount = stocktwitsResponse.FollowingsCount;
+                    userEntity.Stocktwits.PostsCount = stocktwitsResponse.PostsCount;
+                    userEntity.Stocktwits.LikesCount = stocktwitsResponse.LikesCount;
+                    userEntity.Stocktwits.WatchlistQuotesCount = stocktwitsResponse.WatchlistQuotesCount;
+                    userEntity.Stocktwits.CreatedOn = stocktwitsResponse.CreatedOn;
+                }
+
+                await _repository.SaveChangesAsync();
+
+                //Update memory cache
                 AccountMemoryCache.UserSessions.TryAdd(userSessionEntity.UserSessionId, userSessionEntity.MapToUserSessionContract());
+                AccountMemoryCache.Users.TryAdd(userEntity.UserId, userEntity.MapToUserContract());
 
-                var userSession = AccountMemoryCache.UserSessions[userSessionEntity.UserSessionId];
+                var userSession = GetUserSession(userSessionEntity.UserSessionId);
+                var user = GetUser(userEntity.UserId);
+                var stocktwits = user.Stocktwits!;
 
-                userSession.User.Stocktwits!.Name = userEntity.Stocktwits!.Name;
-                userSession.User.Stocktwits.Username = userEntity.Stocktwits.Username;
-                userSession.User.Stocktwits.FollowersCount = userEntity.Stocktwits.FollowersCount;
-                userSession.User.Stocktwits.FollowingsCount = userEntity.Stocktwits.FollowingsCount;
-                userSession.User.Stocktwits.PostsCount = userEntity.Stocktwits.PostsCount;
-                userSession.User.Stocktwits.LikesCount = userEntity.Stocktwits.LikesCount;
-                userSession.User.Stocktwits.WatchlistQuotesCount = userEntity.Stocktwits.WatchlistQuotesCount;
-                userSession.User.Stocktwits.CreatedOn = userEntity.Stocktwits.CreatedOn;
                 userSession.Token = userSessionEntity.Token;
-                userSession.RefreshToken = userSessionEntity.RefreshToken;
                 userSession.TokenExpiresOn = userSessionEntity.TokenExpiresOn;
+
+                stocktwits.Name = stocktwitsEntity.Name;
+                stocktwits.Username = stocktwitsEntity.Username;
+                stocktwits.FollowersCount = stocktwitsEntity.FollowersCount;
+                stocktwits.FollowingsCount = stocktwitsEntity.FollowingsCount;
+                stocktwits.PostsCount = stocktwitsEntity.PostsCount;
+                stocktwits.LikesCount = stocktwitsEntity.LikesCount;
+                stocktwits.WatchlistQuotesCount = stocktwitsEntity.WatchlistQuotesCount;
+                stocktwits.CreatedOn = stocktwitsEntity.CreatedOn;
+
+                return userSession;
+            }
+
+            if (userTypeId == (int)UserType.Fitbit)
+            {
+                var fitbitTokenResponse = await GetUserFitbitTokenResponseAsync(code, subdomain, page);
+                var fitbitResponse = await GetUserFitbitResponseAsync(fitbitTokenResponse.Token);
+                var currentTime = DateTimeOffset.Now.AtTimezone(timezone);
+
+                //Update database
+                var userSessionEntity = new AccountUserSessionEntity
+                {
+                    Token = fitbitTokenResponse.Token,
+                    RefreshToken = fitbitTokenResponse.RefreshToken,
+                    TokenExpiresOn = currentTime.AddSeconds(fitbitTokenResponse.TokenDurationInSeconds),
+                    CreatedOn = currentTime,
+                    LastUpdatedOn = currentTime
+                };
+                var userEntity = await _repository.GetUserAsync((int)UserType.Fitbit, fitbitResponse.UserId) ?? await _repository.AddAndSaveChangesAsync(new AccountUserEntity
+                {
+                    UserTypeId = (int)UserType.Fitbit,
+                    ExternalUserId = fitbitResponse.UserId,
+                    CreatedOn = currentTime,
+                    LastUpdatedOn = currentTime,
+                    Fitbit = new AccountUserFitbitEntity
+                    {
+                        UserGenderId = fitbitResponse.Gender.ToUserGenderId(),
+                        FirstName = fitbitResponse.FirstName,
+                        LastName = fitbitResponse.LastName,
+                        AgeInYears = fitbitResponse.AgeInYears,
+                        HeightInCentimeters = fitbitResponse.HeightInCentimeters,
+                        CreatedOn = fitbitResponse.CreatedOn
+                    },
+                    UserSessions = new List<AccountUserSessionEntity>
+                    {
+                        userSessionEntity
+                    }
+                });
+                var fitbitEntity = userEntity.Fitbit!;
+
+                //Check for duplicate token
+                var duplicateUserSessionEntity = userEntity.UserSessions.FirstOrDefault(existingUserSessionEntity => existingUserSessionEntity.Token == userSessionEntity.Token);
+
+                if (duplicateUserSessionEntity is null)
+                    userEntity.UserSessions.Add(userSessionEntity);
+                else if (duplicateUserSessionEntity.UserSessionId != userSessionEntity.UserSessionId)
+                {
+                    duplicateUserSessionEntity.Token = userSessionEntity.Token;
+                    duplicateUserSessionEntity.RefreshToken = userSessionEntity.RefreshToken;
+                    duplicateUserSessionEntity.TokenExpiresOn = userSessionEntity.TokenExpiresOn;
+                    duplicateUserSessionEntity.LastUpdatedOn = userSessionEntity.LastUpdatedOn;
+                    userSessionEntity = duplicateUserSessionEntity;
+                }
+
+                //Check if user needs to be updated
+                if ((currentTime - userEntity.LastUpdatedOn).TotalHours > _configuration.Threshold.FitbitUpdateThresholdInHours)
+                {
+                    userEntity.LastUpdatedOn = currentTime;
+
+                    fitbitEntity.UserGenderId = fitbitResponse.Gender.ToUserGenderId();
+                    fitbitEntity.FirstName = fitbitResponse.FirstName;
+                    fitbitEntity.LastName = fitbitResponse.LastName;
+                    fitbitEntity.AgeInYears = fitbitResponse.AgeInYears;
+                    fitbitEntity.HeightInCentimeters = fitbitResponse.HeightInCentimeters;
+                    fitbitEntity.CreatedOn = fitbitResponse.CreatedOn;
+                }
+
+                await _repository.SaveChangesAsync();
+
+                //Update memory cache
+                AccountMemoryCache.UserSessions.TryAdd(userSessionEntity.UserSessionId, userSessionEntity.MapToUserSessionContract());
+                AccountMemoryCache.Users.TryAdd(userEntity.UserId, userEntity.MapToUserContract());
+
+                var userSession = GetUserSession(userSessionEntity.UserSessionId);
+                var user = GetUser(userEntity.UserId);
+                var fitbit = user.Fitbit!;
+
+                userSession.Token = userSessionEntity.Token;
+                userSession.TokenExpiresOn = userSessionEntity.TokenExpiresOn;
+
+                fitbit.UserGenderId = fitbitEntity.UserGenderId;
+                fitbit.FirstName = fitbitEntity.FirstName;
+                fitbit.LastName = fitbitEntity.LastName;
+                fitbit.AgeInYears = fitbitEntity.AgeInYears;
+                fitbit.HeightInCentimeters = fitbitEntity.HeightInCentimeters;
+                fitbit.CreatedOn = fitbitEntity.CreatedOn;
 
                 return userSession;
             }
@@ -369,8 +531,9 @@ namespace Library.Account
         public async Task RevokeUserSessionAsync(int userSessionId)
         {
             var userSession = GetUserSession(userSessionId, isExpiredSessionValid: true);
+            var user = GetUser(userSession.UserId);
 
-            if (userSession.User.UserTypeId == (int)UserType.Google)
+            if (user.UserTypeId == (int)UserType.Google)
             {
                 await RevokeUserGoogleTokenResponseAsync(userSession.Token);
 
@@ -382,17 +545,23 @@ namespace Library.Account
                 AccountMemoryCache.UserSessions.TryRemove(userSession.UserSessionId, out _);
             }
 
-            if (userSession.User.UserTypeId == (int)UserType.Stocktwits)
+            if (user.UserTypeId == (int)UserType.Stocktwits)
             {
-                //There is only one token per multiple devices, no need to revoke it
                 return;
 
-                //var userSessionEntity = await _repository.GetUserSessionAsync(userSession.UserSessionId);
+                //There is only one token per multiple devices, no need to revoke it
+            }
 
-                //if (userSessionEntity is not null)
-                //    await _repository.RemoveAsync(userSessionEntity);
+            if (user.UserTypeId == (int)UserType.Fitbit)
+            {
+                await RevokeUserFitbitTokenResponseAsync(userSession.Token);
 
-                //UserMemoryCache.UserSessions.TryRemove(userSession.UserSessionId, out _);
+                var userSessionEntity = await _repository.GetUserSessionAsync(userSession.UserSessionId);
+
+                if (userSessionEntity is not null)
+                    await _repository.RemoveAsync(userSessionEntity);
+
+                AccountMemoryCache.UserSessions.TryRemove(userSession.UserSessionId, out _);
             }
         }
 
@@ -419,7 +588,7 @@ namespace Library.Account
                     .AddQueryParameter("grant_type", "authorization_code")
                     .AddQueryParameter("redirect_uri", $"{_configuration.Default.UserAuthenticationRedirectUrl}?userTypeId={(int)UserType.Google}&subdomain={subdomain}&page={page}")
                     .AddQueryParameter("code", code)
-            )).GetData(isSuccess: (response) => !string.IsNullOrWhiteSpace(response?.Token));
+            )).GetData(isSuccess: (response) => !string.IsNullOrWhiteSpace(response?.Token) && !string.IsNullOrWhiteSpace(response?.RefreshToken));
 
         private async Task<AccountUserGoogleRefreshTokenResponse> GetUserGoogleRefreshTokenResponseAsync(string refreshToken) =>
             (await _googleTokenApi.ExecutePostAsync<AccountUserGoogleRefreshTokenResponse>(
@@ -461,9 +630,59 @@ namespace Library.Account
             )).GetData(isSuccess: (response) => !string.IsNullOrWhiteSpace(response?.Token));
 
         private async Task<AccountUserStocktwitsResponse> GetUserStocktwitsResponseAsync(string token) =>
-            (await _stocktwitsApi.ExecuteGetAsync<StocktwitsUserResponseRoot>(
+            (await _stocktwitsApi.ExecuteGetAsync<AccountUserStocktwitsRootResponse>(
                 new RestRequest("account/verify.json")
                     .AddQueryParameter("access_token", token)
+            )).GetData(isSuccess: (response) => response?.User is not null).User;
+
+        #endregion
+
+        #region Fitbit Api
+
+        private string GetUserFitbitConsentUrlResponse(string subdomain, string page) =>
+            _fitbitAuthenticationApi.BuildUri(
+                new RestRequest("oauth2/authorize")
+                    .AddQueryParameter("client_id", _configuration.FitbitApi.AuthenticationKey)
+                    .AddQueryParameter("response_type", "code")
+                    .AddQueryParameter("scope", "activity location profile social")
+                    .AddQueryParameter("prompt", "consent")
+                    .AddQueryParameter("redirect_uri", $"{_configuration.Default.UserAuthenticationRedirectUrl}?userTypeId={(int)UserType.Fitbit}&subdomain={subdomain}&page={page}")
+            ).AbsoluteUri;
+
+        private async Task<AccountUserFitbitTokenResponse> GetUserFitbitTokenResponseAsync(string code, string subdomain, string page) =>
+            (await _fitbitTokenApi.ExecutePostAsync<AccountUserFitbitTokenResponse>(
+                new RestRequest("oauth2/token")
+                    .AddHeader("Authorization", $"Basic {Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_configuration.FitbitApi.AuthenticationKey}:{_configuration.FitbitApi.AuthenticationSecretKey}"))}")
+                    .AddHeader("Content-Type", "application/x-www-form-urlencoded")
+                    .AddQueryParameter("client_id", _configuration.FitbitApi.AuthenticationKey)
+                    .AddQueryParameter("grant_type", "authorization_code")
+                    .AddQueryParameter("redirect_uri", $"{_configuration.Default.UserAuthenticationRedirectUrl}?userTypeId={(int)UserType.Fitbit}&subdomain={subdomain}&page={page}")
+                    .AddQueryParameter("code", code)
+                    .AddQueryParameter("expires_in", "3600")
+            )).GetData(isSuccess: (response) => !string.IsNullOrWhiteSpace(response?.Token) && !string.IsNullOrWhiteSpace(response?.RefreshToken));
+
+        private async Task<AccountUserFitbitRefreshTokenResponse> GetUserFitbitRefreshTokenResponseAsync(string refreshToken) =>
+            (await _fitbitTokenApi.ExecutePostAsync<AccountUserFitbitRefreshTokenResponse>(
+                new RestRequest("oauth2/token")
+                    .AddHeader("Authorization", $"Basic {Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_configuration.FitbitApi.AuthenticationKey}:{_configuration.FitbitApi.AuthenticationSecretKey}"))}")
+                    .AddHeader("Content-Type", "application/x-www-form-urlencoded")
+                    .AddQueryParameter("grant_type", "refresh_token")
+                    .AddQueryParameter("refresh_token", refreshToken)
+                    .AddQueryParameter("expires_in", "3600")
+            )).GetData(isSuccess: (response) => !string.IsNullOrWhiteSpace(response?.Token));
+
+        private async Task<IRestResponse> RevokeUserFitbitTokenResponseAsync(string token) =>
+            await _fitbitTokenApi.ExecutePostAsync(
+                new RestRequest("oauth2/revoke")
+                    .AddHeader("Authorization", $"Basic {Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_configuration.FitbitApi.AuthenticationKey}:{_configuration.FitbitApi.AuthenticationSecretKey}"))}")
+                    .AddHeader("Content-Type", "application/x-www-form-urlencoded")
+                    .AddQueryParameter("token", token)
+            );
+
+        private async Task<AccountUserFitbitResponse> GetUserFitbitResponseAsync(string token) =>
+            (await _fitbitTokenApi.ExecuteGetAsync<AccountUserFitbitResponseRoot>(
+                new RestRequest("1/user/-/profile.json")
+                    .AddHeader("Authorization", $"Bearer {token}")
             )).GetData(isSuccess: (response) => response?.User is not null).User;
 
         #endregion

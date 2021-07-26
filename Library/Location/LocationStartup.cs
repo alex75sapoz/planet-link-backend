@@ -64,9 +64,9 @@ namespace Library.Location
             },
             MemoryCache = new
             {
-                TotalCountries = LocationMemoryCache.Countries.Count,
-                TotalStates = LocationMemoryCache.States.Count,
-                TotalCities = LocationMemoryCache.Cities.Count
+                TotalCountries = ILocationMemoryCache.Countries.Count,
+                TotalStates = ILocationMemoryCache.States.Count,
+                TotalCities = ILocationMemoryCache.Cities.Count
             }
         };
     }

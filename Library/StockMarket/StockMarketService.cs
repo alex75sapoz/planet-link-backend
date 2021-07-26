@@ -49,7 +49,7 @@ namespace Library.StockMarket
         #region Search
 
         public List<StockMarketQuoteContract> SearchQuotesAsync(string keyword) =>
-            StockMarketMemoryCache.Quotes
+            IStockMarketMemoryCache.Quotes
                 .Where(quote => quote.Value.Symbol.StartsWith(keyword))
                 .OrderBy(quote => quote.Value.Symbol.Length)
                 .Take(_configuration.Limit.SearchQuotesLimit)
@@ -61,15 +61,15 @@ namespace Library.StockMarket
             if (userId.HasValue && _accountService.GetUser(userId.Value).UserTypeId != (int)UserType.Stocktwits)
                 throw new BadRequestException($"{nameof(userId)} is not of {nameof(UserType.Stocktwits)} type");
 
-            return StockMarketMemoryCache.QuoteUserAlerts
+            return IStockMarketMemoryCache.QuoteUserAlerts
                 .Where(quoteUserAlert =>
                     (quoteUserAlert.Value.AlertTypeId == alertTypeId) &&
                     (!userId.HasValue || quoteUserAlert.Value.UserId == userId) &&
                     (!quoteId.HasValue || quoteUserAlert.Value.QuoteId == quoteId)
                 )
-                .Select(quoteUserAlert => quoteUserAlert.Value)
-                .OrderByDescending(quoteUserAlert => quoteUserAlert.CreatedOn)
+                .OrderByDescending(quoteUserAlert => quoteUserAlert.Value.CreatedOn)
                 .Take(_configuration.Limit.SearchQuoteUserAlertsLimit)
+                .Select(quoteUserAlert => quoteUserAlert.Value)
                 .ToList();
         }
 
@@ -78,17 +78,17 @@ namespace Library.StockMarket
         #region Get
 
         public StockMarketQuoteContract GetQuote(int quoteId) =>
-            StockMarketMemoryCache.Quotes.TryGetValue(quoteId, out StockMarketQuoteContract? quote)
+            IStockMarketMemoryCache.Quotes.TryGetValue(quoteId, out StockMarketQuoteContract? quote)
                 ? quote
                 : throw new BadRequestException($"{nameof(quoteId)} is invalid");
 
         public StockMarketEmotionContract GetEmotion(int emotionId) =>
-            StockMarketMemoryCache.Emotions.TryGetValue(emotionId, out StockMarketEmotionContract? emotion)
+            IStockMarketMemoryCache.Emotions.TryGetValue(emotionId, out StockMarketEmotionContract? emotion)
                 ? emotion
                 : throw new BadRequestException($"{nameof(emotionId)} is invalid");
 
         public StockMarketTimeframeContract GetTimeframe(int timeframeId) =>
-            StockMarketMemoryCache.Timeframes.TryGetValue(timeframeId, out StockMarketTimeframeContract? timeframe)
+            IStockMarketMemoryCache.Timeframes.TryGetValue(timeframeId, out StockMarketTimeframeContract? timeframe)
                 ? timeframe
                 : throw new BadRequestException($"{nameof(timeframeId)} is invalid");
 
@@ -215,7 +215,7 @@ namespace Library.StockMarket
             }
 
             //Everything under here is dynamic, no matter the timeframe
-            var quoteUserAlerts = StockMarketMemoryCache.QuoteUserAlerts
+            var quoteUserAlerts = IStockMarketMemoryCache.QuoteUserAlerts
                                            .Where(quoteUserAlert =>
                                                quoteUserAlert.Value.QuoteId == quote.QuoteId &&
                                                quoteUserAlert.Value.CreatedOn >= quoteCandlesResponse[^1].CreatedOn &&
@@ -309,7 +309,7 @@ namespace Library.StockMarket
         {
             var quote = GetQuote(quoteId);
 
-            return StockMarketMemoryCache.QuoteUserEmotions.GetQuoteUserEmotionsAtTimezoneToday(timezone)
+            return IStockMarketMemoryCache.QuoteUserEmotions.GetQuoteUserEmotionsAtTimezoneToday(timezone)
                 .GroupBy(quoteUserEmotion => quoteUserEmotion.EmotionId)
                 .Select(quoteUserEmotionGroup => new StockMarketQuoteEmotionCountContract
                 {
@@ -325,7 +325,7 @@ namespace Library.StockMarket
             var user = _accountService.GetUser(userId);
             var quote = GetQuote(quoteId);
 
-            var quoteUserEmotions = StockMarketMemoryCache.QuoteUserEmotions.GetQuoteUserEmotionsAtTimezoneToday(timezone, userId);
+            var quoteUserEmotions = IStockMarketMemoryCache.QuoteUserEmotions.GetQuoteUserEmotionsAtTimezoneToday(timezone, userId);
 
             return new StockMarketQuoteUserConfigurationContract
             {
@@ -337,11 +337,11 @@ namespace Library.StockMarket
 
         public StockMarketConfigurationContract GetConfiguration() => new()
         {
-            AlertTypes = StockMarketMemoryCache.AlertTypes.Select(alertType => alertType.Value).ToList(),
-            AlertCompletedTypes = StockMarketMemoryCache.AlertCompletedTypes.Select(alertCompletedType => alertCompletedType.Value).ToList(),
-            Emotions = StockMarketMemoryCache.Emotions.Select(emotion => emotion.Value).ToList(),
-            Exchanges = StockMarketMemoryCache.Exchanges.Select(exchange => exchange.Value).ToList(),
-            Timeframes = StockMarketMemoryCache.Timeframes.Select(timeframe => timeframe.Value).ToList(),
+            AlertTypes = IStockMarketMemoryCache.AlertTypes.Select(alertType => alertType.Value).ToList(),
+            AlertCompletedTypes = IStockMarketMemoryCache.AlertCompletedTypes.Select(alertCompletedType => alertCompletedType.Value).ToList(),
+            Emotions = IStockMarketMemoryCache.Emotions.Select(emotion => emotion.Value).ToList(),
+            Exchanges = IStockMarketMemoryCache.Exchanges.Select(exchange => exchange.Value).ToList(),
+            Timeframes = IStockMarketMemoryCache.Timeframes.Select(timeframe => timeframe.Value).ToList(),
             QuoteUserAlertRequirement = new StockMarketQuoteUserAlertRequirementConfigurationContract()
             {
                 MinimumFollowersCount = _configuration.Requirement.CreateQuoteUserAlertMinimumFollowersCount,
@@ -363,7 +363,7 @@ namespace Library.StockMarket
 
             return new StockMarketUserContract
             {
-                AlertTypeCounts = StockMarketMemoryCache.QuoteUserAlerts
+                AlertTypeCounts = IStockMarketMemoryCache.QuoteUserAlerts
                     .Where(quoteUserAlert => quoteUserAlert.Value.UserId == user.UserId)
                     .GroupBy(quoteUserAlert => quoteUserAlert.Value.AlertTypeId)
                     .Select(alertTypeGroup => new StockMarketUserAlertTypeCountContract
@@ -413,7 +413,7 @@ namespace Library.StockMarket
             if (user.Stocktwits.WatchlistQuotesCount < _configuration.Requirement.CreateQuoteUserAlertMinimumWatchlistQuotesCount)
                 throw new BadRequestException($"Your account must have at least {_configuration.Requirement.CreateQuoteUserAlertMinimumWatchlistQuotesCount} watchlist quotes");
 
-            var quoteUserAlerts = StockMarketMemoryCache.QuoteUserAlerts
+            var quoteUserAlerts = IStockMarketMemoryCache.QuoteUserAlerts
                 .Where(quoteUserAlert =>
                     quoteUserAlert.Value.UserId == user.UserId &&
                     !quoteUserAlert.Value.AlertCompletedTypeId.HasValue
@@ -466,7 +466,7 @@ namespace Library.StockMarket
             var quote = GetQuote(quoteId);
             var emotion = GetEmotion(emotionId);
 
-            var quoteUserEmotions = StockMarketMemoryCache.QuoteUserEmotions.GetQuoteUserEmotionsAtTimezoneToday(timezone, userId);
+            var quoteUserEmotions = IStockMarketMemoryCache.QuoteUserEmotions.GetQuoteUserEmotionsAtTimezoneToday(timezone, userId);
 
             if (quoteUserEmotions.Any(userEmotion => userEmotion.QuoteId == quote.QuoteId))
                 throw new BadRequestException("You already selected an emotion");
@@ -495,7 +495,7 @@ namespace Library.StockMarket
         {
             var user = _accountService.GetUser(userId);
 
-            if (!StockMarketMemoryCache.QuoteUserAlerts.TryGetValue(quoteUserAlertId, out StockMarketQuoteUserAlertContract? quoteUserAlert))
+            if (!IStockMarketMemoryCache.QuoteUserAlerts.TryGetValue(quoteUserAlertId, out StockMarketQuoteUserAlertContract? quoteUserAlert))
                 throw new BadRequestException($"{nameof(quoteUserAlertId)} is invalid");
 
             if (quoteUserAlert.UserId != user.UserId)
@@ -534,7 +534,7 @@ namespace Library.StockMarket
                 return;
             }
 
-            var financialModelingPrepExchanges = StockMarketMemoryCache.Exchanges
+            var financialModelingPrepExchanges = IStockMarketMemoryCache.Exchanges
                 .Select(exchange => exchange.Value)
                 .ToDictionary(exchange => exchange.FinancialModelingPrepId);
 
@@ -616,7 +616,7 @@ namespace Library.StockMarket
                     if (originalQuoteUserAlertEntityReverseSplitCount != quoteUserAlertEntity.ReverseSplitCount)
                         quoteUserAlertCacheUpdates.Add(() =>
                         {
-                            if (!StockMarketMemoryCache.QuoteUserAlerts.TryGetValue(quoteUserAlertEntity.QuoteUserAlertId, out StockMarketQuoteUserAlertContract? quoteUserAlert))
+                            if (!IStockMarketMemoryCache.QuoteUserAlerts.TryGetValue(quoteUserAlertEntity.QuoteUserAlertId, out StockMarketQuoteUserAlertContract? quoteUserAlert))
                                 return;
 
                             quoteUserAlert.Buy = quoteUserAlertEntity.Buy;
@@ -701,7 +701,7 @@ namespace Library.StockMarket
                     if (quoteUserAlertEntity.AlertTypeId != (int)AlertType.InProgress)
                         quoteUserAlertCacheUpdates.Add(() =>
                         {
-                            if (!StockMarketMemoryCache.QuoteUserAlerts.TryGetValue(quoteUserAlertEntity.QuoteUserAlertId, out StockMarketQuoteUserAlertContract? quoteUserAlert))
+                            if (!IStockMarketMemoryCache.QuoteUserAlerts.TryGetValue(quoteUserAlertEntity.QuoteUserAlertId, out StockMarketQuoteUserAlertContract? quoteUserAlert))
                                 return;
 
                             quoteUserAlert.AlertTypeId = quoteUserAlertEntity.AlertTypeId;

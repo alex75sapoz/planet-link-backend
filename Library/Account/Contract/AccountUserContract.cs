@@ -11,6 +11,7 @@ namespace Library.Account.Contract
 
         public AccountUserGoogleContract? Google { get; internal set; }
         public AccountUserStocktwitsContract? Stocktwits { get; internal set; }
+        public AccountUserFitbitContract? Fitbit { get; internal set; }
 
         public AccountUserTypeContract UserType => IAccountMemoryCache.UserTypes[UserTypeId];
     }

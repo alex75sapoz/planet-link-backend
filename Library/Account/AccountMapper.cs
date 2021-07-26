@@ -8,12 +8,19 @@
             Name = src.Name
         };
 
+        public static AccountUserGenderContract MapToUserGenderContract(this AccountUserGenderEntity src) => new()
+        {
+            UserGenderId = src.UserGenderId,
+            Name = src.Name
+        };
+
         public static AccountUserContract MapToUserContract(this AccountUserEntity src) => new()
         {
             UserTypeId = src.UserTypeId,
             UserId = src.UserId,
             Google = src.Google?.MapToUserGoogleContract(),
-            Stocktwits = src.Stocktwits?.MapToUserStocktwitsContract()
+            Stocktwits = src.Stocktwits?.MapToUserStocktwitsContract(),
+            Fitbit = src.Fitbit?.MapToUserFitbitContract()
         };
 
         public static AccountUserGoogleContract MapToUserGoogleContract(this AccountUserGoogleEntity src) => new()
@@ -34,12 +41,21 @@
             CreatedOn = src.CreatedOn
         };
 
+        public static AccountUserFitbitContract MapToUserFitbitContract(this AccountUserFitbitEntity src) => new()
+        {
+            UserGenderId = src.UserGenderId,
+            FirstName = src.FirstName,
+            LastName = src.LastName,
+            AgeInYears = src.AgeInYears,
+            HeightInCentimeters = src.HeightInCentimeters,
+            CreatedOn = src.CreatedOn
+        };
+
         public static AccountUserSessionContract MapToUserSessionContract(this AccountUserSessionEntity src) => new()
         {
             UserId = src.UserId,
             UserSessionId = src.UserSessionId,
             Token = src.Token,
-            RefreshToken = src.RefreshToken,
             TokenExpiresOn = src.TokenExpiresOn
         };
     }

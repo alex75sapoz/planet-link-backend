@@ -6,8 +6,6 @@ namespace Library.Account.Contract
     public class AccountUserSessionContract
     {
         [JsonIgnore]
-        public string RefreshToken { get; internal set; } = default!;
-        [JsonIgnore]
         public bool IsAuthenticated => !IsExpired;
         [JsonIgnore]
         public bool IsExpired => TokenExpiresOn <= DateTimeOffset.Now;
