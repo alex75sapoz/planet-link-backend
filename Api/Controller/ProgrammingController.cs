@@ -21,5 +21,10 @@ namespace Api.Controller
         [ResponseCache(Duration = 59)]
         public async Task<IActionResult> SearchProjectsAsync([Range(1, int.MaxValue)] int? projectTypeId, [Range(1, int.MaxValue)] int? languageId, [Range(1, int.MaxValue)] int? jobId, [Range(1, int.MaxValue)] int? technologyStackId) =>
             Ok(await Task.FromResult(_service.SearchProjects(projectTypeId, languageId, jobId, technologyStackId)));
+
+        [HttpPost("Project"), ProducesResponseType(typeof(ProgrammingProjectContract), (int)HttpStatusCode.OK)]
+        [Authorization(Requirement.UserTypeGoogle)]
+        public async Task<IActionResult> CreateProjectAsync([Required] ProgrammingProjectCreateContract newProject) =>
+            Ok(await _service.CreateProjectAsync(newProject, Timezone));
     }
 }

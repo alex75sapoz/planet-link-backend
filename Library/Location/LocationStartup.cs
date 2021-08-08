@@ -58,15 +58,14 @@ namespace Library.Location
                 Public = new[]
                 {
                     nameof(ILocationRepository),
-                    nameof(ILocationService),
-                    nameof(ILocationMemoryCache)
+                    nameof(ILocationService)
                 }
             },
             MemoryCache = new
             {
-                TotalCountries = ILocationMemoryCache.Countries.Count,
-                TotalStates = ILocationMemoryCache.States.Count,
-                TotalCities = ILocationMemoryCache.Cities.Count
+                TotalCountries = ILocationService.Countries.Count,
+                TotalStates = ILocationService.States.Count,
+                TotalCities = ILocationService.Cities.Count
             }
         };
     }

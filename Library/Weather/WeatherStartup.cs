@@ -62,8 +62,7 @@ namespace Library.Weather
                 Public = new[]
                 {
                     nameof(IWeatherRepository),
-                    nameof(IWeatherService),
-                    nameof(IWeatherMemoryCache)
+                    nameof(IWeatherService)
                 },
                 Job = new[]
                 {
@@ -72,8 +71,8 @@ namespace Library.Weather
             },
             MemoryCache = new
             {
-                TotalEmotions = IWeatherMemoryCache.Emotions.Count,
-                TotalCityUserEmotions = IWeatherMemoryCache.CityUserEmotions.Count
+                TotalEmotions = IWeatherService.Emotions.Count,
+                TotalCityUserEmotions = IWeatherService.CityUserEmotions.Count
             }
         };
     }

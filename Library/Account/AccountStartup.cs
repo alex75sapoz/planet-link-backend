@@ -60,16 +60,15 @@ namespace Library.Account
                 Public = new[]
                 {
                     nameof(IAccountRepository),
-                    nameof(IAccountService),
-                    nameof(IAccountMemoryCache)
+                    nameof(IAccountService)
                 }
             },
             MemoryCache = new
             {
-                TotalUserTypes = IAccountMemoryCache.UserTypes.Count,
-                TotalUserGenders = IAccountMemoryCache.UserGenders.Count,
-                TotalUserSessions = IAccountMemoryCache.UserSessions.Count,
-                TotalUsers = IAccountMemoryCache.Users.Count,
+                TotalUserTypes = IAccountService.UserTypes.Count,
+                TotalUserGenders = IAccountService.UserGenders.Count,
+                TotalUserSessions = IAccountService.UserSessions.Count,
+                TotalUsers = IAccountService.Users.Count,
             }
         };
     }

@@ -18,6 +18,6 @@ namespace Library.Account.Contract
         public string Token { get; internal set; } = default!;
         public DateTimeOffset TokenExpiresOn { get; internal set; }
 
-        public AccountUserContract User => IAccountMemoryCache.Users[UserId];
+        public AccountUserContract User => IAccountService.GetUser(UserId);
     }
 }

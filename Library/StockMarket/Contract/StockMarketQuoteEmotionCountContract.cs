@@ -10,6 +10,6 @@ namespace Library.StockMarket.Contract
         public int QuoteCount { get; internal set; }
         public int GlobalCount { get; internal set; }
 
-        public StockMarketEmotionContract Emotion => IStockMarketMemoryCache.Emotions[EmotionId];
+        public StockMarketEmotionContract Emotion => IStockMarketService.GetEmotion(EmotionId);
     }
 }

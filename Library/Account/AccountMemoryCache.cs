@@ -1,18 +1,9 @@
 ﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Library.Account
 {
-    public interface IAccountMemoryCache
-    {
-        public static IReadOnlyDictionary<int, AccountUserContract> Users => AccountMemoryCache.Users;
-        public static IReadOnlyDictionary<int, AccountUserSessionContract> UserSessions => AccountMemoryCache.UserSessions;
-        public static IReadOnlyDictionary<int, AccountUserTypeContract> UserTypes => AccountMemoryCache.UserTypes;
-        public static IReadOnlyDictionary<int, AccountUserGenderContract> UserGenders => AccountMemoryCache.UserGenders;
-    }
-
     static class AccountMemoryCache
     {
         public static bool IsReady { get; private set; }

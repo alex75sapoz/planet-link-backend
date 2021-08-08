@@ -93,7 +93,7 @@ namespace Api.Configuration.Authentication
 
             try
             {
-                return GetUserSessionAuthenticateResult(_accountService.GetUserSession(userTypeId.Value, _headerToken), timezone);
+                return GetUserSessionAuthenticateResult(IAccountService.GetUserSession(userTypeId.Value, _headerToken, isExpiredSessionValid: false), timezone);
             }
             catch (System.Exception exception)
             {

@@ -17,7 +17,7 @@ namespace Api.Controller
         [HttpGet("Country"), ProducesResponseType(typeof(LocationCountryContract), (int)HttpStatusCode.OK)]
         [ResponseCache(Duration = 299)]
         public async Task<IActionResult> GetCountryAsync([Required, Range(1, int.MaxValue)] int countryId) =>
-            Ok(await Task.FromResult(_service.GetCountry(countryId)));
+            Ok(await Task.FromResult(ILocationService.GetCountry(countryId)));
 
         [HttpGet("Country/Search"), ProducesResponseType(typeof(List<LocationCountryContract>), (int)HttpStatusCode.OK)]
         [ResponseCache(Duration = 299)]
@@ -29,7 +29,7 @@ namespace Api.Controller
         [ResponseCache(Duration = 299)]
         public async Task<IActionResult> GetCityAsync([Range(1, int.MaxValue)] int? cityId, [Range(-90, 90)] decimal? latitude, [Range(-180, 180)] decimal? longitude) =>
             cityId.HasValue
-                ? Ok(await Task.FromResult(_service.GetCity(cityId.Value)))
+                ? Ok(await Task.FromResult(ILocationService.GetCity(cityId.Value)))
                 : latitude.HasValue && longitude.HasValue
                     ? Ok(await Task.FromResult(_service.GetCity((latitude.Value, longitude.Value))))
                     : throw new BadRequestException($"{nameof(cityId)} or {nameof(latitude)}/{nameof(longitude)} is required");
