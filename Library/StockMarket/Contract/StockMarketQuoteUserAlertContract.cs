@@ -27,9 +27,9 @@ namespace Library.StockMarket.Contract
         public decimal? CompletedSellPoints => CompletedSell.HasValue ? StockMarketExtension.GetChangePercent(from: Buy, CompletedSell.Value) : CompletedSell;
         public DateTimeOffset? CompletedOn { get; internal set; }
 
-        public StockMarketQuoteContract Quote => IStockMarketMemoryCache.Quotes[QuoteId];
-        public AccountUserContract User => IAccountMemoryCache.Users[UserId];
-        public StockMarketAlertTypeContract AlertType => IStockMarketMemoryCache.AlertTypes[AlertTypeId];
-        public StockMarketAlertCompletedTypeContract? AlertCompletedType => AlertCompletedTypeId.HasValue ? IStockMarketMemoryCache.AlertCompletedTypes[AlertCompletedTypeId.Value] : null;
+        public StockMarketQuoteContract Quote => IStockMarketService.GetQuote(QuoteId);
+        public AccountUserContract User => IAccountService.GetUser(UserId);
+        public StockMarketAlertTypeContract AlertType => IStockMarketService.GetAlertType(AlertTypeId);
+        public StockMarketAlertCompletedTypeContract? AlertCompletedType => AlertCompletedTypeId.HasValue ? IStockMarketService.GetAlertCompletedType(AlertCompletedTypeId.Value) : null;
     }
 }

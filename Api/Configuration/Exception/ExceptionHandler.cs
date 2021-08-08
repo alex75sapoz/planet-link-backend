@@ -15,22 +15,9 @@ namespace Api.Configuration.Exception
         {
             var exception = context.Features.Get<IExceptionHandlerPathFeature>()?.Error ?? new InternalServerException("Unknown Error");
 
-            string exceptionMessage;
-            int statusCodeId;
-
-            if (exception is BaseException baseException)
-            {
-                statusCodeId = (int)baseException.StatusCode;
-                exceptionMessage = baseException.GetFullMessage();
-
-                if (baseException.InternalMessage is not null)
-                    exceptionMessage += $", {baseException.InternalMessage}";
-            }
-            else
-            {
-                statusCodeId = (int)HttpStatusCode.InternalServerError;
-                exceptionMessage = exception.GetFullMessage();
-            }
+            context.Response.StatusCode = exception is BaseException baseException
+                ? (int)baseException.StatusCode
+                : (int)HttpStatusCode.InternalServerError;
 
             using var scope = context.RequestServices.CreateScope();
             var applicationService = scope.ServiceProvider.GetRequiredService<IApplicationService>();
@@ -42,9 +29,9 @@ namespace Api.Configuration.Exception
                 method: context.Request.Method,
                 path: context.Request.Path,
                 query: context.Request.QueryString.ToString(),
-                statusCodeId: statusCodeId,
+                statusCodeId: context.Response.StatusCode,
                 exceptionType: exception.GetType().Name,
-                exceptionMessage: exceptionMessage,
+                exceptionMessage: exception.GetFullMessage(),
                 timezoneId: authenticationResult.Timezone.Id
             )
             {
@@ -52,11 +39,7 @@ namespace Api.Configuration.Exception
                 UserId = authenticationResult.UserId
             });
 
-            context.Response.StatusCode = statusCodeId;
-            await context.Response.WriteAsJsonAsync(exception.InnerException is not null
-                    ? $"{exception.Message}, {exception.InnerException}"
-                    : $"{exception.Message}"
-            );
+            await context.Response.WriteAsJsonAsync(exception.GetFullMessage(includeInternalMessage: false));
         }
     }
 }

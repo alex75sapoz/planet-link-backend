@@ -8,8 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Error\Library.Application.csproj" />
-    <ProjectReference Include="..\User\Library.Account.csproj" />
+    <ProjectReference Include="..\Application\Library.Application.csproj" />
+    <ProjectReference Include="..\Account\Library.Account.csproj" />
   </ItemGroup>
 
 </Project>

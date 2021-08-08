@@ -22,7 +22,7 @@ namespace Api.Controller
         [HttpGet("Quote"), ProducesResponseType(typeof(StockMarketQuoteContract), (int)HttpStatusCode.OK)]
         [ResponseCache(Duration = 299)]
         public async Task<IActionResult> GetQuoteAsync([Required, Range(1, int.MaxValue)] int quoteId) =>
-            Ok(await Task.FromResult(_service.GetQuote(quoteId)));
+            Ok(await Task.FromResult(IStockMarketService.GetQuote(quoteId)));
 
         [HttpGet("Quote/Search"), ProducesResponseType(typeof(List<StockMarketQuoteContract>), (int)HttpStatusCode.OK)]
         [ResponseCache(Duration = 299)]

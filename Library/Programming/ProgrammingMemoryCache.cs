@@ -1,19 +1,9 @@
 ﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Library.Programming
 {
-    public interface IProgrammingMemoryCache
-    {
-        public static IReadOnlyDictionary<int, ProgrammingLanguageContract> Languages => ProgrammingMemoryCache.Languages;
-        public static IReadOnlyDictionary<int, ProgrammingJobContract> Jobs => ProgrammingMemoryCache.Jobs;
-        public static IReadOnlyDictionary<int, ProgrammingTechnologyStackContract> TechnologyStacks => ProgrammingMemoryCache.TechnologyStacks;
-        public static IReadOnlyDictionary<int, ProgrammingProjectTypeContract> ProjectTypes => ProgrammingMemoryCache.ProjectTypes;
-        public static IReadOnlyDictionary<int, ProgrammingProjectContract> Projects => ProgrammingMemoryCache.Projects;
-    }
-
     static class ProgrammingMemoryCache
     {
         public static bool IsReady { get; private set; }

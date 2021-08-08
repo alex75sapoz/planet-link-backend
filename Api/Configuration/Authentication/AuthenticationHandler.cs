@@ -1,6 +1,9 @@
 ﻿using Api.Controller;
 using Library.Account;
 using Library.Account.Contract;
+using Library.Application;
+using Library.Application.Contract;
+using Library.Base;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -15,10 +18,21 @@ namespace Api.Configuration.Authentication
 {
     class AuthenticationHandler : AuthenticationHandler<AuthenticationScheme>
     {
-        public AuthenticationHandler(IOptionsMonitor<AuthenticationScheme> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock, IAccountService accountService) : base(options, logger, encoder, clock) =>
+        public AuthenticationHandler(IOptionsMonitor<AuthenticationScheme> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock, IAccountService accountService, IApplicationService applicationService) : base(options, logger, encoder, clock)
+        {
             _accountService = accountService;
+            _applicationService = applicationService;
+        }
 
         private readonly IAccountService _accountService;
+        private readonly IApplicationService _applicationService;
+
+        private StringValues _headerTimezoneId;
+        private StringValues _headerUserTypeId;
+        private StringValues _headerToken;
+        private StringValues _headerCode;
+        private StringValues _headerSubdomain;
+        private StringValues _headerPage;
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
@@ -27,19 +41,13 @@ namespace Api.Configuration.Authentication
                 return GetSwaggerAuthenticateResult();
 
             //Step 1 - TimezoneId
-            if (!Request.Headers.TryGetValue(ApiHeader.TimezoneId, out StringValues headerTimezoneId))
-                return AuthenticateResult.Fail($"{ApiHeader.TimezoneId} is required");
-
-            var timezone = DateTimeZoneProviders.Tzdb.GetZoneOrNull(headerTimezoneId);
-
-            if (timezone is null)
-                return AuthenticateResult.Fail($"{ApiHeader.TimezoneId} is invalid");
+            if (!Request.Headers.TryGetValue(ApiHeader.TimezoneId, out _headerTimezoneId)) return await GetUnauthorizedResult($"{ApiHeader.TimezoneId} is required");
+            var timezone = DateTimeZoneProviders.Tzdb.GetZoneOrNull(_headerTimezoneId);
+            if (timezone is null) return await GetUnauthorizedResult($"{ApiHeader.TimezoneId} is invalid");
 
             //Step 2 - UserTypeId
-            if (!Request.Headers.TryGetValue(ApiHeader.UserTypeId, out StringValues headerUserTypeId))
-                return AuthenticateResult.Fail($"{ApiHeader.UserTypeId} is required");
-
-            int? userTypeId = headerUserTypeId.ToString() switch
+            if (!Request.Headers.TryGetValue(ApiHeader.UserTypeId, out _headerUserTypeId)) return await GetUnauthorizedResult($"{ApiHeader.UserTypeId} is required");
+            int? userTypeId = _headerUserTypeId.ToString() switch
             {
                 nameof(AuthenticationUserType.Guest) => (int)AuthenticationUserType.Guest,
                 "0" => (int)AuthenticationUserType.Guest,
@@ -47,50 +55,49 @@ namespace Api.Configuration.Authentication
                 "1" => (int)AuthenticationUserType.Google,
                 nameof(AuthenticationUserType.Stocktwits) => (int)AuthenticationUserType.Stocktwits,
                 "2" => (int)AuthenticationUserType.Stocktwits,
+                nameof(AuthenticationUserType.Fitbit) => (int)AuthenticationUserType.Fitbit,
+                "3" => (int)AuthenticationUserType.Fitbit,
                 _ => null
             };
-
-            if (userTypeId is null)
-                return AuthenticateResult.Fail($"{ApiHeader.UserTypeId} is invalid");
+            if (userTypeId is null) return await GetUnauthorizedResult($"{ApiHeader.UserTypeId} is invalid");
 
             //Step 3 - Check if Guest
-            if (userTypeId == (int)AuthenticationUserType.Guest)
-                return GetGuestAuthenticateResult(timezone);
+            if (userTypeId == (int)AuthenticationUserType.Guest) return GetGuestAuthenticateResult(timezone);
 
             //Step 4 - Token or Code/Subdomain/Page
-            if (!Request.Headers.TryGetValue(ApiHeader.Token, out StringValues token) & (!Request.Headers.TryGetValue(ApiHeader.Code, out StringValues code) | !Request.Headers.TryGetValue(ApiHeader.Subdomain, out StringValues subdomain) | !Request.Headers.TryGetValue(ApiHeader.Page, out StringValues page)))
-                return AuthenticateResult.Fail($"{ApiHeader.Token} or {ApiHeader.Code}/{ApiHeader.Page} is required");
-            else if (token != StringValues.Empty && code != StringValues.Empty)
-                return AuthenticateResult.Fail($"{ApiHeader.Token} and {ApiHeader.Code} both cannot have a value");
+            if (!Request.Headers.TryGetValue(ApiHeader.Token, out _headerToken) & (!Request.Headers.TryGetValue(ApiHeader.Code, out _headerCode) | !Request.Headers.TryGetValue(ApiHeader.Subdomain, out _headerSubdomain) | !Request.Headers.TryGetValue(ApiHeader.Page, out _headerPage)))
+                return await GetUnauthorizedResult($"{ApiHeader.Token} or {ApiHeader.Code}/{ApiHeader.Page} is required");
+            else if (_headerToken != StringValues.Empty && _headerCode != StringValues.Empty)
+                return await GetUnauthorizedResult($"{ApiHeader.Token} and {ApiHeader.Code} both cannot have a value");
 
             //Step 5 - Check if route is Authenticate
             if (Request.Path.StartsWithSegments(Options.AuthenticateUrlSegment))
             {
                 try
                 {
-                    if (token != StringValues.Empty)
-                        return GetUserSessionAuthenticateResult(await _accountService.AuthenticateUserTokenAsync(userTypeId.Value, token, timezone), timezone);
+                    if (_headerToken != StringValues.Empty)
+                        return GetUserSessionAuthenticateResult(await _accountService.AuthenticateUserTokenAsync(userTypeId.Value, _headerToken, timezone), timezone);
 
-                    if (code != StringValues.Empty)
-                        return GetUserSessionAuthenticateResult(await _accountService.AuthenticateUserCodeAsync(userTypeId.Value, code, subdomain, page, timezone), timezone);
+                    if (_headerCode != StringValues.Empty)
+                        return GetUserSessionAuthenticateResult(await _accountService.AuthenticateUserCodeAsync(userTypeId.Value, _headerCode, _headerSubdomain, _headerPage, timezone), timezone);
                 }
                 catch (System.Exception exception)
                 {
-                    return AuthenticateResult.Fail(exception.Message);
+                    return await GetUnauthorizedResult(exception);
                 }
             }
 
             //Step 6 - Validate
-            if (code != StringValues.Empty || page != StringValues.Empty)
-                return AuthenticateResult.Fail($"{nameof(code)} is not allowed in this controller");
+            if (_headerCode != StringValues.Empty || _headerPage != StringValues.Empty)
+                return await GetUnauthorizedResult($"{nameof(ApiHeader.Code)} or {nameof(ApiHeader.Page)} is not allowed in this controller");
 
             try
             {
-                return GetUserSessionAuthenticateResult(_accountService.GetUserSession(userTypeId.Value, token), timezone);
+                return GetUserSessionAuthenticateResult(IAccountService.GetUserSession(userTypeId.Value, _headerToken, isExpiredSessionValid: false), timezone);
             }
             catch (System.Exception exception)
             {
-                return AuthenticateResult.Fail(exception.Message);
+                return await GetUnauthorizedResult(exception);
             }
         }
 
@@ -116,5 +123,31 @@ namespace Api.Configuration.Authentication
                 new Claim(nameof(AuthenticationResult.UserTypeId), userSession.User.UserTypeId.ToString()),
                 new Claim(nameof(AuthenticationResult.Timezone), timezone.Id)
             })), Scheme.Name));
+
+        private async Task<AuthenticateResult> GetUnauthorizedResult(string message) =>
+            await GetUnauthorizedResult(new UnauthorizedException(message));
+
+        private async Task<AuthenticateResult> GetUnauthorizedResult(System.Exception exception)
+        {
+            await _applicationService.CreateErrorAuthenticationAsync(new ApplicationErrorAuthenticationCreateContract
+            (
+                method: Request.Method,
+                path: Request.Path,
+                query: Request.QueryString.ToString(),
+                exceptionType: exception.GetType().Name,
+                exceptionMessage: exception.GetFullMessage()
+            )
+            {
+                TimezoneId = _headerTimezoneId,
+                UserTypeId = _headerUserTypeId,
+                Token = _headerToken,
+                Code = _headerCode,
+                Subdomain = _headerSubdomain,
+                Page = _headerPage
+            });
+
+            return AuthenticateResult.Fail(exception);
+        }
+
     }
 }

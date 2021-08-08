@@ -58,17 +58,16 @@ namespace Library.Programming
                 Public = new[]
                 {
                     nameof(IProgrammingRepository),
-                    nameof(IProgrammingService),
-                    nameof(IProgrammingMemoryCache)
+                    nameof(IProgrammingService)
                 }
             },
             MemoryCache = new
             {
-                TotalJobs = ProgrammingMemoryCache.Jobs.Count,
-                TotalLanguages = ProgrammingMemoryCache.Languages.Count,
-                TotalProjects = ProgrammingMemoryCache.Projects.Count,
-                TotalProjectTypes = ProgrammingMemoryCache.ProjectTypes.Count,
-                TotalTechnologyStacks = ProgrammingMemoryCache.TechnologyStacks.Count,
+                TotalJobs = IProgrammingService.Jobs.Count,
+                TotalLanguages = IProgrammingService.Languages.Count,
+                TotalProjects = IProgrammingService.Projects.Count,
+                TotalProjectTypes = IProgrammingService.ProjectTypes.Count,
+                TotalTechnologyStacks = IProgrammingService.TechnologyStacks.Count,
             }
         };
     }

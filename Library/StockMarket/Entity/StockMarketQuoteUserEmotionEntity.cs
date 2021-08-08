@@ -25,7 +25,7 @@ namespace Library.StockMarket.Entity.Configuration
             entity.ToTable(nameof(StockMarket) + nameof(StockMarketContext.QuoteUserEmotions));
             entity.HasKey(quoteUserEmotion => quoteUserEmotion.QuoteUserEmotionId);
 
-            entity.HasOne(quoteUserEmotion => quoteUserEmotion.Emotion).WithMany(emotion => emotion.QuoteUserEmotions).IsRequired(true);
+            entity.HasOne(quoteUserEmotion => quoteUserEmotion.Emotion).WithMany(emotion => emotion.QuoteUserEmotions);
         }
     }
 }

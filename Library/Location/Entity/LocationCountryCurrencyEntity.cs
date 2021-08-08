@@ -23,8 +23,8 @@ namespace Library.Location.Entity.Configuration
             entity.ToTable(nameof(Location) + nameof(LocationContext.CountryCurrencies));
             entity.HasKey(countryCurrency => countryCurrency.CountryCurrencyId);
 
-            entity.HasOne(countryCurrency => countryCurrency.Country).WithMany(country => country.CountryCurrencies).IsRequired(true);
-            entity.HasOne(countryCurrency => countryCurrency.Currency).WithMany(country => country.CountryCurrencies).IsRequired(true);
+            entity.HasOne(countryCurrency => countryCurrency.Country).WithMany(country => country.CountryCurrencies);
+            entity.HasOne(countryCurrency => countryCurrency.Currency).WithMany(country => country.CountryCurrencies);
         }
     }
 }

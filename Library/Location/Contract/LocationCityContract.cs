@@ -22,7 +22,7 @@ namespace Library.Location.Contract
         public decimal Latitude { get; internal set; }
         public decimal Longitude { get; internal set; }
 
-        public LocationCountryContract Country => ILocationMemoryCache.LocationCountries[CountryId];
-        public LocationStateContract? State => StateId.HasValue ? ILocationMemoryCache.LocationStates[StateId.Value] : null;
+        public LocationCountryContract Country => ILocationService.GetCountry(CountryId);
+        public LocationStateContract? State => StateId.HasValue ? ILocationService.GetState(StateId.Value) : null;
     }
 }

@@ -65,8 +65,7 @@ namespace Library.StockMarket
                 Public = new[]
                 {
                     nameof(IStockMarketRepository),
-                    nameof(IStockMarketService),
-                    nameof(IStockMarketMemoryCache)
+                    nameof(IStockMarketService)
                 },
                 Job = new[]
                 {
@@ -77,14 +76,14 @@ namespace Library.StockMarket
             },
             MemoryCache = new
             {
-                TotalAlertCompletedTypes = StockMarketMemoryCache.AlertCompletedTypes.Count,
-                TotalAlertTypes = StockMarketMemoryCache.AlertTypes.Count,
-                TotalEmotions = StockMarketMemoryCache.Emotions.Count,
-                TotalExchanges = StockMarketMemoryCache.Exchanges.Count,
-                TotalQuotes = StockMarketMemoryCache.Quotes.Count,
-                TotalQuoteUserAlerts = StockMarketMemoryCache.QuoteUserAlerts.Count,
-                TotalQuoteUserEmotions = StockMarketMemoryCache.QuoteUserEmotions.Count,
-                TotalTimeframes = StockMarketMemoryCache.Timeframes.Count
+                TotalAlertCompletedTypes = IStockMarketService.AlertCompletedTypes.Count,
+                TotalAlertTypes = IStockMarketService.AlertTypes.Count,
+                TotalEmotions = IStockMarketService.Emotions.Count,
+                TotalExchanges = IStockMarketService.Exchanges.Count,
+                TotalQuotes = IStockMarketService.Quotes.Count,
+                TotalQuoteUserAlerts = IStockMarketService.QuoteUserAlerts.Count,
+                TotalQuoteUserEmotions = IStockMarketService.QuoteUserEmotions.Count,
+                TotalTimeframes = IStockMarketService.Timeframes.Count
             }
         };
     }

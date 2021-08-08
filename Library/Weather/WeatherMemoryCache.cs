@@ -1,17 +1,10 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Library.Weather
 {
-    public interface IWeatherMemoryCache
-    {
-        public static IReadOnlyDictionary<int, WeatherEmotionContract> Emotions => WeatherMemoryCache.Emotions;
-        public static IReadOnlyDictionary<int, WeatherCityUserEmotionContract> CityUserEmotions => WeatherMemoryCache.CityUserEmotions;
-    }
-
     static class WeatherMemoryCache
     {
         public static bool IsReady { get; private set; }
@@ -35,7 +28,9 @@ namespace Library.Weather
             IsReady = true;
         }
 
+#pragma warning disable IDE0060 // Remove unused parameter
         public static async Task TrimAsync(WeatherRepository repository)
+#pragma warning restore IDE0060 // Remove unused parameter
         {
             foreach (var cityUserEmotion in CityUserEmotions.Where(cityUserEmotion => cityUserEmotion.Value.CreatedOn < DateTimeOffset.Now.AddDays(-1)).ToList())
                 CityUserEmotions.TryRemove(cityUserEmotion);

@@ -1,23 +1,10 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Library.StockMarket
 {
-    public interface IStockMarketMemoryCache
-    {
-        public static IReadOnlyDictionary<int, StockMarketExchangeContract> Exchanges => StockMarketMemoryCache.Exchanges;
-        public static IReadOnlyDictionary<int, StockMarketTimeframeContract> Timeframes => StockMarketMemoryCache.Timeframes;
-        public static IReadOnlyDictionary<int, StockMarketAlertTypeContract> AlertTypes => StockMarketMemoryCache.AlertTypes;
-        public static IReadOnlyDictionary<int, StockMarketAlertCompletedTypeContract> AlertCompletedTypes => StockMarketMemoryCache.AlertCompletedTypes;
-        public static IReadOnlyDictionary<int, StockMarketEmotionContract> Emotions => StockMarketMemoryCache.Emotions;
-        public static IReadOnlyDictionary<int, StockMarketQuoteContract> Quotes => StockMarketMemoryCache.Quotes;
-        public static IReadOnlyDictionary<int, StockMarketQuoteUserAlertContract> QuoteUserAlerts => StockMarketMemoryCache.QuoteUserAlerts;
-        public static IReadOnlyDictionary<int, StockMarketQuoteUserEmotionContract> QuoteUserEmotions => StockMarketMemoryCache.QuoteUserEmotions;
-    }
-
     static class StockMarketMemoryCache
     {
         public static bool IsReady { get; private set; }

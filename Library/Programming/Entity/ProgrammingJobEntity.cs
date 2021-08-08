@@ -22,7 +22,7 @@ namespace Library.Programming.Entity.Configuration
             entity.ToTable(nameof(Programming) + nameof(ProgrammingContext.Jobs));
             entity.HasKey(job => job.JobId);
 
-            entity.HasMany(job => job.Projects).WithOne(project => project.Job).IsRequired(true);
+            entity.HasMany(job => job.Projects).WithOne(project => project.Job);
         }
     }
 }

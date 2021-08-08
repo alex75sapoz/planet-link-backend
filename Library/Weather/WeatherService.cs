@@ -18,28 +18,35 @@ namespace Library.Weather
         Task<WeatherCityObservationContract> GetCityObservationAsync(int cityId);
         WeatherCityUserConfigurationContract GetCityUserConfiguration(int userId, int cityId, DateTimeZone timezone);
         WeatherConfigurationContract GetConfiguration();
-        WeatherEmotionContract GetEmotion(int emotionId);
+
+        #region Memory Cache
+
+        internal static IReadOnlyDictionary<int, WeatherEmotionContract> Emotions => WeatherMemoryCache.Emotions;
+        internal static IReadOnlyDictionary<int, WeatherCityUserEmotionContract> CityUserEmotions => WeatherMemoryCache.CityUserEmotions;
+
+        public static WeatherEmotionContract GetEmotion(int emotionId) =>
+            Emotions.TryGetValue(emotionId, out WeatherEmotionContract? emotion)
+                ? emotion
+                : throw new BadRequestException($"{nameof(emotionId)} is invalid");
+
+        public static WeatherCityUserEmotionContract GetCityUserEmotion(int cityUserEmotionId) =>
+           CityUserEmotions.TryGetValue(cityUserEmotionId, out WeatherCityUserEmotionContract? cityUserEmotion)
+               ? cityUserEmotion
+               : throw new BadRequestException($"{nameof(cityUserEmotionId)} is invalid");
+
+        #endregion
     }
 
     class WeatherService : BaseService<WeatherConfiguration, WeatherRepository>, IWeatherService
     {
-        public WeatherService(WeatherConfiguration configuration, WeatherRepository repository, ILocationService locationService, IAccountService accountService, IMemoryCache cache) : base(configuration, repository, cache)
+        public WeatherService(WeatherConfiguration configuration, WeatherRepository repository, IMemoryCache cache) : base(configuration, repository, cache)
         {
-            _locationService = locationService;
-            _accountService = accountService;
             _openWeatherApi = new RestClient(_configuration.OpenWeatherApi.Server);
         }
 
-        private readonly ILocationService _locationService;
-        private readonly IAccountService _accountService;
         private readonly IRestClient _openWeatherApi;
 
         #region Get
-
-        public WeatherEmotionContract GetEmotion(int emotionId) =>
-            WeatherMemoryCache.Emotions.TryGetValue(emotionId, out WeatherEmotionContract? emotion)
-                ? emotion
-                : throw new BadRequestException($"{nameof(emotionId)} is invalid");
 
         public async Task<WeatherCityObservationContract> GetCityObservationAsync(int cityId)
         {
@@ -48,7 +55,7 @@ namespace Library.Weather
             if (_memoryCache.TryGetValue(memoryCacheKey, out WeatherCityObservationContract cityObservation))
                 return cityObservation;
 
-            var city = _locationService.GetCity(cityId);
+            var city = ILocationService.GetCity(cityId);
 
             return _memoryCache.Set(
                 memoryCacheKey,
@@ -65,7 +72,7 @@ namespace Library.Weather
             if (_memoryCache.TryGetValue(memoryCacheKey, out List<WeatherCityForecastContract> cityForecasts))
                 return cityForecasts;
 
-            var city = _locationService.GetCity(cityId);
+            var city = ILocationService.GetCity(cityId);
 
             return _memoryCache.Set(
                 memoryCacheKey,
@@ -77,11 +84,11 @@ namespace Library.Weather
 
         public List<WeatherCityEmotionCountContract> GetCityEmotionCounts(int cityId, DateTimeZone timezone)
         {
-            var city = _locationService.GetCity(cityId);
+            var city = ILocationService.GetCity(cityId);
 
-            return WeatherMemoryCache.CityUserEmotions.GetCityUserEmotionsAtTimezoneToday(timezone)
+            return IWeatherService.CityUserEmotions.GetCityUserEmotionsAtTimezoneToday(timezone)
                 .GroupBy(cityUserEmotion => cityUserEmotion.EmotionId)
-                .Select(cityUserEmotionGroup => new WeatherCityEmotionCountContract()
+                .Select(cityUserEmotionGroup => new WeatherCityEmotionCountContract
                 {
                     EmotionId = cityUserEmotionGroup.Key,
                     CityCount = cityUserEmotionGroup.Where(cityUserEmotion => cityUserEmotion.CityId == city.CityId).Count(),
@@ -92,12 +99,12 @@ namespace Library.Weather
 
         public WeatherCityUserConfigurationContract GetCityUserConfiguration(int userId, int cityId, DateTimeZone timezone)
         {
-            var user = _accountService.GetUser(userId);
-            var city = _locationService.GetCity(cityId);
+            var user = IAccountService.GetUser(userId);
+            var city = ILocationService.GetCity(cityId);
 
-            var cityUserEmotions = WeatherMemoryCache.CityUserEmotions.GetCityUserEmotionsAtTimezoneToday(timezone, userId);
+            var cityUserEmotions = IWeatherService.CityUserEmotions.GetCityUserEmotionsAtTimezoneToday(timezone, user.UserId);
 
-            return new WeatherCityUserConfigurationContract()
+            return new WeatherCityUserConfigurationContract
             {
                 EmotionId = cityUserEmotions.SingleOrDefault(cityUserEmotion => cityUserEmotion.CityId == city.CityId)?.EmotionId,
                 SelectionsToday = cityUserEmotions.Count,
@@ -107,7 +114,7 @@ namespace Library.Weather
 
         public WeatherConfigurationContract GetConfiguration() => new()
         {
-            Emotions = WeatherMemoryCache.Emotions.Select(emotion => emotion.Value).ToList()
+            Emotions = IWeatherService.Emotions.Select(emotion => emotion.Value).ToList()
         };
 
         #endregion
@@ -116,11 +123,11 @@ namespace Library.Weather
 
         public async Task<WeatherCityUserEmotionContract> CreateCityUserEmotionAsync(int userId, int cityId, int emotionId, DateTimeZone timezone)
         {
-            var user = _accountService.GetUser(userId);
-            var city = _locationService.GetCity(cityId);
-            var emotion = GetEmotion(emotionId);
+            var user = IAccountService.GetUser(userId);
+            var city = ILocationService.GetCity(cityId);
+            var emotion = IWeatherService.GetEmotion(emotionId);
 
-            var cityUserEmotions = WeatherMemoryCache.CityUserEmotions.GetCityUserEmotionsAtTimezoneToday(timezone, userId);
+            var cityUserEmotions = IWeatherService.CityUserEmotions.GetCityUserEmotionsAtTimezoneToday(timezone, user.UserId);
 
             if (cityUserEmotions.Any(cityUserEmotion => cityUserEmotion.CityId == city.CityId))
                 throw new BadRequestException("You already selected an emotion");
@@ -128,7 +135,7 @@ namespace Library.Weather
             if (cityUserEmotions.Count >= _configuration.Limit.CreateCityUserEmotionLimit)
                 throw new BadRequestException("You have reached your daily limit. Come back tomorrow!");
 
-            var cityUserEmotion = (await _repository.AddAndSaveChangesAsync(new WeatherCityUserEmotionEntity()
+            var cityUserEmotion = (await _repository.AddAndSaveChangesAsync(new WeatherCityUserEmotionEntity
             {
                 CityId = city.CityId,
                 UserId = user.UserId,
@@ -157,27 +164,27 @@ namespace Library.Weather
                     return false;
 
                 if (response.Wind is null)
-                    response.Wind = new WeatherWindResponse()
+                    response.Wind = new WeatherWindResponse
                     {
                         Degrees = 0,
                         Speed = 0
                     };
 
                 if (response.Cloud is null)
-                    response.Cloud = new WeatherCloudResponse()
+                    response.Cloud = new WeatherCloudResponse
                     {
                         Cloudiness = 0
                     };
 
                 if (response.Rain is null)
-                    response.Rain = new WeatherRainResponse()
+                    response.Rain = new WeatherRainResponse
                     {
                         OneHourVolume = 0,
                         ThreeHourVolume = 0
                     };
 
                 if (response.Snow is null)
-                    response.Snow = new WeatherSnowResponse()
+                    response.Snow = new WeatherSnowResponse
                     {
                         OneHourVolume = 0,
                         ThreeHourVolume = 0
@@ -200,27 +207,27 @@ namespace Library.Weather
                 response.Forecasts.ForEach(forecast =>
                 {
                     if (forecast.Cloud is null)
-                        forecast.Cloud = new WeatherCloudResponse()
+                        forecast.Cloud = new WeatherCloudResponse
                         {
                             Cloudiness = 0
                         };
 
                     if (forecast.Wind is null)
-                        forecast.Wind = new WeatherWindResponse()
+                        forecast.Wind = new WeatherWindResponse
                         {
                             Degrees = 0,
                             Speed = 0
                         };
 
                     if (forecast.Rain is null)
-                        forecast.Rain = new WeatherRainResponse()
+                        forecast.Rain = new WeatherRainResponse
                         {
                             OneHourVolume = 0,
                             ThreeHourVolume = 0
                         };
 
                     if (forecast.Snow is null)
-                        forecast.Snow = new WeatherSnowResponse()
+                        forecast.Snow = new WeatherSnowResponse
                         {
                             OneHourVolume = 0,
                             ThreeHourVolume = 0

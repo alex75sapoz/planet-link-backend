@@ -1,17 +1,9 @@
 ﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Library.Location
 {
-    public interface ILocationMemoryCache
-    {
-        public static IReadOnlyDictionary<int, LocationCountryContract> LocationCountries => LocationMemoryCache.Countries;
-        public static IReadOnlyDictionary<int, LocationStateContract> LocationStates => LocationMemoryCache.States;
-        public static IReadOnlyDictionary<int, LocationCityContract> LocationCities => LocationMemoryCache.Cities;
-    }
-
     static class LocationMemoryCache
     {
         public static bool IsReady { get; private set; }

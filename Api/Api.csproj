@@ -8,13 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.4" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.5" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Library\Programming\Library.Programming.csproj" />
     <ProjectReference Include="..\Library\StockMarket\Library.StockMarket.csproj" />
-    <ProjectReference Include="..\Library\User\Library.Account.csproj" />
+    <ProjectReference Include="..\Library\Account\Library.Account.csproj" />
     <ProjectReference Include="..\Library\Weather\Library.Weather.csproj" />
   </ItemGroup>
 

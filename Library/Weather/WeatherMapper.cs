@@ -31,7 +31,7 @@ namespace Library.Weather
         };
 
         public static List<WeatherCityForecastContract> MapToCityForecastContracts(this WeatherForecastResponse data) =>
-            data.Forecasts.Select(src => new WeatherCityForecastContract()
+            data.Forecasts.Select(src => new WeatherCityForecastContract
             {
                 Title = src.Conditions.First().Name,
                 LongTitle = src.Conditions.GetLongTitle(),

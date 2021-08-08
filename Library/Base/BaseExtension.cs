@@ -9,18 +9,18 @@ namespace Library.Base
     {
         #region Exception
 
-        public static string GetFullMessage(this Exception input)
-        {
-            var message = input.Message;
-
-            while (input.InnerException is not null)
-            {
-                message += $", {input.InnerException}";
-                input = input.InnerException;
-            }
-
-            return message;
-        }
+        public static string GetFullMessage(this Exception input, bool includeInternalMessage = true) =>
+            includeInternalMessage && input is BaseException baseException && baseException.InternalMessage is not null
+                ? $"{baseException.Message}, {baseException.InternalMessage}" +
+                    (baseException.InnerException is not null
+                        ? $", {baseException.InnerException.GetFullMessage(includeInternalMessage)}"
+                        : string.Empty
+                    )
+                : $"{input.Message}" +
+                    (input.InnerException is not null
+                        ? $", {input.InnerException.GetFullMessage(includeInternalMessage)}"
+                        : string.Empty
+                    );
 
         #endregion
 
