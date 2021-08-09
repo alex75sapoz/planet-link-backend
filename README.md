@@ -1,4 +1,5 @@
 ## Api Explorer
+
 https://api.planet-link.com/swagger
 
 ## Project Structure
@@ -6,9 +7,11 @@ https://api.planet-link.com/swagger
 > Api
 
 **Configuration**
+
 Provides access to configuration methods that the startup class calls
 
 **Controller**
+
 Provides access to routes
 
 > Library
