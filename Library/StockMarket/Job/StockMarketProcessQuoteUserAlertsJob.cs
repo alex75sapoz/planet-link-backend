@@ -11,7 +11,7 @@ namespace Library.StockMarket.Job
         public StockMarketProcessQuoteUserAlertsJob(IServiceProvider serviceProvider) : base(serviceProvider, (
             delay: TimeSpan.FromMinutes(30),
             interval: TimeSpan.FromHours(1),
-            state: JobState.Paused
+            state: JobState.Finished
         ))
         { }
 
