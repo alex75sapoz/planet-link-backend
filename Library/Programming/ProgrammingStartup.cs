@@ -1,10 +1,9 @@
 ﻿global using Library.Base;
 global using Library.Programming.Contract;
 global using Library.Programming.Entity;
+global using Library.Programming.Enum;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Threading.Tasks;
 
 namespace Library.Programming
 {
@@ -12,9 +11,6 @@ namespace Library.Programming
     {
         public static void ConfigureServices(IServiceCollection services, ProgrammingConfiguration configuration, string databaseConnection) =>
             ProgrammingStartup.ConfigureServices(services, configuration, databaseConnection);
-
-        public static async Task LoadMemoryCacheAsync(IServiceProvider serviceProvider) =>
-            await ProgrammingMemoryCache.LoadAsync(serviceProvider.GetRequiredService<ProgrammingRepository>());
 
         public static object GetStatus() =>
             ProgrammingStartup.GetStatus();
@@ -44,7 +40,6 @@ namespace Library.Programming
         public static object GetStatus() => new
         {
             IsReady,
-            IsMemoryCacheReady = ProgrammingMemoryCache.IsReady,
             RegisteredTypes = new
             {
                 Internal = new[]
@@ -52,22 +47,22 @@ namespace Library.Programming
                     nameof(ProgrammingContext),
                     nameof(ProgrammingRepository),
                     nameof(ProgrammingService),
-                    nameof(ProgrammingMemoryCache),
                     nameof(ProgrammingConfiguration)
                 },
                 Public = new[]
                 {
                     nameof(IProgrammingRepository),
+                    nameof(IProgrammingMemoryCache),
                     nameof(IProgrammingService)
                 }
             },
             MemoryCache = new
             {
-                TotalJobs = IProgrammingService.Jobs.Count,
-                TotalLanguages = IProgrammingService.Languages.Count,
-                TotalProjects = IProgrammingService.Projects.Count,
-                TotalProjectTypes = IProgrammingService.ProjectTypes.Count,
-                TotalTechnologyStacks = IProgrammingService.TechnologyStacks.Count,
+                TotalJobs = IProgrammingMemoryCache.Jobs.Count,
+                TotalLanguages = IProgrammingMemoryCache.Languages.Count,
+                TotalProjects = IProgrammingMemoryCache.Projects.Count,
+                TotalProjectTypes = IProgrammingMemoryCache.ProjectTypes.Count,
+                TotalTechnologyStacks = IProgrammingMemoryCache.TechnologyStacks.Count,
             }
         };
     }

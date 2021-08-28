@@ -1,5 +1,6 @@
 ﻿using Library.Programming;
 using Library.Programming.Contract;
+using Library.Programming.Enum;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -26,5 +27,9 @@ namespace Api.Controller
         [Authorization(Requirement.UserTypeGoogle)]
         public async Task<IActionResult> CreateProjectAsync([Required] ProgrammingProjectCreateContract newProject) =>
             Ok(await _service.CreateProjectAsync(newProject, Timezone));
+
+        [HttpPost("MemoryCache/Refresh")]
+        public async Task MemoryCacheRefreshAsync(MemoryCacheDictionary? dictionary = null, int? id = null) =>
+            await _service.MemoryCacheRefreshAsync(dictionary, id);
     }
 }
