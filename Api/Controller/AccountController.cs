@@ -35,5 +35,9 @@ namespace Api.Controller
         [ResponseCache(Duration = 59, VaryByHeader = ApiHeader.UserTypeId + "," + ApiHeader.Token)]
         public async Task<IActionResult> SearchUsersStocktwitsAsync([Required] string keyword) =>
             Ok(await Task.FromResult(_service.SearchUsers(keyword, (int)UserType.Stocktwits)));
+
+        [HttpPost("MemoryCache/Refresh")]
+        public async Task MemoryCacheRefreshAsync(AccountDictionary? dictionary = null, int? id = null) =>
+            await _service.MemoryCacheRefreshAsync(dictionary, id);
     }
 }
