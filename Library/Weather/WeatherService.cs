@@ -46,7 +46,7 @@ namespace Library.Weather
 
         public async Task MemoryCacheTrimAsync()
         {
-            foreach (var cityUserEmotion in _cityUserEmotions.Where(cityUserEmotion => cityUserEmotion.Value.CreatedOn < DateTimeOffset.Now.AddDays(-1)).ToList())
+            foreach (var cityUserEmotion in IWeatherMemoryCache.CityUserEmotions.Where(cityUserEmotion => cityUserEmotion.Value.CreatedOn < DateTimeOffset.Now.AddDays(-1)).ToList())
                 _cityUserEmotions.TryRemove(cityUserEmotion);
 
             await Task.CompletedTask;

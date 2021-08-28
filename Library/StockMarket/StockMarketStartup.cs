@@ -6,8 +6,6 @@ global using Library.StockMarket.Job;
 global using Library.StockMarket.Response;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Threading.Tasks;
 
 namespace Library.StockMarket
 {
@@ -15,9 +13,6 @@ namespace Library.StockMarket
     {
         public static void ConfigureServices(IServiceCollection services, StockMarketConfiguration configuration, string databaseConnection) =>
             StockMarketStartup.ConfigureServices(services, configuration, databaseConnection);
-
-        public static async Task LoadMemoryCacheAsync(IServiceProvider serviceProvider) =>
-            await StockMarketMemoryCache.LoadAsync(serviceProvider.GetRequiredService<StockMarketRepository>());
 
         public static object GetStatus() =>
             StockMarketStartup.GetStatus();
@@ -51,7 +46,6 @@ namespace Library.StockMarket
         public static object GetStatus() => new
         {
             IsReady,
-            IsMemoryCacheReady = StockMarketMemoryCache.IsReady,
             RegisteredType = new
             {
                 Internal = new[]
@@ -59,12 +53,12 @@ namespace Library.StockMarket
                     nameof(StockMarketContext),
                     nameof(StockMarketRepository),
                     nameof(StockMarketService),
-                    nameof(StockMarketMemoryCache),
                     nameof(StockMarketConfiguration)
                 },
                 Public = new[]
                 {
                     nameof(IStockMarketRepository),
+                    nameof(IStockMarketMemoryCache),
                     nameof(IStockMarketService)
                 },
                 Job = new[]
@@ -76,14 +70,14 @@ namespace Library.StockMarket
             },
             MemoryCache = new
             {
-                TotalAlertCompletedTypes = IStockMarketService.AlertCompletedTypes.Count,
-                TotalAlertTypes = IStockMarketService.AlertTypes.Count,
-                TotalEmotions = IStockMarketService.Emotions.Count,
-                TotalExchanges = IStockMarketService.Exchanges.Count,
-                TotalQuotes = IStockMarketService.Quotes.Count,
-                TotalQuoteUserAlerts = IStockMarketService.QuoteUserAlerts.Count,
-                TotalQuoteUserEmotions = IStockMarketService.QuoteUserEmotions.Count,
-                TotalTimeframes = IStockMarketService.Timeframes.Count
+                TotalAlertCompletedTypes = IStockMarketMemoryCache.AlertCompletedTypes.Count,
+                TotalAlertTypes = IStockMarketMemoryCache.AlertTypes.Count,
+                TotalEmotions = IStockMarketMemoryCache.Emotions.Count,
+                TotalExchanges = IStockMarketMemoryCache.Exchanges.Count,
+                TotalQuotes = IStockMarketMemoryCache.Quotes.Count,
+                TotalQuoteUserAlerts = IStockMarketMemoryCache.QuoteUserAlerts.Count,
+                TotalQuoteUserEmotions = IStockMarketMemoryCache.QuoteUserEmotions.Count,
+                TotalTimeframes = IStockMarketMemoryCache.Timeframes.Count
             }
         };
     }

@@ -1,5 +1,17 @@
 ﻿namespace Library.StockMarket.Enum
 {
+    public enum MemoryCacheDictionary : int
+    {
+        Exchanges = 1,
+        Timeframes = 2,
+        AlertTypes = 3,
+        AlertCompletedTypes = 4,
+        Emotions = 5,
+        Quotes = 6,
+        QuoteUserAlerts = 7,
+        QuoteUserEmotions = 8
+    }
+
     public enum Exchange : int
     {
         Nyse = 1,

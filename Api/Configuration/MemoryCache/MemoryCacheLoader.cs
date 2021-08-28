@@ -22,12 +22,13 @@ namespace Api.Configuration.MemoryCache
         {
             using var scope = _serviceProvider.CreateScope();
             var weatherService = scope.ServiceProvider.GetRequiredService<IWeatherService>();
+            var stockMarketService = scope.ServiceProvider.GetRequiredService<IStockMarketService>();
 
             await Task.WhenAll(
                 IAccountStartup.LoadMemoryCacheAsync(scope.ServiceProvider),
                 ILocationStartup.LoadMemoryCacheAsync(scope.ServiceProvider),
                 weatherService.MemoryCacheRefreshAsync(),
-                IStockMarketStartup.LoadMemoryCacheAsync(scope.ServiceProvider),
+                stockMarketService.MemoryCacheRefreshAsync(),
                 IProgrammingStartup.LoadMemoryCacheAsync(scope.ServiceProvider)
             );
         }
