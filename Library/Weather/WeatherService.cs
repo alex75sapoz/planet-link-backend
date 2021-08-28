@@ -63,7 +63,7 @@ namespace Library.Weather
             if (_memoryCache.TryGetValue(memoryCacheKey, out WeatherCityObservationContract cityObservation))
                 return cityObservation;
 
-            var city = ILocationService.GetCity(cityId);
+            var city = ILocationMemoryCache.GetCity(cityId);
 
             return _memoryCache.Set(
                 memoryCacheKey,
@@ -80,7 +80,7 @@ namespace Library.Weather
             if (_memoryCache.TryGetValue(memoryCacheKey, out List<WeatherCityForecastContract> cityForecasts))
                 return cityForecasts;
 
-            var city = ILocationService.GetCity(cityId);
+            var city = ILocationMemoryCache.GetCity(cityId);
 
             return _memoryCache.Set(
                 memoryCacheKey,
@@ -92,7 +92,7 @@ namespace Library.Weather
 
         public List<WeatherCityEmotionCountContract> GetCityEmotionCounts(int cityId, DateTimeZone timezone)
         {
-            var city = ILocationService.GetCity(cityId);
+            var city = ILocationMemoryCache.GetCity(cityId);
 
             return IWeatherMemoryCache.CityUserEmotions.GetCityUserEmotionsAtTimezoneToday(timezone)
                 .GroupBy(cityUserEmotion => cityUserEmotion.EmotionId)
@@ -108,7 +108,7 @@ namespace Library.Weather
         public WeatherCityUserConfigurationContract GetCityUserConfiguration(int userId, int cityId, DateTimeZone timezone)
         {
             var user = IAccountService.GetUser(userId);
-            var city = ILocationService.GetCity(cityId);
+            var city = ILocationMemoryCache.GetCity(cityId);
 
             var cityUserEmotions = IWeatherMemoryCache.CityUserEmotions.GetCityUserEmotionsAtTimezoneToday(timezone, user.UserId);
 
@@ -132,7 +132,7 @@ namespace Library.Weather
         public async Task<WeatherCityUserEmotionContract> CreateCityUserEmotionAsync(int userId, int cityId, int emotionId, DateTimeZone timezone)
         {
             var user = IAccountService.GetUser(userId);
-            var city = ILocationService.GetCity(cityId);
+            var city = ILocationMemoryCache.GetCity(cityId);
             var emotion = IWeatherMemoryCache.GetEmotion(emotionId);
 
             var cityUserEmotions = IWeatherMemoryCache.CityUserEmotions.GetCityUserEmotionsAtTimezoneToday(timezone, user.UserId);

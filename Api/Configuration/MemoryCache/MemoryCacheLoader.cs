@@ -21,13 +21,14 @@ namespace Api.Configuration.MemoryCache
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             using var scope = _serviceProvider.CreateScope();
+            var locationService = scope.ServiceProvider.GetRequiredService<ILocationService>();
             var weatherService = scope.ServiceProvider.GetRequiredService<IWeatherService>();
             var stockMarketService = scope.ServiceProvider.GetRequiredService<IStockMarketService>();
             var programmingService = scope.ServiceProvider.GetRequiredService<IProgrammingService>();
 
             await Task.WhenAll(
                 IAccountStartup.LoadMemoryCacheAsync(scope.ServiceProvider),
-                ILocationStartup.LoadMemoryCacheAsync(scope.ServiceProvider),
+                locationService.MemoryCacheRefreshAsync(),
                 weatherService.MemoryCacheRefreshAsync(),
                 stockMarketService.MemoryCacheRefreshAsync(),
                 programmingService.MemoryCacheRefreshAsync()
