@@ -21,11 +21,12 @@ namespace Api.Configuration.MemoryCache
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             using var scope = _serviceProvider.CreateScope();
+            var weatherService = scope.ServiceProvider.GetRequiredService<IWeatherService>();
 
             await Task.WhenAll(
                 IAccountStartup.LoadMemoryCacheAsync(scope.ServiceProvider),
                 ILocationStartup.LoadMemoryCacheAsync(scope.ServiceProvider),
-                IWeatherStartup.LoadMemoryCacheAsync(scope.ServiceProvider),
+                weatherService.MemoryCacheRefreshAsync(),
                 IStockMarketStartup.LoadMemoryCacheAsync(scope.ServiceProvider),
                 IProgrammingStartup.LoadMemoryCacheAsync(scope.ServiceProvider)
             );

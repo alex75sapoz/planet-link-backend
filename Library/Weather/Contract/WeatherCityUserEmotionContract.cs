@@ -21,6 +21,6 @@ namespace Library.Weather.Contract
 
         public LocationCityContract City => ILocationService.GetCity(CityId);
         public AccountUserContract User => IAccountService.GetUser(UserId);
-        public WeatherEmotionContract Emotion => IWeatherService.GetEmotion(EmotionId);
+        public WeatherEmotionContract Emotion => IWeatherMemoryCache.Emotions[EmotionId];
     }
 }

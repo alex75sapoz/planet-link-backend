@@ -43,5 +43,9 @@ namespace Api.Controller
         [ResponseCache(Duration = 299)]
         public async Task<IActionResult> GetConfigurationAsync() =>
             Ok(await Task.FromResult(_service.GetConfiguration()));
+
+        [HttpPost("MemoryCache/Refresh")]
+        public async Task MemoryCacheRefreshAsync(MemoryCacheDictionary? dictionary = null, int? id = null) =>
+            await _service.MemoryCacheRefreshAsync(dictionary, id);
     }
 }

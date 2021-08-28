@@ -1,12 +1,11 @@
 ﻿global using Library.Base;
 global using Library.Weather.Contract;
 global using Library.Weather.Entity;
+global using Library.Weather.Enum;
 global using Library.Weather.Job;
 global using Library.Weather.Response;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Threading.Tasks;
 
 namespace Library.Weather
 {
@@ -14,9 +13,6 @@ namespace Library.Weather
     {
         public static void ConfigureServices(IServiceCollection services, WeatherConfiguration configuration, string databaseConnection) =>
             WeatherStartup.ConfigureServices(services, configuration, databaseConnection);
-
-        public static async Task LoadMemoryCacheAsync(IServiceProvider serviceProvider) =>
-            await WeatherMemoryCache.LoadAsync(serviceProvider.GetRequiredService<WeatherRepository>());
 
         public static object GetStatus() =>
             WeatherStartup.GetStatus();
@@ -48,7 +44,6 @@ namespace Library.Weather
         public static object GetStatus() => new
         {
             IsReady,
-            IsMemoryCacheReady = WeatherMemoryCache.IsReady,
             RegisteredTypes = new
             {
                 Internal = new[]
@@ -56,12 +51,12 @@ namespace Library.Weather
                     nameof(WeatherContext),
                     nameof(WeatherRepository),
                     nameof(WeatherService),
-                    nameof(WeatherMemoryCache),
                     nameof(WeatherConfiguration)
                 },
                 Public = new[]
                 {
                     nameof(IWeatherRepository),
+                    nameof(IWeatherMemoryCache),
                     nameof(IWeatherService)
                 },
                 Job = new[]
@@ -71,8 +66,8 @@ namespace Library.Weather
             },
             MemoryCache = new
             {
-                TotalEmotions = IWeatherService.Emotions.Count,
-                TotalCityUserEmotions = IWeatherService.CityUserEmotions.Count
+                TotalEmotions = IWeatherMemoryCache.Emotions.Count,
+                TotalCityUserEmotions = IWeatherMemoryCache.CityUserEmotions.Count
             }
         };
     }
