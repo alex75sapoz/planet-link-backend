@@ -19,7 +19,7 @@ namespace Api.Controller
 #pragma warning disable IDE0060 // Remove unused parameter
         public async Task<IActionResult> AuthenticateSessionAsync([Required, FromHeader(Name = ApiHeader.UserTypeId)] AuthenticationUserType userTypeId, [FromHeader(Name = ApiHeader.Subdomain)] string? subdomain) =>
 #pragma warning restore IDE0060 // Remove unused parameter
-            Ok(await Task.FromResult(IAccountService.GetUserSession(UserSessionId!.Value)));
+            Ok(await Task.FromResult(IAccountMemoryCache.GetUserSession(UserSessionId!.Value)));
 
         [HttpPost("User/Revoke"), ProducesResponseType((int)HttpStatusCode.NoContent)]
         [Authorization(Requirement.UserTypeAny)]
@@ -35,5 +35,10 @@ namespace Api.Controller
         [ResponseCache(Duration = 59, VaryByHeader = ApiHeader.UserTypeId + "," + ApiHeader.Token)]
         public async Task<IActionResult> SearchUsersStocktwitsAsync([Required] string keyword) =>
             Ok(await Task.FromResult(_service.SearchUsers(keyword, (int)UserType.Stocktwits)));
+
+        [HttpPost("MemoryCache/Refresh")]
+        [Authorization(Requirement.UserTypeAny), Authorization(Requirement.UserAdministrator)]
+        public async Task MemoryCacheRefreshAsync(AccountDictionary? dictionary = null, int? id = null) =>
+            await _service.MemoryCacheRefreshAsync(dictionary, id);
     }
 }

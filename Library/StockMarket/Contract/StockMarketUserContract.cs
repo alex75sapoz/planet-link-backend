@@ -12,6 +12,6 @@ namespace Library.StockMarket.Contract
 
         public List<StockMarketUserAlertTypeCountContract> AlertTypeCounts { get; internal set; } = new List<StockMarketUserAlertTypeCountContract>();
 
-        public AccountUserContract User => IAccountService.GetUser(UserId);
+        public AccountUserContract User => IAccountMemoryCache.Users[UserId];
     }
 }

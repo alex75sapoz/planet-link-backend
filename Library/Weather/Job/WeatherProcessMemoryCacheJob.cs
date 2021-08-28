@@ -19,9 +19,8 @@ namespace Library.Weather.Job
         protected override async Task StartAsync()
         {
             using var scope = _serviceProvider.CreateScope();
-            var repository = scope.ServiceProvider.GetRequiredService<WeatherRepository>();
-
-            await WeatherMemoryCache.TrimAsync(repository);
+            var service = scope.ServiceProvider.GetRequiredService<IWeatherService>();
+            await service.MemoryCacheTrimAsync();
         }
 
         protected override async Task ErrorAsync(Exception exception)

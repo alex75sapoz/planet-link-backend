@@ -23,9 +23,9 @@ namespace Library.Programming.Contract
         public bool IsImportant { get; internal set; }
         public DateTimeOffset CreatedOn { get; internal set; }
 
-        public ProgrammingProjectTypeContract ProjectType => IProgrammingService.GetProjectType(ProjectTypeId);
-        public ProgrammingJobContract Job => IProgrammingService.GetJob(JobId);
-        public ProgrammingTechnologyStackContract TechnologyStack => IProgrammingService.GetTechnologyStack(TechnologyStackId);
-        public List<ProgrammingLanguageContract> Languages => LanguageIds.Select(languageId => IProgrammingService.GetLanguage(languageId)).ToList();
+        public ProgrammingProjectTypeContract ProjectType => IProgrammingMemoryCache.ProjectTypes[ProjectTypeId];
+        public ProgrammingJobContract Job => IProgrammingMemoryCache.Jobs[JobId];
+        public ProgrammingTechnologyStackContract TechnologyStack => IProgrammingMemoryCache.TechnologyStacks[TechnologyStackId];
+        public List<ProgrammingLanguageContract> Languages => LanguageIds.Select(languageId => IProgrammingMemoryCache.Languages[languageId]).ToList();
     }
 }

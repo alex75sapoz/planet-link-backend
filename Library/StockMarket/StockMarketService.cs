@@ -6,100 +6,116 @@ using Microsoft.Extensions.Caching.Memory;
 using NodaTime;
 using RestSharp;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Library.StockMarket
 {
-    public interface IStockMarketService
-    {
-        Task<StockMarketQuoteUserAlertContract> CompleteQuoteUserAlertAsync(int userId, int quoteUserAlertId);
-        Task<StockMarketQuoteUserAlertContract> CreateQuoteUserAlertAsync(int userId, int quoteId, (decimal sell, decimal stopLoss) alert, DateTimeZone timezone);
-        Task<StockMarketQuoteUserEmotionContract> CreateQuoteUserEmotionAsync(int userId, int quoteId, int emotionId, DateTimeZone timezone);
-        StockMarketConfigurationContract GetConfiguration();
-        Task<StockMarketGlobalContract> GetGlobalAsync();
-        Task<List<StockMarketQuoteCandleContract>> GetQuoteCandlesAsync(int quoteId, int timeframeId);
-        Task<StockMarketQuoteCompanyContract> GetQuoteCompanyAsync(int quoteId);
-        List<StockMarketQuoteEmotionCountContract> GetQuoteEmotionCounts(int quoteId, DateTimeZone timezone);
-        Task<StockMarketQuotePriceContract> GetQuotePriceAsync(int quoteId);
-        Task<List<StockMarketQuoteReverseSplitContract>> GetQuoteReverseSplitsAsync(int quoteId);
-        StockMarketQuoteUserConfigurationContract GetQuoteUserConfiguration(int userId, int quoteId, DateTimeZone timezone);
-        StockMarketUserContract GetUser(int userId);
-        List<StockMarketQuoteContract> SearchQuotesAsync(string keyword);
-        List<StockMarketQuoteUserAlertContract> SearchQuoteUserAlerts(int alertTypeId, int? userId, int? quoteId);
-
-        #region Memory Cache
-
-        internal static IReadOnlyDictionary<int, StockMarketExchangeContract> Exchanges => StockMarketMemoryCache.Exchanges;
-        internal static IReadOnlyDictionary<int, StockMarketTimeframeContract> Timeframes => StockMarketMemoryCache.Timeframes;
-        internal static IReadOnlyDictionary<int, StockMarketAlertTypeContract> AlertTypes => StockMarketMemoryCache.AlertTypes;
-        internal static IReadOnlyDictionary<int, StockMarketAlertCompletedTypeContract> AlertCompletedTypes => StockMarketMemoryCache.AlertCompletedTypes;
-        internal static IReadOnlyDictionary<int, StockMarketEmotionContract> Emotions => StockMarketMemoryCache.Emotions;
-        internal static IReadOnlyDictionary<int, StockMarketQuoteContract> Quotes => StockMarketMemoryCache.Quotes;
-        internal static IReadOnlyDictionary<int, StockMarketQuoteUserAlertContract> QuoteUserAlerts => StockMarketMemoryCache.QuoteUserAlerts;
-        internal static IReadOnlyDictionary<int, StockMarketQuoteUserEmotionContract> QuoteUserEmotions => StockMarketMemoryCache.QuoteUserEmotions;
-
-        public static StockMarketExchangeContract GetExchange(int exchangeId) =>
-            Exchanges.TryGetValue(exchangeId, out StockMarketExchangeContract? exchange)
-                ? exchange
-                : throw new BadRequestException($"{nameof(exchangeId)} is invalid");
-
-        public static StockMarketTimeframeContract GetTimeframe(int timeframeId) =>
-            Timeframes.TryGetValue(timeframeId, out StockMarketTimeframeContract? timeframe)
-                ? timeframe
-                : throw new BadRequestException($"{nameof(timeframeId)} is invalid");
-
-        public static StockMarketAlertTypeContract GetAlertType(int alertTypeId) =>
-            AlertTypes.TryGetValue(alertTypeId, out StockMarketAlertTypeContract? alertType)
-                ? alertType
-                : throw new BadRequestException($"{nameof(alertTypeId)} is invalid");
-
-        public static StockMarketAlertCompletedTypeContract GetAlertCompletedType(int alertCompletedTypeId) =>
-            AlertCompletedTypes.TryGetValue(alertCompletedTypeId, out StockMarketAlertCompletedTypeContract? alertCompletedType)
-                ? alertCompletedType
-                : throw new BadRequestException($"{nameof(alertCompletedTypeId)} is invalid");
-
-        public static StockMarketEmotionContract GetEmotion(int emotionId) =>
-            Emotions.TryGetValue(emotionId, out StockMarketEmotionContract? emotion)
-                ? emotion
-                : throw new BadRequestException($"{nameof(emotionId)} is invalid");
-
-        public static StockMarketQuoteContract GetQuote(int quoteId) =>
-           Quotes.TryGetValue(quoteId, out StockMarketQuoteContract? quote)
-               ? quote
-               : throw new BadRequestException($"{nameof(quoteId)} is invalid");
-
-        public static StockMarketQuoteUserAlertContract GetQuoteUserAlert(int quoteUserAlertId) =>
-           QuoteUserAlerts.TryGetValue(quoteUserAlertId, out StockMarketQuoteUserAlertContract? quoteUserAlert)
-               ? quoteUserAlert
-               : throw new BadRequestException($"{nameof(quoteUserAlertId)} is invalid");
-
-        public static StockMarketQuoteUserEmotionContract GetQuoteUserEmotion(int quoteUserEmotionId) =>
-           QuoteUserEmotions.TryGetValue(quoteUserEmotionId, out StockMarketQuoteUserEmotionContract? quoteUserEmotion)
-               ? quoteUserEmotion
-               : throw new BadRequestException($"{nameof(quoteUserEmotionId)} is invalid");
-
-        #endregion
-    }
-
     class StockMarketService : BaseService<StockMarketConfiguration, StockMarketRepository>, IStockMarketService
     {
-        public StockMarketService(StockMarketConfiguration configuration, StockMarketRepository repository, IAccountService accountService, IApplicationService applicationService, IMemoryCache memoryCache) : base(configuration, repository, memoryCache)
+        public StockMarketService(StockMarketConfiguration configuration, StockMarketRepository repository, IApplicationService applicationService, IMemoryCache memoryCache) : base(configuration, repository, memoryCache)
         {
             _financialModelingPrepApi = new RestClient(_configuration.FinancialModelingPrepApi.Server);
-            _accountService = accountService;
             _applicationService = applicationService;
         }
 
         private readonly IRestClient _financialModelingPrepApi;
-        private readonly IAccountService _accountService;
         private readonly IApplicationService _applicationService;
+
+        #region MemoryCache
+
+        internal static ConcurrentDictionary<int, StockMarketExchangeContract> _exchanges = new();
+        internal static ConcurrentDictionary<int, StockMarketTimeframeContract> _timeframes = new();
+        internal static ConcurrentDictionary<int, StockMarketAlertTypeContract> _alertTypes = new();
+        internal static ConcurrentDictionary<int, StockMarketAlertCompletedTypeContract> _alertCompletedTypes = new();
+        internal static ConcurrentDictionary<int, StockMarketEmotionContract> _emotions = new();
+        internal static ConcurrentDictionary<int, StockMarketQuoteContract> _quotes = new();
+        internal static ConcurrentDictionary<int, StockMarketQuoteUserAlertContract> _quoteUserAlerts = new();
+        internal static ConcurrentDictionary<int, StockMarketQuoteUserEmotionContract> _quoteUserEmotions = new();
+
+        public async Task MemoryCacheRefreshAsync(StockMarketDictionary? dictionary = null, int? id = null)
+        {
+            if (!dictionary.HasValue || dictionary.Value == StockMarketDictionary.Exchanges)
+            {
+                if (!id.HasValue)
+                    _exchanges = new((await _repository.GetExchangesAsync()).Select(exchangeEntity => exchangeEntity.MaptToExchangeContract()).ToDictionary(exchange => exchange.ExchangeId));
+                else
+                    _exchanges[id.Value] = (await _repository.GetExchangeAsync(id.Value) ?? throw new BadRequestException($"{nameof(id)} is invalid")).MaptToExchangeContract();
+            }
+
+            if (!dictionary.HasValue || dictionary.Value == StockMarketDictionary.Timeframes)
+            {
+                if (!id.HasValue)
+                    _timeframes = new((await _repository.GetTimeframesAsync()).Select(timeframeEntity => timeframeEntity.MaptToTimeframeContract()).ToDictionary(timeframe => timeframe.TimeframeId));
+                else
+                    _timeframes[id.Value] = (await _repository.GetTimeframeAsync(id.Value) ?? throw new BadRequestException($"{nameof(id)} is invalid")).MaptToTimeframeContract();
+            }
+
+            if (!dictionary.HasValue || dictionary.Value == StockMarketDictionary.AlertTypes)
+            {
+                if (!id.HasValue)
+                    _alertTypes = new((await _repository.GetAlertTypesAsync()).Select(alertTypeEntity => alertTypeEntity.MaptToAlertTypeContract()).ToDictionary(alertType => alertType.AlertTypeId));
+                else
+                    _alertTypes[id.Value] = (await _repository.GetAlertTypeAsync(id.Value) ?? throw new BadRequestException($"{nameof(id)} is invalid")).MaptToAlertTypeContract();
+            }
+
+            if (!dictionary.HasValue || dictionary.Value == StockMarketDictionary.AlertCompletedTypes)
+            {
+                if (!id.HasValue)
+                    _alertCompletedTypes = new((await _repository.GetAlertCompletedTypesAsync()).Select(alertCompletedTypeEntity => alertCompletedTypeEntity.MaptToAlertCompletedTypeContract()).ToDictionary(alertCompletedType => alertCompletedType.AlertCompletedTypeId));
+                else
+                    _alertCompletedTypes[id.Value] = (await _repository.GetAlertCompletedTypeAsync(id.Value) ?? throw new BadRequestException($"{nameof(id)} is invalid")).MaptToAlertCompletedTypeContract();
+            }
+
+            if (!dictionary.HasValue || dictionary.Value == StockMarketDictionary.Emotions)
+            {
+                if (!id.HasValue)
+                    _emotions = new((await _repository.GetEmotionsAsync()).Select(emotionEntity => emotionEntity.MapToEmotionContract()).ToDictionary(emotion => emotion.EmotionId));
+                else
+                    _emotions[id.Value] = (await _repository.GetEmotionAsync(id.Value) ?? throw new BadRequestException($"{nameof(id)} is invalid")).MapToEmotionContract();
+            }
+
+            if (!dictionary.HasValue || dictionary.Value == StockMarketDictionary.Quotes)
+            {
+                if (!id.HasValue)
+                    _quotes = new((await _repository.GetQuotesAsync()).Select(quoteEntity => quoteEntity.MapToQuoteContract()).ToDictionary(quote => quote.QuoteId));
+                else
+                    _quotes[id.Value] = (await _repository.GetQuoteAsync(id.Value) ?? throw new BadRequestException($"{nameof(id)} is invalid")).MapToQuoteContract();
+            }
+
+            if (!dictionary.HasValue || dictionary.Value == StockMarketDictionary.QuoteUserAlerts)
+            {
+                if (!id.HasValue)
+                    _quoteUserAlerts = new((await _repository.GetQuoteUserAlertsAsync()).Select(quoteUserAlertEntity => quoteUserAlertEntity.MapToQuoteUserAlertContract()).ToDictionary(quoteUserAlert => quoteUserAlert.QuoteUserAlertId));
+                else
+                    _quoteUserAlerts[id.Value] = (await _repository.GetQuoteUserAlertAsync(id.Value) ?? throw new BadRequestException($"{nameof(id)} is invalid")).MapToQuoteUserAlertContract();
+            }
+
+            if (!dictionary.HasValue || dictionary.Value == StockMarketDictionary.QuoteUserEmotions)
+            {
+                if (!id.HasValue)
+                    _quoteUserEmotions = new((await _repository.GetQuoteUserEmotionsAsync(DateTimeOffset.Now.AddDays(-1))).Select(quoteUserEmotionEntity => quoteUserEmotionEntity.MapToQuoteUserEmotionContract()).ToDictionary(quoteUserEmotion => quoteUserEmotion.QuoteUserEmotionId));
+                else
+                    _quoteUserEmotions[id.Value] = (await _repository.GetQuoteUserEmotionAsync(id.Value) ?? throw new BadRequestException($"{nameof(id)} is invalid")).MapToQuoteUserEmotionContract();
+            }
+        }
+
+        public async Task MemoryCacheTrimAsync()
+        {
+            foreach (var quoteUserEmotion in IStockMarketMemoryCache.QuoteUserEmotions.Where(quoteUserEmotion => quoteUserEmotion.Value.CreatedOn < DateTimeOffset.Now.AddDays(-1)).ToList())
+                _quoteUserEmotions.TryRemove(quoteUserEmotion);
+
+            await Task.CompletedTask;
+        }
+
+        #endregion
 
         #region Search
 
         public List<StockMarketQuoteContract> SearchQuotesAsync(string keyword) =>
-            IStockMarketService.Quotes
+            IStockMarketMemoryCache.Quotes
                 .Where(quote => quote.Value.Symbol.StartsWith(keyword))
                 .OrderBy(quote => quote.Value.Symbol.Length)
                 .Take(_configuration.Limit.SearchQuotesLimit)
@@ -108,14 +124,14 @@ namespace Library.StockMarket
 
         public List<StockMarketQuoteUserAlertContract> SearchQuoteUserAlerts(int alertTypeId, int? userId, int? quoteId)
         {
-            var alertType = IStockMarketService.GetAlertType(alertTypeId);
-            var user = userId.HasValue ? IAccountService.GetUser(userId.Value) : null;
-            var quote = quoteId.HasValue ? IStockMarketService.GetQuote(quoteId.Value) : null;
+            var alertType = IStockMarketMemoryCache.GetAlertType(alertTypeId);
+            var quote = quoteId.HasValue ? IStockMarketMemoryCache.GetQuote(quoteId.Value) : null;
+            var user = userId.HasValue ? IAccountMemoryCache.GetUser(userId.Value) : null;
 
             if (user is not null && user.UserTypeId != (int)UserType.Stocktwits)
                 throw new BadRequestException($"{nameof(userId)} is not of {nameof(UserType.Stocktwits)} type");
 
-            return IStockMarketService.QuoteUserAlerts
+            return IStockMarketMemoryCache.QuoteUserAlerts
                 .Where(quoteUserAlert =>
                     (quoteUserAlert.Value.AlertTypeId == alertType.AlertTypeId) &&
                     (user is null || quoteUserAlert.Value.UserId == user.UserId) &&
@@ -153,7 +169,7 @@ namespace Library.StockMarket
             if (_memoryCache.TryGetValue(memoryCacheKey, out StockMarketQuotePriceContract quotePrice))
                 return quotePrice;
 
-            var quote = IStockMarketService.GetQuote(quoteId);
+            var quote = IStockMarketMemoryCache.GetQuote(quoteId);
 
             return _memoryCache.Set(
                 memoryCacheKey,
@@ -170,7 +186,7 @@ namespace Library.StockMarket
             if (_memoryCache.TryGetValue(memoryCacheKey, out StockMarketQuoteCompanyContract quoteCompany))
                 return quoteCompany;
 
-            var quote = IStockMarketService.GetQuote(quoteId);
+            var quote = IStockMarketMemoryCache.GetQuote(quoteId);
 
             return _memoryCache.Set(
                 memoryCacheKey,
@@ -187,8 +203,8 @@ namespace Library.StockMarket
             if (_memoryCache.TryGetValue(memoryCacheKey, out List<StockMarketQuoteCandleContract> quoteCandles))
                 return quoteCandles;
 
-            var quote = IStockMarketService.GetQuote(quoteId);
-            var timeframe = IStockMarketService.GetTimeframe(timeframeId);
+            var quote = IStockMarketMemoryCache.GetQuote(quoteId);
+            var timeframe = IStockMarketMemoryCache.GetTimeframe(timeframeId);
 
             //How does this code work?
             //Every timeframe is 1 multiplier
@@ -254,7 +270,7 @@ namespace Library.StockMarket
             }
 
             //Everything under here is dynamic, no matter the timeframe
-            var quoteUserAlerts = IStockMarketService.QuoteUserAlerts
+            var quoteUserAlerts = IStockMarketMemoryCache.QuoteUserAlerts
                                            .Where(quoteUserAlert =>
                                                quoteUserAlert.Value.QuoteId == quote.QuoteId &&
                                                quoteUserAlert.Value.CreatedOn >= quoteCandlesResponse[^1].CreatedOn &&
@@ -332,7 +348,7 @@ namespace Library.StockMarket
             if (_memoryCache.TryGetValue(memoryCacheKey, out List<StockMarketQuoteReverseSplitContract> quoteReverseSplits))
                 return quoteReverseSplits;
 
-            var quote = IStockMarketService.GetQuote(quoteId);
+            var quote = IStockMarketMemoryCache.GetQuote(quoteId);
 
             return _memoryCache.Set(
                 memoryCacheKey,
@@ -346,9 +362,9 @@ namespace Library.StockMarket
 
         public List<StockMarketQuoteEmotionCountContract> GetQuoteEmotionCounts(int quoteId, DateTimeZone timezone)
         {
-            var quote = IStockMarketService.GetQuote(quoteId);
+            var quote = IStockMarketMemoryCache.GetQuote(quoteId);
 
-            return IStockMarketService.QuoteUserEmotions.GetQuoteUserEmotionsAtTimezoneToday(timezone)
+            return IStockMarketMemoryCache.QuoteUserEmotions.GetQuoteUserEmotionsAtTimezoneToday(timezone)
                 .GroupBy(quoteUserEmotion => quoteUserEmotion.EmotionId)
                 .Select(quoteUserEmotionGroup => new StockMarketQuoteEmotionCountContract
                 {
@@ -361,10 +377,10 @@ namespace Library.StockMarket
 
         public StockMarketQuoteUserConfigurationContract GetQuoteUserConfiguration(int userId, int quoteId, DateTimeZone timezone)
         {
-            var user = IAccountService.GetUser(userId);
-            var quote = IStockMarketService.GetQuote(quoteId);
+            var user = IAccountMemoryCache.GetUser(userId);
+            var quote = IStockMarketMemoryCache.GetQuote(quoteId);
 
-            var quoteUserEmotions = IStockMarketService.QuoteUserEmotions.GetQuoteUserEmotionsAtTimezoneToday(timezone, user.UserId);
+            var quoteUserEmotions = IStockMarketMemoryCache.QuoteUserEmotions.GetQuoteUserEmotionsAtTimezoneToday(timezone, user.UserId);
 
             return new StockMarketQuoteUserConfigurationContract
             {
@@ -376,11 +392,11 @@ namespace Library.StockMarket
 
         public StockMarketConfigurationContract GetConfiguration() => new()
         {
-            AlertTypes = IStockMarketService.AlertTypes.Values.ToList(),
-            AlertCompletedTypes = IStockMarketService.AlertCompletedTypes.Values.ToList(),
-            Emotions = IStockMarketService.Emotions.Values.ToList(),
-            Exchanges = IStockMarketService.Exchanges.Values.ToList(),
-            Timeframes = IStockMarketService.Timeframes.Values.ToList(),
+            AlertTypes = IStockMarketMemoryCache.AlertTypes.Values.ToList(),
+            AlertCompletedTypes = IStockMarketMemoryCache.AlertCompletedTypes.Values.ToList(),
+            Emotions = IStockMarketMemoryCache.Emotions.Values.ToList(),
+            Exchanges = IStockMarketMemoryCache.Exchanges.Values.ToList(),
+            Timeframes = IStockMarketMemoryCache.Timeframes.Values.ToList(),
             QuoteUserAlertRequirement = new StockMarketQuoteUserAlertRequirementConfigurationContract()
             {
                 MinimumFollowersCount = _configuration.Requirement.CreateQuoteUserAlertMinimumFollowersCount,
@@ -395,14 +411,14 @@ namespace Library.StockMarket
 
         public StockMarketUserContract GetUser(int userId)
         {
-            var user = IAccountService.GetUser(userId);
+            var user = IAccountMemoryCache.GetUser(userId);
 
             if (user.UserTypeId != (int)UserType.Stocktwits)
                 throw new BadRequestException($"{nameof(userId)} is not of {nameof(UserType.Stocktwits)} type");
 
             return new StockMarketUserContract
             {
-                AlertTypeCounts = IStockMarketService.QuoteUserAlerts
+                AlertTypeCounts = IStockMarketMemoryCache.QuoteUserAlerts
                     .Where(quoteUserAlert => quoteUserAlert.Value.UserId == user.UserId)
                     .GroupBy(quoteUserAlert => quoteUserAlert.Value.AlertTypeId)
                     .Select(alertTypeGroup => new StockMarketUserAlertTypeCountContract
@@ -431,8 +447,8 @@ namespace Library.StockMarket
 
         public async Task<StockMarketQuoteUserAlertContract> CreateQuoteUserAlertAsync(int userId, int quoteId, (decimal sell, decimal stopLoss) alert, DateTimeZone timezone)
         {
-            var user = IAccountService.GetUser(userId);
-            var quote = IStockMarketService.GetQuote(quoteId);
+            var user = IAccountMemoryCache.GetUser(userId);
+            var quote = IStockMarketMemoryCache.GetQuote(quoteId);
 
             if (user.Stocktwits!.CreatedOn.UtcDateTime.Date.AddMonths(_configuration.Requirement.CreateQuoteUserAlertMinimumStocktwitsCreatedOnAgeInMonths) > DateTimeOffset.UtcNow.Date)
                 throw new BadRequestException($"Your account must be at least {_configuration.Requirement.CreateQuoteUserAlertMinimumStocktwitsCreatedOnAgeInMonths} months old");
@@ -452,7 +468,7 @@ namespace Library.StockMarket
             if (user.Stocktwits.WatchlistQuotesCount < _configuration.Requirement.CreateQuoteUserAlertMinimumWatchlistQuotesCount)
                 throw new BadRequestException($"Your account must have at least {_configuration.Requirement.CreateQuoteUserAlertMinimumWatchlistQuotesCount} watchlist quotes");
 
-            var quoteUserAlerts = IStockMarketService.QuoteUserAlerts
+            var quoteUserAlerts = IStockMarketMemoryCache.QuoteUserAlerts
                 .Where(quoteUserAlert =>
                     quoteUserAlert.Value.UserId == user.UserId &&
                     !quoteUserAlert.Value.AlertCompletedTypeId.HasValue
@@ -494,18 +510,18 @@ namespace Library.StockMarket
                 ReverseSplitCount = 0
             })).MapToQuoteUserAlertContract();
 
-            StockMarketMemoryCache.QuoteUserAlerts.TryAdd(quoteUserAlert.QuoteUserAlertId, quoteUserAlert);
+            _quoteUserAlerts.TryAdd(quoteUserAlert.QuoteUserAlertId, quoteUserAlert);
 
             return quoteUserAlert;
         }
 
         public async Task<StockMarketQuoteUserEmotionContract> CreateQuoteUserEmotionAsync(int userId, int quoteId, int emotionId, DateTimeZone timezone)
         {
-            var user = IAccountService.GetUser(userId);
-            var quote = IStockMarketService.GetQuote(quoteId);
-            var emotion = IStockMarketService.GetEmotion(emotionId);
+            var user = IAccountMemoryCache.GetUser(userId);
+            var quote = IStockMarketMemoryCache.GetQuote(quoteId);
+            var emotion = IStockMarketMemoryCache.GetEmotion(emotionId);
 
-            var quoteUserEmotions = IStockMarketService.QuoteUserEmotions.GetQuoteUserEmotionsAtTimezoneToday(timezone, user.UserId);
+            var quoteUserEmotions = IStockMarketMemoryCache.QuoteUserEmotions.GetQuoteUserEmotionsAtTimezoneToday(timezone, user.UserId);
 
             if (quoteUserEmotions.Any(userEmotion => userEmotion.QuoteId == quote.QuoteId))
                 throw new BadRequestException("You already selected an emotion");
@@ -521,7 +537,7 @@ namespace Library.StockMarket
                 CreatedOn = DateTimeOffset.Now.AtTimezone(timezone)
             })).MapToQuoteUserEmotionContract();
 
-            StockMarketMemoryCache.QuoteUserEmotions.TryAdd(quoteUserEmotion.QuoteUserEmotionId, quoteUserEmotion);
+            _quoteUserEmotions.TryAdd(quoteUserEmotion.QuoteUserEmotionId, quoteUserEmotion);
 
             return quoteUserEmotion;
         }
@@ -532,8 +548,8 @@ namespace Library.StockMarket
 
         public async Task<StockMarketQuoteUserAlertContract> CompleteQuoteUserAlertAsync(int userId, int quoteUserAlertId)
         {
-            var user = IAccountService.GetUser(userId);
-            var quoteUserAlert = IStockMarketService.GetQuoteUserAlert(quoteUserAlertId);
+            var user = IAccountMemoryCache.GetUser(userId);
+            var quoteUserAlert = IStockMarketMemoryCache.GetQuoteUserAlert(quoteUserAlertId);
 
             if (quoteUserAlert.UserId != user.UserId)
                 throw new BadRequestException($"{nameof(quoteUserAlertId)} is not owned by you");
@@ -571,7 +587,7 @@ namespace Library.StockMarket
                 return;
             }
 
-            var financialModelingPrepExchanges = IStockMarketService.Exchanges
+            var financialModelingPrepExchanges = IStockMarketMemoryCache.Exchanges
                 .Select(exchange => exchange.Value)
                 .ToDictionary(exchange => exchange.FinancialModelingPrepId);
 
@@ -599,7 +615,7 @@ namespace Library.StockMarket
             );
 
             foreach (var quote in newQuoteEntities.Select(quoteEntity => quoteEntity.MapToQuoteContract()))
-                StockMarketMemoryCache.Quotes.TryAdd(quote.QuoteId, quote);
+                _quotes.TryAdd(quote.QuoteId, quote);
         }
 
         public async Task ProcessQuoteUserAlertsReverseSplitsAsync(List<int>? quoteUserAlertIds = null)
@@ -653,7 +669,7 @@ namespace Library.StockMarket
                     if (originalQuoteUserAlertEntityReverseSplitCount != quoteUserAlertEntity.ReverseSplitCount)
                         quoteUserAlertCacheUpdates.Add(() =>
                         {
-                            var quoteUserAlert = IStockMarketService.GetQuoteUserAlert(quoteUserAlertEntity.QuoteUserAlertId);
+                            var quoteUserAlert = IStockMarketMemoryCache.GetQuoteUserAlert(quoteUserAlertEntity.QuoteUserAlertId);
 
                             quoteUserAlert.Buy = quoteUserAlertEntity.Buy;
                             quoteUserAlert.Sell = quoteUserAlertEntity.Sell;
@@ -737,7 +753,7 @@ namespace Library.StockMarket
                     if (quoteUserAlertEntity.AlertTypeId != (int)AlertType.InProgress)
                         quoteUserAlertCacheUpdates.Add(() =>
                         {
-                            var quoteUserAlert = IStockMarketService.GetQuoteUserAlert(quoteUserAlertEntity.QuoteUserAlertId);
+                            var quoteUserAlert = IStockMarketMemoryCache.GetQuoteUserAlert(quoteUserAlertEntity.QuoteUserAlertId);
 
                             quoteUserAlert.AlertTypeId = quoteUserAlertEntity.AlertTypeId;
                             quoteUserAlert.AlertCompletedTypeId = quoteUserAlertEntity.AlertCompletedTypeId;
@@ -818,5 +834,85 @@ namespace Library.StockMarket
             )).GetData(isSuccess: (response) => response is not null).ReverseSplits ?? new List<StockMarketQuoteReverseSplitResponse>();
 
         #endregion
+    }
+
+    public interface IStockMarketMemoryCache
+    {
+        Task MemoryCacheRefreshAsync(StockMarketDictionary? dictionary = null, int? id = null);
+        Task MemoryCacheTrimAsync();
+
+        public static IReadOnlyDictionary<int, StockMarketExchangeContract> Exchanges => StockMarketService._exchanges;
+        public static IReadOnlyDictionary<int, StockMarketTimeframeContract> Timeframes => StockMarketService._timeframes;
+        public static IReadOnlyDictionary<int, StockMarketAlertTypeContract> AlertTypes => StockMarketService._alertTypes;
+        public static IReadOnlyDictionary<int, StockMarketAlertCompletedTypeContract> AlertCompletedTypes => StockMarketService._alertCompletedTypes;
+        public static IReadOnlyDictionary<int, StockMarketEmotionContract> Emotions => StockMarketService._emotions;
+        public static IReadOnlyDictionary<int, StockMarketQuoteContract> Quotes => StockMarketService._quotes;
+        public static IReadOnlyDictionary<int, StockMarketQuoteUserAlertContract> QuoteUserAlerts => StockMarketService._quoteUserAlerts;
+        public static IReadOnlyDictionary<int, StockMarketQuoteUserEmotionContract> QuoteUserEmotions => StockMarketService._quoteUserEmotions;
+
+        public static StockMarketExchangeContract GetExchange(int exchangeId) =>
+            Exchanges.TryGetValue(exchangeId, out StockMarketExchangeContract? exchange)
+                ? exchange
+                : throw new BadRequestException($"{nameof(exchangeId)} is invalid");
+
+        public static StockMarketTimeframeContract GetTimeframe(int timeframeId) =>
+            Timeframes.TryGetValue(timeframeId, out StockMarketTimeframeContract? timeframe)
+                ? timeframe
+                : throw new BadRequestException($"{nameof(timeframeId)} is invalid");
+
+        public static StockMarketAlertTypeContract GetAlertType(int alertTypeId) =>
+            AlertTypes.TryGetValue(alertTypeId, out StockMarketAlertTypeContract? alertType)
+                ? alertType
+                : throw new BadRequestException($"{nameof(alertTypeId)} is invalid");
+
+        public static StockMarketAlertCompletedTypeContract GetAlertCompletedType(int alertCompletedTypeId) =>
+            AlertCompletedTypes.TryGetValue(alertCompletedTypeId, out StockMarketAlertCompletedTypeContract? alertCompletedType)
+                ? alertCompletedType
+                : throw new BadRequestException($"{nameof(alertCompletedTypeId)} is invalid");
+
+        public static StockMarketEmotionContract GetEmotion(int emotionId) =>
+            Emotions.TryGetValue(emotionId, out StockMarketEmotionContract? emotion)
+                ? emotion
+                : throw new BadRequestException($"{nameof(emotionId)} is invalid");
+
+        public static StockMarketQuoteContract GetQuote(int quoteId) =>
+           Quotes.TryGetValue(quoteId, out StockMarketQuoteContract? quote)
+               ? quote
+               : throw new BadRequestException($"{nameof(quoteId)} is invalid");
+
+        public static StockMarketQuoteUserAlertContract GetQuoteUserAlert(int quoteUserAlertId) =>
+           QuoteUserAlerts.TryGetValue(quoteUserAlertId, out StockMarketQuoteUserAlertContract? quoteUserAlert)
+               ? quoteUserAlert
+               : throw new BadRequestException($"{nameof(quoteUserAlertId)} is invalid");
+
+        public static StockMarketQuoteUserEmotionContract GetQuoteUserEmotion(int quoteUserEmotionId) =>
+           QuoteUserEmotions.TryGetValue(quoteUserEmotionId, out StockMarketQuoteUserEmotionContract? quoteUserEmotion)
+               ? quoteUserEmotion
+               : throw new BadRequestException($"{nameof(quoteUserEmotionId)} is invalid");
+    }
+
+    public interface IStockMarketProcess
+    {
+        Task ProcessQuotesAsync();
+        Task ProcessQuoteUserAlertsReverseSplitsAsync(List<int>? quoteUserAlertIds = null);
+        Task ProcessQuoteUserAlertsInProgressAsync(int alertCompletionTypeId, List<int>? quoteUserAlertIds = null);
+    }
+
+    public interface IStockMarketService : IStockMarketMemoryCache, IStockMarketProcess
+    {
+        Task<StockMarketQuoteUserAlertContract> CompleteQuoteUserAlertAsync(int userId, int quoteUserAlertId);
+        Task<StockMarketQuoteUserAlertContract> CreateQuoteUserAlertAsync(int userId, int quoteId, (decimal sell, decimal stopLoss) alert, DateTimeZone timezone);
+        Task<StockMarketQuoteUserEmotionContract> CreateQuoteUserEmotionAsync(int userId, int quoteId, int emotionId, DateTimeZone timezone);
+        StockMarketConfigurationContract GetConfiguration();
+        Task<StockMarketGlobalContract> GetGlobalAsync();
+        Task<List<StockMarketQuoteCandleContract>> GetQuoteCandlesAsync(int quoteId, int timeframeId);
+        Task<StockMarketQuoteCompanyContract> GetQuoteCompanyAsync(int quoteId);
+        List<StockMarketQuoteEmotionCountContract> GetQuoteEmotionCounts(int quoteId, DateTimeZone timezone);
+        Task<StockMarketQuotePriceContract> GetQuotePriceAsync(int quoteId);
+        Task<List<StockMarketQuoteReverseSplitContract>> GetQuoteReverseSplitsAsync(int quoteId);
+        StockMarketQuoteUserConfigurationContract GetQuoteUserConfiguration(int userId, int quoteId, DateTimeZone timezone);
+        StockMarketUserContract GetUser(int userId);
+        List<StockMarketQuoteContract> SearchQuotesAsync(string keyword);
+        List<StockMarketQuoteUserAlertContract> SearchQuoteUserAlerts(int alertTypeId, int? userId, int? quoteId);
     }
 }

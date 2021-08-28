@@ -11,6 +11,6 @@ namespace Library.StockMarket.Contract
         public string Name { get; internal set; } = default!;
         public string Symbol { get; internal set; } = default!;
 
-        public StockMarketExchangeContract Exchange => IStockMarketService.GetExchange(ExchangeId);
+        public StockMarketExchangeContract Exchange => IStockMarketMemoryCache.Exchanges[ExchangeId];
     }
 }

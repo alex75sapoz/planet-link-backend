@@ -22,6 +22,10 @@ namespace Api.Configuration.Authorization
                     new AuthorizationDefaultRequirement(),
                     new AuthorizationUserTypeStocktwitsRequirement()
                 ));
+                options.AddPolicy(nameof(AuthorizationUserAdministratorRequirement), policy => policy.AddRequirements(
+                    new AuthorizationDefaultRequirement(),
+                    new AuthorizationUserAdministratorRequirement()
+                ));
 
                 options.FallbackPolicy = options.GetPolicy(nameof(AuthorizationDefaultRequirement));
             });

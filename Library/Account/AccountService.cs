@@ -2,6 +2,7 @@
 using NodaTime;
 using RestSharp;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -10,76 +11,6 @@ using System.Threading.Tasks;
 
 namespace Library.Account
 {
-    public interface IAccountService
-    {
-        Task<AccountUserSessionContract> AuthenticateUserCodeAsync(int userTypeId, string code, string subdomain, string page, DateTimeZone timezone);
-        Task<AccountUserSessionContract> AuthenticateUserTokenAsync(int userTypeId, string token, DateTimeZone timezone);
-        string GetUserConsentUrl(int userTypeId, string subdomain, string page);
-        Task RevokeUserSessionAsync(int userSessionId);
-        List<AccountUserContract> SearchUsers(string keyword, int userTypeId);
-
-        #region Memory Cache
-
-        internal static IReadOnlyDictionary<int, AccountUserContract> Users => AccountMemoryCache.Users;
-        internal static IReadOnlyDictionary<int, AccountUserSessionContract> UserSessions => AccountMemoryCache.UserSessions;
-        internal static IReadOnlyDictionary<int, AccountUserTypeContract> UserTypes => AccountMemoryCache.UserTypes;
-        internal static IReadOnlyDictionary<int, AccountUserGenderContract> UserGenders => AccountMemoryCache.UserGenders;
-
-        public static AccountUserContract GetUser(int userId) =>
-            Users.TryGetValue(userId, out AccountUserContract? user)
-                ? user
-                : throw new BadRequestException($"{nameof(userId)} is invalid");
-
-        public static AccountUserSessionContract GetUserSession(int userSessionId) =>
-            UserSessions.TryGetValue(userSessionId, out AccountUserSessionContract? userSession)
-                ? userSession
-                : throw new BadRequestException($"{nameof(userSessionId)} is invalid");
-
-        public static AccountUserSessionContract GetUserSession(int userSessionId, bool isExpiredSessionValid)
-        {
-            var userSession = GetUserSession(userSessionId);
-
-            if (isExpiredSessionValid)
-                return userSession;
-
-            if (userSession.IsExpired)
-                throw new BadRequestException($"{nameof(userSessionId)} is expired");
-
-            return userSession;
-        }
-
-        public static AccountUserSessionContract GetUserSession(int userTypeId, string token) =>
-            UserSessions.SingleOrDefault(userSession =>
-                userSession.Value.Token == token &&
-                userSession.Value.User.UserTypeId == userTypeId
-            ).Value ?? throw new BadRequestException($"{nameof(userTypeId)}/{nameof(token)} is invalid");
-
-        public static AccountUserSessionContract GetUserSession(int userTypeId, string token, bool isExpiredSessionValid)
-        {
-            var userSession = GetUserSession(userTypeId, token);
-
-            if (isExpiredSessionValid)
-                return userSession;
-
-            if (userSession.IsExpired)
-                throw new BadRequestException($"{nameof(userTypeId)}/{nameof(token)} is expired");
-
-            return userSession;
-        }
-
-        public static AccountUserTypeContract GetUserType(int userTypeId) =>
-            UserTypes.TryGetValue(userTypeId, out AccountUserTypeContract? userType)
-                ? userType
-                : throw new BadRequestException($"{nameof(userTypeId)} is invalid");
-
-        public static AccountUserGenderContract GetUserGender(int userGenderId) =>
-            UserGenders.TryGetValue(userGenderId, out AccountUserGenderContract? userGender)
-                ? userGender
-                : throw new BadRequestException($"{nameof(userGenderId)} is invalid");
-
-        #endregion
-    }
-
     class AccountService : BaseService<AccountConfiguration, AccountRepository>, IAccountService
     {
         public AccountService(AccountConfiguration configuration, AccountRepository repository, IMemoryCache memoryCache) : base(configuration, repository, memoryCache)
@@ -97,23 +28,67 @@ namespace Library.Account
         private readonly IRestClient _fitbitAuthenticationApi;
         private readonly IRestClient _fitbitTokenApi;
 
+        #region Memory Cache
+
+        internal static ConcurrentDictionary<int, AccountUserTypeContract> _userTypes = new();
+        internal static ConcurrentDictionary<int, AccountUserGenderContract> _userGenders = new();
+        internal static ConcurrentDictionary<int, AccountUserContract> _users = new();
+        internal static ConcurrentDictionary<int, AccountUserSessionContract> _userSessions = new();
+
+        public async Task MemoryCacheRefreshAsync(AccountDictionary? dictionary = null, int? id = null)
+        {
+            if (!dictionary.HasValue || dictionary.Value == AccountDictionary.UserTypes)
+            {
+                if (!id.HasValue)
+                    _userTypes = new((await _repository.GetUserTypesAsync()).Select(userTypeEntity => userTypeEntity.MapToUserTypeContract()).ToDictionary(userType => userType.UserTypeId));
+                else
+                    _userTypes[id.Value] = (await _repository.GetUserTypeAsync(id.Value) ?? throw new BadRequestException($"{nameof(id)} is invalid")).MapToUserTypeContract();
+            }
+
+            if (!dictionary.HasValue || dictionary.Value == AccountDictionary.UserGenders)
+            {
+                if (!id.HasValue)
+                    _userGenders = new((await _repository.GetUserGendersAsync()).Select(userGenderEntity => userGenderEntity.MapToUserGenderContract()).ToDictionary(userGender => userGender.UserGenderId));
+                else
+                    _userGenders[id.Value] = (await _repository.GetUserGenderAsync(id.Value) ?? throw new BadRequestException($"{nameof(id)} is invalid")).MapToUserGenderContract();
+            }
+
+            if (!dictionary.HasValue || dictionary.Value == AccountDictionary.Users)
+            {
+                if (!id.HasValue)
+                    _users = new((await _repository.GetUsersAsync()).Select(userEntity => userEntity.MapToUserContract()).ToDictionary(user => user.UserId));
+                else
+                    _users[id.Value] = (await _repository.GetUserAsync(id.Value) ?? throw new BadRequestException($"{nameof(id)} is invalid")).MapToUserContract();
+            }
+
+            if (!dictionary.HasValue || dictionary.Value == AccountDictionary.UserSessions)
+            {
+                if (!id.HasValue)
+                    _userSessions = new((await _repository.GetUserSessionsAsync()).Select(userSessionEntity => userSessionEntity.MapToUserSessionContract()).ToDictionary(userSession => userSession.UserSessionId));
+                else
+                    _userSessions[id.Value] = (await _repository.GetUserSessionAsync(id.Value) ?? throw new BadRequestException($"{nameof(id)} is invalid")).MapToUserSessionContract();
+            }
+        }
+
+        #endregion
+
         #region Search
 
         public List<AccountUserContract> SearchUsers(string keyword, int userTypeId)
         {
-            var userType = IAccountService.GetUserType(userTypeId);
+            var userType = IAccountMemoryCache.GetUserType(userTypeId);
 
             return (userType.UserTypeId switch
             {
-                (int)UserType.Google => IAccountService.Users.Where(user =>
+                (int)UserType.Google => IAccountMemoryCache.Users.Where(user =>
                     user.Value.UserTypeId == userType.UserTypeId &&
                     user.Value.Google!.Username.StartsWith(keyword, StringComparison.OrdinalIgnoreCase)
                 ),
-                (int)UserType.Stocktwits => IAccountService.Users.Where(user =>
+                (int)UserType.Stocktwits => IAccountMemoryCache.Users.Where(user =>
                     user.Value.UserTypeId == userType.UserTypeId &&
                     user.Value.Stocktwits!.Username.StartsWith(keyword, StringComparison.OrdinalIgnoreCase)
                 ),
-                (int)UserType.Fitbit => IAccountService.Users.Where(user =>
+                (int)UserType.Fitbit => IAccountMemoryCache.Users.Where(user =>
                     user.Value.UserTypeId == userType.UserTypeId &&
                     user.Value.Fitbit!.FullName.StartsWith(keyword, StringComparison.OrdinalIgnoreCase)
                 ),
@@ -129,7 +104,7 @@ namespace Library.Account
 
         public string GetUserConsentUrl(int userTypeId, string subdomain, string page)
         {
-            var userType = IAccountService.GetUserType(userTypeId);
+            var userType = IAccountMemoryCache.GetUserType(userTypeId);
 
             return userType.UserTypeId switch
             {
@@ -146,7 +121,7 @@ namespace Library.Account
 
         public async Task<AccountUserSessionContract> AuthenticateUserTokenAsync(int userTypeId, string token, DateTimeZone timezone)
         {
-            var userSession = IAccountService.GetUserSession(userTypeId, token, isExpiredSessionValid: true);
+            var userSession = IAccountMemoryCache.GetUserSession(userTypeId, token, isExpiredSessionValid: true);
 
             if (userTypeId == (int)UserType.Google)
             {
@@ -182,7 +157,7 @@ namespace Library.Account
                 await _repository.SaveChangesAsync();
 
                 //Update memory cache
-                var user = IAccountService.GetUser(userEntity.UserId);
+                var user = IAccountMemoryCache.GetUser(userEntity.UserId);
                 var google = user.Google!;
 
                 userSession.Token = userSessionEntity.Token;
@@ -228,7 +203,7 @@ namespace Library.Account
                 await _repository.SaveChangesAsync();
 
                 //Update memory cache
-                var user = IAccountService.GetUser(userEntity.UserId);
+                var user = IAccountMemoryCache.GetUser(userEntity.UserId);
                 var stocktwits = user.Stocktwits!;
 
                 userSession.Token = userSessionEntity.Token;
@@ -281,7 +256,7 @@ namespace Library.Account
                 await _repository.SaveChangesAsync();
 
                 //Update memory cache
-                var user = IAccountService.GetUser(userEntity.UserId);
+                var user = IAccountMemoryCache.GetUser(userEntity.UserId);
                 var fitbit = user.Fitbit!;
 
                 userSession.Token = userSessionEntity.Token;
@@ -368,11 +343,11 @@ namespace Library.Account
                 await _repository.SaveChangesAsync();
 
                 //Update memory cache
-                AccountMemoryCache.UserSessions.TryAdd(userSessionEntity.UserSessionId, userSessionEntity.MapToUserSessionContract());
-                AccountMemoryCache.Users.TryAdd(userEntity.UserId, userEntity.MapToUserContract());
+                _userSessions.TryAdd(userSessionEntity.UserSessionId, userSessionEntity.MapToUserSessionContract());
+                _users.TryAdd(userEntity.UserId, userEntity.MapToUserContract());
 
-                var userSession = IAccountService.GetUserSession(userSessionEntity.UserSessionId);
-                var user = IAccountService.GetUser(userEntity.UserId);
+                var userSession = IAccountMemoryCache.GetUserSession(userSessionEntity.UserSessionId);
+                var user = IAccountMemoryCache.GetUser(userEntity.UserId);
                 var google = user.Google!;
 
                 userSession.Token = userSessionEntity.Token;
@@ -455,11 +430,11 @@ namespace Library.Account
                 await _repository.SaveChangesAsync();
 
                 //Update memory cache
-                AccountMemoryCache.UserSessions.TryAdd(userSessionEntity.UserSessionId, userSessionEntity.MapToUserSessionContract());
-                AccountMemoryCache.Users.TryAdd(userEntity.UserId, userEntity.MapToUserContract());
+                _userSessions.TryAdd(userSessionEntity.UserSessionId, userSessionEntity.MapToUserSessionContract());
+                _users.TryAdd(userEntity.UserId, userEntity.MapToUserContract());
 
-                var userSession = IAccountService.GetUserSession(userSessionEntity.UserSessionId);
-                var user = IAccountService.GetUser(userEntity.UserId);
+                var userSession = IAccountMemoryCache.GetUserSession(userSessionEntity.UserSessionId);
+                var user = IAccountMemoryCache.GetUser(userEntity.UserId);
                 var stocktwits = user.Stocktwits!;
 
                 userSession.Token = userSessionEntity.Token;
@@ -544,11 +519,11 @@ namespace Library.Account
                 await _repository.SaveChangesAsync();
 
                 //Update memory cache
-                AccountMemoryCache.UserSessions.TryAdd(userSessionEntity.UserSessionId, userSessionEntity.MapToUserSessionContract());
-                AccountMemoryCache.Users.TryAdd(userEntity.UserId, userEntity.MapToUserContract());
+                _userSessions.TryAdd(userSessionEntity.UserSessionId, userSessionEntity.MapToUserSessionContract());
+                _users.TryAdd(userEntity.UserId, userEntity.MapToUserContract());
 
-                var userSession = IAccountService.GetUserSession(userSessionEntity.UserSessionId);
-                var user = IAccountService.GetUser(userEntity.UserId);
+                var userSession = IAccountMemoryCache.GetUserSession(userSessionEntity.UserSessionId);
+                var user = IAccountMemoryCache.GetUser(userEntity.UserId);
                 var fitbit = user.Fitbit!;
 
                 userSession.Token = userSessionEntity.Token;
@@ -573,8 +548,8 @@ namespace Library.Account
 
         public async Task RevokeUserSessionAsync(int userSessionId)
         {
-            var userSession = IAccountService.GetUserSession(userSessionId, isExpiredSessionValid: true);
-            var user = IAccountService.GetUser(userSession.UserId);
+            var userSession = IAccountMemoryCache.GetUserSession(userSessionId, isExpiredSessionValid: true);
+            var user = IAccountMemoryCache.GetUser(userSession.UserId);
 
             if (user.UserTypeId == (int)UserType.Google)
             {
@@ -585,7 +560,7 @@ namespace Library.Account
                 if (userSessionEntity is not null)
                     await _repository.RemoveAsync(userSessionEntity);
 
-                AccountMemoryCache.UserSessions.TryRemove(userSession.UserSessionId, out _);
+                _userSessions.TryRemove(userSession.UserSessionId, out _);
             }
 
             if (user.UserTypeId == (int)UserType.Stocktwits)
@@ -604,7 +579,7 @@ namespace Library.Account
                 if (userSessionEntity is not null)
                     await _repository.RemoveAsync(userSessionEntity);
 
-                AccountMemoryCache.UserSessions.TryRemove(userSession.UserSessionId, out _);
+                _userSessions.TryRemove(userSession.UserSessionId, out _);
             }
         }
 
@@ -729,5 +704,76 @@ namespace Library.Account
             )).GetData(isSuccess: (response) => response?.User is not null).User;
 
         #endregion
+    }
+
+    public interface IAccountMemoryCache
+    {
+        Task MemoryCacheRefreshAsync(AccountDictionary? dictionary = null, int? id = null);
+
+        public static IReadOnlyDictionary<int, AccountUserContract> Users => AccountService._users;
+        public static IReadOnlyDictionary<int, AccountUserSessionContract> UserSessions => AccountService._userSessions;
+        public static IReadOnlyDictionary<int, AccountUserTypeContract> UserTypes => AccountService._userTypes;
+        public static IReadOnlyDictionary<int, AccountUserGenderContract> UserGenders => AccountService._userGenders;
+
+        public static AccountUserContract GetUser(int userId) =>
+            Users.TryGetValue(userId, out AccountUserContract? user)
+                ? user
+                : throw new BadRequestException($"{nameof(userId)} is invalid");
+
+        public static AccountUserSessionContract GetUserSession(int userSessionId) =>
+            UserSessions.TryGetValue(userSessionId, out AccountUserSessionContract? userSession)
+                ? userSession
+                : throw new BadRequestException($"{nameof(userSessionId)} is invalid");
+
+        public static AccountUserSessionContract GetUserSession(int userSessionId, bool isExpiredSessionValid)
+        {
+            var userSession = GetUserSession(userSessionId);
+
+            if (isExpiredSessionValid)
+                return userSession;
+
+            if (userSession.IsExpired)
+                throw new BadRequestException($"{nameof(userSessionId)} is expired");
+
+            return userSession;
+        }
+
+        public static AccountUserSessionContract GetUserSession(int userTypeId, string token) =>
+            UserSessions.SingleOrDefault(userSession =>
+                userSession.Value.Token == token &&
+                userSession.Value.User.UserTypeId == userTypeId
+            ).Value ?? throw new BadRequestException($"{nameof(userTypeId)}/{nameof(token)} is invalid");
+
+        public static AccountUserSessionContract GetUserSession(int userTypeId, string token, bool isExpiredSessionValid)
+        {
+            var userSession = GetUserSession(userTypeId, token);
+
+            if (isExpiredSessionValid)
+                return userSession;
+
+            if (userSession.IsExpired)
+                throw new BadRequestException($"{nameof(userTypeId)}/{nameof(token)} is expired");
+
+            return userSession;
+        }
+
+        public static AccountUserTypeContract GetUserType(int userTypeId) =>
+            UserTypes.TryGetValue(userTypeId, out AccountUserTypeContract? userType)
+                ? userType
+                : throw new BadRequestException($"{nameof(userTypeId)} is invalid");
+
+        public static AccountUserGenderContract GetUserGender(int userGenderId) =>
+            UserGenders.TryGetValue(userGenderId, out AccountUserGenderContract? userGender)
+                ? userGender
+                : throw new BadRequestException($"{nameof(userGenderId)} is invalid");
+    }
+
+    public interface IAccountService : IAccountMemoryCache
+    {
+        Task<AccountUserSessionContract> AuthenticateUserCodeAsync(int userTypeId, string code, string subdomain, string page, DateTimeZone timezone);
+        Task<AccountUserSessionContract> AuthenticateUserTokenAsync(int userTypeId, string token, DateTimeZone timezone);
+        string GetUserConsentUrl(int userTypeId, string subdomain, string page);
+        Task RevokeUserSessionAsync(int userSessionId);
+        List<AccountUserContract> SearchUsers(string keyword, int userTypeId);
     }
 }

@@ -18,7 +18,7 @@ namespace Library.StockMarket.Job
         protected override async Task StartAsync()
         {
             using var scope = _serviceProvider.CreateScope();
-            var service = scope.ServiceProvider.GetRequiredService<StockMarketService>();
+            var service = scope.ServiceProvider.GetRequiredService<IStockMarketService>();
 
             await service.ProcessQuoteUserAlertsReverseSplitsAsync();
             await service.ProcessQuoteUserAlertsInProgressAsync((int)AlertCompletedType.Automatic);

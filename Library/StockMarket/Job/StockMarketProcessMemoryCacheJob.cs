@@ -19,9 +19,9 @@ namespace Library.StockMarket.Job
         protected override async Task StartAsync()
         {
             using var scope = _serviceProvider.CreateScope();
-            var repository = scope.ServiceProvider.GetRequiredService<StockMarketRepository>();
+            var service = scope.ServiceProvider.GetRequiredService<IStockMarketService>();
 
-            await StockMarketMemoryCache.TrimAsync(repository);
+            await service.MemoryCacheTrimAsync();
         }
 
         protected override async Task ErrorAsync(Exception exception)

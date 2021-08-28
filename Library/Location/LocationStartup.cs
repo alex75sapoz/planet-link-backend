@@ -1,10 +1,9 @@
 ﻿global using Library.Base;
 global using Library.Location.Contract;
 global using Library.Location.Entity;
+global using Library.Location.Enum;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Threading.Tasks;
 
 namespace Library.Location
 {
@@ -12,9 +11,6 @@ namespace Library.Location
     {
         public static void ConfigureServices(IServiceCollection services, LocationConfiguration configuration, string databaseConnection) =>
             LocationStartup.ConfigureServices(services, configuration, databaseConnection);
-
-        public static async Task LoadMemoryCacheAsync(IServiceProvider serviceProvider) =>
-            await LocationMemoryCache.LoadAsync(serviceProvider.GetRequiredService<LocationRepository>());
 
         public static object GetStatus() =>
             LocationStartup.GetStatus();
@@ -44,7 +40,6 @@ namespace Library.Location
         public static object GetStatus() => new
         {
             IsReady,
-            IsMemoryCacheReady = LocationMemoryCache.IsReady,
             RegisteredTypes = new
             {
                 Internal = new[]
@@ -52,20 +47,20 @@ namespace Library.Location
                     nameof(LocationContext),
                     nameof(LocationRepository),
                     nameof(LocationService),
-                    nameof(LocationMemoryCache),
                     nameof(LocationConfiguration)
                 },
                 Public = new[]
                 {
                     nameof(ILocationRepository),
+                    nameof(ILocationMemoryCache),
                     nameof(ILocationService)
                 }
             },
             MemoryCache = new
             {
-                TotalCountries = ILocationService.Countries.Count,
-                TotalStates = ILocationService.States.Count,
-                TotalCities = ILocationService.Cities.Count
+                TotalCountries = ILocationMemoryCache.Countries.Count,
+                TotalStates = ILocationMemoryCache.States.Count,
+                TotalCities = ILocationMemoryCache.Cities.Count
             }
         };
     }

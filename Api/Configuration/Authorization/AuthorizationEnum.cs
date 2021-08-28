@@ -5,5 +5,6 @@
         UserTypeAny,
         UserTypeGoogle,
         UserTypeStocktwits,
+        UserAdministrator
     }
 }

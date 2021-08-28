@@ -10,6 +10,7 @@ namespace Library.Account.Entity
         public int UserId { get; internal set; }
         public int UserTypeId { get; internal set; }
         public string ExternalUserId { get; internal set; } = default!;
+        public bool IsAdministrator { get; internal set; }
         public DateTimeOffset CreatedOn { get; internal set; }
         public DateTimeOffset LastUpdatedOn { get; internal set; }
 

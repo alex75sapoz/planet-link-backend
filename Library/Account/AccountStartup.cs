@@ -5,8 +5,6 @@ global using Library.Account.Response;
 global using Library.Base;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Threading.Tasks;
 
 namespace Library.Account
 {
@@ -14,9 +12,6 @@ namespace Library.Account
     {
         public static void ConfigureServices(IServiceCollection services, AccountConfiguration configuration, string databaseConnection) =>
             AccountStartup.ConfigureServices(services, configuration, databaseConnection);
-
-        public static async Task LoadMemoryCacheAsync(IServiceProvider serviceProvider) =>
-            await AccountMemoryCache.LoadAsync(serviceProvider.GetRequiredService<AccountRepository>());
 
         public static object GetStatus() =>
             AccountStartup.GetStatus();
@@ -46,7 +41,6 @@ namespace Library.Account
         public static object GetStatus() => new
         {
             IsReady,
-            IsMemoryCacheReady = AccountMemoryCache.IsReady,
             RegisteredType = new
             {
                 Internal = new[]
@@ -54,21 +48,21 @@ namespace Library.Account
                     nameof(AccountContext),
                     nameof(AccountRepository),
                     nameof(AccountService),
-                    nameof(AccountMemoryCache),
                     nameof(AccountConfiguration)
                 },
                 Public = new[]
                 {
                     nameof(IAccountRepository),
+                    nameof(IAccountMemoryCache),
                     nameof(IAccountService)
                 }
             },
             MemoryCache = new
             {
-                TotalUserTypes = IAccountService.UserTypes.Count,
-                TotalUserGenders = IAccountService.UserGenders.Count,
-                TotalUserSessions = IAccountService.UserSessions.Count,
-                TotalUsers = IAccountService.Users.Count,
+                TotalUserTypes = IAccountMemoryCache.UserTypes.Count,
+                TotalUserGenders = IAccountMemoryCache.UserGenders.Count,
+                TotalUserSessions = IAccountMemoryCache.UserSessions.Count,
+                TotalUsers = IAccountMemoryCache.Users.Count,
             }
         };
     }

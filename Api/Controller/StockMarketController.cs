@@ -83,5 +83,11 @@ namespace Api.Controller
         [ResponseCache(Duration = 59)]
         public async Task<IActionResult> GetUserAsync(int userId) =>
             Ok(await Task.FromResult(_service.GetUser(userId)));
+
+
+        [HttpPost("MemoryCache/Refresh")]
+        [Authorization(Requirement.UserTypeAny), Authorization(Requirement.UserAdministrator)]
+        public async Task MemoryCacheRefreshAsync(StockMarketDictionary? dictionary = null, int? id = null) =>
+            await _service.MemoryCacheRefreshAsync(dictionary, id);
     }
 }

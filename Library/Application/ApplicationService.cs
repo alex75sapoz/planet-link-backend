@@ -4,13 +4,6 @@ using System.Threading.Tasks;
 
 namespace Library.Application
 {
-    public interface IApplicationService
-    {
-        Task CreateErrorProcessingAsync(ApplicationErrorProcessingCreateContract processing);
-        Task CreateErrorRequestAsync(ApplicationErrorRequestCreateContract request);
-        Task CreateErrorAuthenticationAsync(ApplicationErrorAuthenticationCreateContract errorAuthentication);
-    }
-
     class ApplicationService : BaseService<ApplicationConfiguration, ApplicationRepository>, IApplicationService
     {
         public ApplicationService(ApplicationConfiguration configuration, ApplicationRepository repository, IMemoryCache memoryCache) : base(configuration, repository, memoryCache) { }
@@ -91,5 +84,12 @@ namespace Library.Application
         }
 
         #endregion
+    }
+
+    public interface IApplicationService
+    {
+        Task CreateErrorProcessingAsync(ApplicationErrorProcessingCreateContract processing);
+        Task CreateErrorRequestAsync(ApplicationErrorRequestCreateContract request);
+        Task CreateErrorAuthenticationAsync(ApplicationErrorAuthenticationCreateContract errorAuthentication);
     }
 }

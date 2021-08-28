@@ -10,6 +10,6 @@ namespace Library.Weather.Contract
         public int CityCount { get; internal set; }
         public int GlobalCount { get; internal set; }
 
-        public WeatherEmotionContract Emotion => IWeatherService.GetEmotion(EmotionId);
+        public WeatherEmotionContract Emotion => IWeatherMemoryCache.Emotions[EmotionId];
     }
 }
