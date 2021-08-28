@@ -121,6 +121,7 @@ namespace Api.Configuration.Authentication
                 new Claim(nameof(AuthenticationResult.UserSessionId), userSession.UserSessionId.ToString()),
                 new Claim(nameof(AuthenticationResult.UserId), userSession.UserId.ToString()),
                 new Claim(nameof(AuthenticationResult.UserTypeId), userSession.User.UserTypeId.ToString()),
+                new Claim(nameof(AuthenticationResult.IsAdministrator), userSession.User.IsAdministrator.ToString()),
                 new Claim(nameof(AuthenticationResult.Timezone), timezone.Id)
             })), Scheme.Name));
 

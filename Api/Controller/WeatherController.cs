@@ -45,6 +45,7 @@ namespace Api.Controller
             Ok(await Task.FromResult(_service.GetConfiguration()));
 
         [HttpPost("MemoryCache/Refresh")]
+        [Authorization(Requirement.UserTypeAny), Authorization(Requirement.UserAdministrator)]
         public async Task MemoryCacheRefreshAsync(WeatherDictionary? dictionary = null, int? id = null) =>
             await _service.MemoryCacheRefreshAsync(dictionary, id);
     }

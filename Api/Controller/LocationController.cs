@@ -41,6 +41,7 @@ namespace Api.Controller
             Ok(await Task.FromResult(_service.SearchCities(keyword)));
 
         [HttpPost("MemoryCache/Refresh")]
+        [Authorization(Requirement.UserTypeAny), Authorization(Requirement.UserAdministrator)]
         public async Task MemoryCacheRefreshAsync(LocationDictionary? dictionary = null, int? id = null) =>
             await _service.MemoryCacheRefreshAsync(dictionary, id);
     }

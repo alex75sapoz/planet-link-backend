@@ -37,6 +37,7 @@ namespace Api.Controller
             Ok(await Task.FromResult(_service.SearchUsers(keyword, (int)UserType.Stocktwits)));
 
         [HttpPost("MemoryCache/Refresh")]
+        [Authorization(Requirement.UserTypeAny), Authorization(Requirement.UserAdministrator)]
         public async Task MemoryCacheRefreshAsync(AccountDictionary? dictionary = null, int? id = null) =>
             await _service.MemoryCacheRefreshAsync(dictionary, id);
     }

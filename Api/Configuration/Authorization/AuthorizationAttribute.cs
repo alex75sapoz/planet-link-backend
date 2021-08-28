@@ -11,6 +11,7 @@ namespace Api.Configuration.Authorization
             Requirement.UserTypeAny => nameof(AuthorizationUserTypeAnyRequirement),
             Requirement.UserTypeGoogle => nameof(AuthorizationUserTypeGoogleRequirement),
             Requirement.UserTypeStocktwits => nameof(AuthorizationUserTypeStocktwitsRequirement),
+            Requirement.UserAdministrator => nameof(AuthorizationUserAdministratorRequirement),
             _ => throw new System.Exception($"{requirement} is invalid in {nameof(AuthorizationAttribute)}")
         })
         { }

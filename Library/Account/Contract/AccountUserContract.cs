@@ -8,6 +8,7 @@ namespace Library.Account.Contract
         public int UserTypeId { get; internal set; }
 
         public int UserId { get; internal set; }
+        public bool IsAdministrator { get; internal set; }
 
         public AccountUserGoogleContract? Google { get; internal set; }
         public AccountUserStocktwitsContract? Stocktwits { get; internal set; }

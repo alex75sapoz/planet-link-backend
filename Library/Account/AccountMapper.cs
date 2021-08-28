@@ -18,6 +18,7 @@
         {
             UserTypeId = src.UserTypeId,
             UserId = src.UserId,
+            IsAdministrator = src.IsAdministrator,
             Google = src.Google?.MapToUserGoogleContract(),
             Stocktwits = src.Stocktwits?.MapToUserStocktwitsContract(),
             Fitbit = src.Fitbit?.MapToUserFitbitContract()

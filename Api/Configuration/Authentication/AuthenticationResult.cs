@@ -21,6 +21,8 @@ namespace Api.Configuration.Authentication
                 ? userTypeId
                 : null;
 
+            IsAdministrator = bool.TryParse(user.FindFirstValue(nameof(IsAdministrator)), out bool isAdministrator) && isAdministrator;
+
             Timezone = DateTimeZoneProviders.Tzdb[user.FindFirstValue(nameof(Timezone))];
         }
 
@@ -28,6 +30,7 @@ namespace Api.Configuration.Authentication
         public int? UserSessionId { get; set; }
         public int? UserId { get; set; }
         public int? UserTypeId { get; set; }
+        public bool IsAdministrator { get; set; }
         public DateTimeZone Timezone { get; set; }
     }
 }
