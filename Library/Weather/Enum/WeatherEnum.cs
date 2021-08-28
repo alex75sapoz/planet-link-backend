@@ -1,6 +1,6 @@
 ﻿namespace Library.Weather.Enum
 {
-    public enum MemoryCacheDictionary : int
+    public enum WeatherDictionary : int
     {
         Emotions = 1,
         CityUserEmotions = 2

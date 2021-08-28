@@ -13,6 +13,6 @@ namespace Library.Account.Contract
         public AccountUserStocktwitsContract? Stocktwits { get; internal set; }
         public AccountUserFitbitContract? Fitbit { get; internal set; }
 
-        public AccountUserTypeContract UserType => IAccountService.GetUserType(UserTypeId);
+        public AccountUserTypeContract UserType => IAccountMemoryCache.UserTypes[UserTypeId];
     }
 }

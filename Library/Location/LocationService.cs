@@ -18,9 +18,9 @@ namespace Library.Location
         internal static ConcurrentDictionary<int, LocationStateContract> _states = new();
         internal static ConcurrentDictionary<int, LocationCityContract> _cities = new();
 
-        public async Task MemoryCacheRefreshAsync(MemoryCacheDictionary? dictionary = null, int? id = null)
+        public async Task MemoryCacheRefreshAsync(LocationDictionary? dictionary = null, int? id = null)
         {
-            if (!dictionary.HasValue || dictionary.Value == MemoryCacheDictionary.Countries)
+            if (!dictionary.HasValue || dictionary.Value == LocationDictionary.Countries)
             {
                 if (!id.HasValue)
                     _countries = new((await _repository.GetCountriesAsync()).Select(countryEntity => countryEntity.MapToCountryContract()).ToDictionary(country => country.CountryId));
@@ -28,7 +28,7 @@ namespace Library.Location
                     _countries[id.Value] = (await _repository.GetCountryAsync(id.Value) ?? throw new BadRequestException($"{nameof(id)} is invalid")).MapToCountryContract();
             }
 
-            if (!dictionary.HasValue || dictionary.Value == MemoryCacheDictionary.States)
+            if (!dictionary.HasValue || dictionary.Value == LocationDictionary.States)
             {
                 if (!id.HasValue)
                     _states = new((await _repository.GetStatesAsync()).Select(stateEntity => stateEntity.MapToStateContract()).ToDictionary(state => state.StateId));
@@ -36,7 +36,7 @@ namespace Library.Location
                     _states[id.Value] = (await _repository.GetStateAsync(id.Value) ?? throw new BadRequestException($"{nameof(id)} is invalid")).MapToStateContract();
             }
 
-            if (!dictionary.HasValue || dictionary.Value == MemoryCacheDictionary.Cities)
+            if (!dictionary.HasValue || dictionary.Value == LocationDictionary.Cities)
             {
                 if (!id.HasValue)
                     _cities = new((await _repository.GetCitiesAsync()).Select(cityEntity => cityEntity.MapToCityContract()).ToDictionary(city => city.CityId));
@@ -87,7 +87,7 @@ namespace Library.Location
 
     public interface ILocationMemoryCache
     {
-        Task MemoryCacheRefreshAsync(MemoryCacheDictionary? dictionary = null, int? id = null);
+        Task MemoryCacheRefreshAsync(LocationDictionary? dictionary = null, int? id = null);
 
         public static IReadOnlyDictionary<int, LocationCountryContract> Countries => LocationService._countries;
         public static IReadOnlyDictionary<int, LocationStateContract> States => LocationService._states;

@@ -1,6 +1,6 @@
 ﻿namespace Library.Programming.Enum
 {
-    public enum MemoryCacheDictionary
+    public enum ProgrammingDictionary : int
     {
         Languages = 1,
         Jobs = 2,

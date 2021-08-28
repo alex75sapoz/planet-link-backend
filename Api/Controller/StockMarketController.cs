@@ -86,7 +86,7 @@ namespace Api.Controller
 
 
         [HttpPost("MemoryCache/Refresh")]
-        public async Task MemoryCacheRefreshAsync(MemoryCacheDictionary? dictionary = null, int? id = null) =>
+        public async Task MemoryCacheRefreshAsync(StockMarketDictionary? dictionary = null, int? id = null) =>
             await _service.MemoryCacheRefreshAsync(dictionary, id);
     }
 }

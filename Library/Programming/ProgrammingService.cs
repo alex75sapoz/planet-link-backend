@@ -20,9 +20,9 @@ namespace Library.Programming
         internal static ConcurrentDictionary<int, ProgrammingProjectTypeContract> _projectTypes = new();
         internal static ConcurrentDictionary<int, ProgrammingProjectContract> _projects = new();
 
-        public async Task MemoryCacheRefreshAsync(MemoryCacheDictionary? dictionary = null, int? id = null)
+        public async Task MemoryCacheRefreshAsync(ProgrammingDictionary? dictionary = null, int? id = null)
         {
-            if (!dictionary.HasValue || dictionary.Value == MemoryCacheDictionary.Languages)
+            if (!dictionary.HasValue || dictionary.Value == ProgrammingDictionary.Languages)
             {
                 if (!id.HasValue)
                     _languages = new((await _repository.GetLanguagesAsync()).Select(languageEntity => languageEntity.MapToLanguageContract()).ToDictionary(language => language.LanguageId));
@@ -30,7 +30,7 @@ namespace Library.Programming
                     _languages[id.Value] = (await _repository.GetLanguageAsync(id.Value) ?? throw new BadRequestException($"{nameof(id)} is invalid")).MapToLanguageContract();
             }
 
-            if (!dictionary.HasValue || dictionary.Value == MemoryCacheDictionary.Jobs)
+            if (!dictionary.HasValue || dictionary.Value == ProgrammingDictionary.Jobs)
             {
                 if (!id.HasValue)
                     _jobs = new((await _repository.GetJobsAsync()).Select(jobEntity => jobEntity.MapToJobContract()).ToDictionary(job => job.JobId));
@@ -38,7 +38,7 @@ namespace Library.Programming
                     _jobs[id.Value] = (await _repository.GetJobAsync(id.Value) ?? throw new BadRequestException($"{nameof(id)} is invalid")).MapToJobContract();
             }
 
-            if (!dictionary.HasValue || dictionary.Value == MemoryCacheDictionary.TechnologyStacks)
+            if (!dictionary.HasValue || dictionary.Value == ProgrammingDictionary.TechnologyStacks)
             {
                 if (!id.HasValue)
                     _technologyStacks = new((await _repository.GetTechnologyStacksAsync()).Select(technologyStackEntity => technologyStackEntity.MapToTechnologyStackContract()).ToDictionary(technologyStack => technologyStack.TechnologyStackId));
@@ -46,7 +46,7 @@ namespace Library.Programming
                     _technologyStacks[id.Value] = (await _repository.GetTechnologyStackAsync(id.Value) ?? throw new BadRequestException($"{nameof(id)} is invalid")).MapToTechnologyStackContract();
             }
 
-            if (!dictionary.HasValue || dictionary.Value == MemoryCacheDictionary.ProjectTypes)
+            if (!dictionary.HasValue || dictionary.Value == ProgrammingDictionary.ProjectTypes)
             {
                 if (!id.HasValue)
                     _projectTypes = new((await _repository.GetProjectTypesAsync()).Select(projectTypeEntity => projectTypeEntity.MapToProjectTypeContract()).ToDictionary(projectType => projectType.ProjectTypeId));
@@ -54,7 +54,7 @@ namespace Library.Programming
                     _projectTypes[id.Value] = (await _repository.GetProjectTypeAsync(id.Value) ?? throw new BadRequestException($"{nameof(id)} is invalid")).MapToProjectTypeContract();
             }
 
-            if (!dictionary.HasValue || dictionary.Value == MemoryCacheDictionary.Projects)
+            if (!dictionary.HasValue || dictionary.Value == ProgrammingDictionary.Projects)
             {
                 if (!id.HasValue)
                     _projects = new((await _repository.GetProjectsAsync()).Select(projectEntity => projectEntity.MapToProjectContract()).ToDictionary(project => project.ProjectId));
@@ -127,7 +127,7 @@ namespace Library.Programming
 
     public interface IProgrammingMemoryCache
     {
-        Task MemoryCacheRefreshAsync(MemoryCacheDictionary? dictionary = null, int? id = null);
+        Task MemoryCacheRefreshAsync(ProgrammingDictionary? dictionary = null, int? id = null);
 
         public static IReadOnlyDictionary<int, ProgrammingLanguageContract> Languages => ProgrammingService._languages;
         public static IReadOnlyDictionary<int, ProgrammingJobContract> Jobs => ProgrammingService._jobs;

@@ -28,7 +28,7 @@ namespace Library.StockMarket.Contract
         public DateTimeOffset? CompletedOn { get; internal set; }
 
         public StockMarketQuoteContract Quote => IStockMarketMemoryCache.Quotes[QuoteId];
-        public AccountUserContract User => IAccountService.GetUser(UserId);
+        public AccountUserContract User => IAccountMemoryCache.Users[UserId];
         public StockMarketAlertTypeContract AlertType => IStockMarketMemoryCache.AlertTypes[AlertTypeId];
         public StockMarketAlertCompletedTypeContract? AlertCompletedType => AlertCompletedTypeId.HasValue ? IStockMarketMemoryCache.AlertCompletedTypes[AlertCompletedTypeId.Value] : null;
     }

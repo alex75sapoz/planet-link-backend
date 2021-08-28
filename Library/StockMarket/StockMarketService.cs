@@ -15,15 +15,13 @@ namespace Library.StockMarket
 {
     class StockMarketService : BaseService<StockMarketConfiguration, StockMarketRepository>, IStockMarketService
     {
-        public StockMarketService(StockMarketConfiguration configuration, StockMarketRepository repository, IAccountService accountService, IApplicationService applicationService, IMemoryCache memoryCache) : base(configuration, repository, memoryCache)
+        public StockMarketService(StockMarketConfiguration configuration, StockMarketRepository repository, IApplicationService applicationService, IMemoryCache memoryCache) : base(configuration, repository, memoryCache)
         {
             _financialModelingPrepApi = new RestClient(_configuration.FinancialModelingPrepApi.Server);
-            _accountService = accountService;
             _applicationService = applicationService;
         }
 
         private readonly IRestClient _financialModelingPrepApi;
-        private readonly IAccountService _accountService;
         private readonly IApplicationService _applicationService;
 
         #region MemoryCache
@@ -37,9 +35,9 @@ namespace Library.StockMarket
         internal static ConcurrentDictionary<int, StockMarketQuoteUserAlertContract> _quoteUserAlerts = new();
         internal static ConcurrentDictionary<int, StockMarketQuoteUserEmotionContract> _quoteUserEmotions = new();
 
-        public async Task MemoryCacheRefreshAsync(MemoryCacheDictionary? dictionary = null, int? id = null)
+        public async Task MemoryCacheRefreshAsync(StockMarketDictionary? dictionary = null, int? id = null)
         {
-            if (!dictionary.HasValue || dictionary.Value == MemoryCacheDictionary.Exchanges)
+            if (!dictionary.HasValue || dictionary.Value == StockMarketDictionary.Exchanges)
             {
                 if (!id.HasValue)
                     _exchanges = new((await _repository.GetExchangesAsync()).Select(exchangeEntity => exchangeEntity.MaptToExchangeContract()).ToDictionary(exchange => exchange.ExchangeId));
@@ -47,7 +45,7 @@ namespace Library.StockMarket
                     _exchanges[id.Value] = (await _repository.GetExchangeAsync(id.Value) ?? throw new BadRequestException($"{nameof(id)} is invalid")).MaptToExchangeContract();
             }
 
-            if (!dictionary.HasValue || dictionary.Value == MemoryCacheDictionary.Timeframes)
+            if (!dictionary.HasValue || dictionary.Value == StockMarketDictionary.Timeframes)
             {
                 if (!id.HasValue)
                     _timeframes = new((await _repository.GetTimeframesAsync()).Select(timeframeEntity => timeframeEntity.MaptToTimeframeContract()).ToDictionary(timeframe => timeframe.TimeframeId));
@@ -55,7 +53,7 @@ namespace Library.StockMarket
                     _timeframes[id.Value] = (await _repository.GetTimeframeAsync(id.Value) ?? throw new BadRequestException($"{nameof(id)} is invalid")).MaptToTimeframeContract();
             }
 
-            if (!dictionary.HasValue || dictionary.Value == MemoryCacheDictionary.AlertTypes)
+            if (!dictionary.HasValue || dictionary.Value == StockMarketDictionary.AlertTypes)
             {
                 if (!id.HasValue)
                     _alertTypes = new((await _repository.GetAlertTypesAsync()).Select(alertTypeEntity => alertTypeEntity.MaptToAlertTypeContract()).ToDictionary(alertType => alertType.AlertTypeId));
@@ -63,7 +61,7 @@ namespace Library.StockMarket
                     _alertTypes[id.Value] = (await _repository.GetAlertTypeAsync(id.Value) ?? throw new BadRequestException($"{nameof(id)} is invalid")).MaptToAlertTypeContract();
             }
 
-            if (!dictionary.HasValue || dictionary.Value == MemoryCacheDictionary.AlertCompletedTypes)
+            if (!dictionary.HasValue || dictionary.Value == StockMarketDictionary.AlertCompletedTypes)
             {
                 if (!id.HasValue)
                     _alertCompletedTypes = new((await _repository.GetAlertCompletedTypesAsync()).Select(alertCompletedTypeEntity => alertCompletedTypeEntity.MaptToAlertCompletedTypeContract()).ToDictionary(alertCompletedType => alertCompletedType.AlertCompletedTypeId));
@@ -71,7 +69,7 @@ namespace Library.StockMarket
                     _alertCompletedTypes[id.Value] = (await _repository.GetAlertCompletedTypeAsync(id.Value) ?? throw new BadRequestException($"{nameof(id)} is invalid")).MaptToAlertCompletedTypeContract();
             }
 
-            if (!dictionary.HasValue || dictionary.Value == MemoryCacheDictionary.Emotions)
+            if (!dictionary.HasValue || dictionary.Value == StockMarketDictionary.Emotions)
             {
                 if (!id.HasValue)
                     _emotions = new((await _repository.GetEmotionsAsync()).Select(emotionEntity => emotionEntity.MapToEmotionContract()).ToDictionary(emotion => emotion.EmotionId));
@@ -79,7 +77,7 @@ namespace Library.StockMarket
                     _emotions[id.Value] = (await _repository.GetEmotionAsync(id.Value) ?? throw new BadRequestException($"{nameof(id)} is invalid")).MapToEmotionContract();
             }
 
-            if (!dictionary.HasValue || dictionary.Value == MemoryCacheDictionary.Quotes)
+            if (!dictionary.HasValue || dictionary.Value == StockMarketDictionary.Quotes)
             {
                 if (!id.HasValue)
                     _quotes = new((await _repository.GetQuotesAsync()).Select(quoteEntity => quoteEntity.MapToQuoteContract()).ToDictionary(quote => quote.QuoteId));
@@ -87,7 +85,7 @@ namespace Library.StockMarket
                     _quotes[id.Value] = (await _repository.GetQuoteAsync(id.Value) ?? throw new BadRequestException($"{nameof(id)} is invalid")).MapToQuoteContract();
             }
 
-            if (!dictionary.HasValue || dictionary.Value == MemoryCacheDictionary.QuoteUserAlerts)
+            if (!dictionary.HasValue || dictionary.Value == StockMarketDictionary.QuoteUserAlerts)
             {
                 if (!id.HasValue)
                     _quoteUserAlerts = new((await _repository.GetQuoteUserAlertsAsync()).Select(quoteUserAlertEntity => quoteUserAlertEntity.MapToQuoteUserAlertContract()).ToDictionary(quoteUserAlert => quoteUserAlert.QuoteUserAlertId));
@@ -95,7 +93,7 @@ namespace Library.StockMarket
                     _quoteUserAlerts[id.Value] = (await _repository.GetQuoteUserAlertAsync(id.Value) ?? throw new BadRequestException($"{nameof(id)} is invalid")).MapToQuoteUserAlertContract();
             }
 
-            if (!dictionary.HasValue || dictionary.Value == MemoryCacheDictionary.QuoteUserEmotions)
+            if (!dictionary.HasValue || dictionary.Value == StockMarketDictionary.QuoteUserEmotions)
             {
                 if (!id.HasValue)
                     _quoteUserEmotions = new((await _repository.GetQuoteUserEmotionsAsync(DateTimeOffset.Now.AddDays(-1))).Select(quoteUserEmotionEntity => quoteUserEmotionEntity.MapToQuoteUserEmotionContract()).ToDictionary(quoteUserEmotion => quoteUserEmotion.QuoteUserEmotionId));
@@ -128,7 +126,7 @@ namespace Library.StockMarket
         {
             var alertType = IStockMarketMemoryCache.GetAlertType(alertTypeId);
             var quote = quoteId.HasValue ? IStockMarketMemoryCache.GetQuote(quoteId.Value) : null;
-            var user = userId.HasValue ? IAccountService.GetUser(userId.Value) : null;
+            var user = userId.HasValue ? IAccountMemoryCache.GetUser(userId.Value) : null;
 
             if (user is not null && user.UserTypeId != (int)UserType.Stocktwits)
                 throw new BadRequestException($"{nameof(userId)} is not of {nameof(UserType.Stocktwits)} type");
@@ -379,7 +377,7 @@ namespace Library.StockMarket
 
         public StockMarketQuoteUserConfigurationContract GetQuoteUserConfiguration(int userId, int quoteId, DateTimeZone timezone)
         {
-            var user = IAccountService.GetUser(userId);
+            var user = IAccountMemoryCache.GetUser(userId);
             var quote = IStockMarketMemoryCache.GetQuote(quoteId);
 
             var quoteUserEmotions = IStockMarketMemoryCache.QuoteUserEmotions.GetQuoteUserEmotionsAtTimezoneToday(timezone, user.UserId);
@@ -413,7 +411,7 @@ namespace Library.StockMarket
 
         public StockMarketUserContract GetUser(int userId)
         {
-            var user = IAccountService.GetUser(userId);
+            var user = IAccountMemoryCache.GetUser(userId);
 
             if (user.UserTypeId != (int)UserType.Stocktwits)
                 throw new BadRequestException($"{nameof(userId)} is not of {nameof(UserType.Stocktwits)} type");
@@ -449,7 +447,7 @@ namespace Library.StockMarket
 
         public async Task<StockMarketQuoteUserAlertContract> CreateQuoteUserAlertAsync(int userId, int quoteId, (decimal sell, decimal stopLoss) alert, DateTimeZone timezone)
         {
-            var user = IAccountService.GetUser(userId);
+            var user = IAccountMemoryCache.GetUser(userId);
             var quote = IStockMarketMemoryCache.GetQuote(quoteId);
 
             if (user.Stocktwits!.CreatedOn.UtcDateTime.Date.AddMonths(_configuration.Requirement.CreateQuoteUserAlertMinimumStocktwitsCreatedOnAgeInMonths) > DateTimeOffset.UtcNow.Date)
@@ -519,7 +517,7 @@ namespace Library.StockMarket
 
         public async Task<StockMarketQuoteUserEmotionContract> CreateQuoteUserEmotionAsync(int userId, int quoteId, int emotionId, DateTimeZone timezone)
         {
-            var user = IAccountService.GetUser(userId);
+            var user = IAccountMemoryCache.GetUser(userId);
             var quote = IStockMarketMemoryCache.GetQuote(quoteId);
             var emotion = IStockMarketMemoryCache.GetEmotion(emotionId);
 
@@ -550,7 +548,7 @@ namespace Library.StockMarket
 
         public async Task<StockMarketQuoteUserAlertContract> CompleteQuoteUserAlertAsync(int userId, int quoteUserAlertId)
         {
-            var user = IAccountService.GetUser(userId);
+            var user = IAccountMemoryCache.GetUser(userId);
             var quoteUserAlert = IStockMarketMemoryCache.GetQuoteUserAlert(quoteUserAlertId);
 
             if (quoteUserAlert.UserId != user.UserId)
@@ -840,7 +838,7 @@ namespace Library.StockMarket
 
     public interface IStockMarketMemoryCache
     {
-        Task MemoryCacheRefreshAsync(MemoryCacheDictionary? dictionary = null, int? id = null);
+        Task MemoryCacheRefreshAsync(StockMarketDictionary? dictionary = null, int? id = null);
         Task MemoryCacheTrimAsync();
 
         public static IReadOnlyDictionary<int, StockMarketExchangeContract> Exchanges => StockMarketService._exchanges;

@@ -25,9 +25,9 @@ namespace Library.Weather
         internal static ConcurrentDictionary<int, WeatherEmotionContract> _emotions = new();
         internal static ConcurrentDictionary<int, WeatherCityUserEmotionContract> _cityUserEmotions = new();
 
-        public async Task MemoryCacheRefreshAsync(MemoryCacheDictionary? dictionary = null, int? id = null)
+        public async Task MemoryCacheRefreshAsync(WeatherDictionary? dictionary = null, int? id = null)
         {
-            if (!dictionary.HasValue || dictionary.Value == MemoryCacheDictionary.Emotions)
+            if (!dictionary.HasValue || dictionary.Value == WeatherDictionary.Emotions)
             {
                 if (!id.HasValue)
                     _emotions = new((await _repository.GetEmotionsAsync()).Select(emotionEntity => emotionEntity.MapToEmotionContract()).ToDictionary(emotion => emotion.EmotionId));
@@ -35,7 +35,7 @@ namespace Library.Weather
                     _emotions[id.Value] = (await _repository.GetEmotionAsync(id.Value) ?? throw new BadRequestException($"{nameof(id)} is invalid")).MapToEmotionContract();
             }
 
-            if (!dictionary.HasValue || dictionary.Value == MemoryCacheDictionary.CityUserEmotions)
+            if (!dictionary.HasValue || dictionary.Value == WeatherDictionary.CityUserEmotions)
             {
                 if (!id.HasValue)
                     _cityUserEmotions = new((await _repository.GetCityUserEmotionsAsync(DateTimeOffset.Now.AddDays(-1))).Select(cityUserEmotionEntity => cityUserEmotionEntity.MapToCityUserEmotionContract()).ToDictionary(cityUserEmotion => cityUserEmotion.CityUserEmotionId));
@@ -107,7 +107,7 @@ namespace Library.Weather
 
         public WeatherCityUserConfigurationContract GetCityUserConfiguration(int userId, int cityId, DateTimeZone timezone)
         {
-            var user = IAccountService.GetUser(userId);
+            var user = IAccountMemoryCache.GetUser(userId);
             var city = ILocationMemoryCache.GetCity(cityId);
 
             var cityUserEmotions = IWeatherMemoryCache.CityUserEmotions.GetCityUserEmotionsAtTimezoneToday(timezone, user.UserId);
@@ -131,7 +131,7 @@ namespace Library.Weather
 
         public async Task<WeatherCityUserEmotionContract> CreateCityUserEmotionAsync(int userId, int cityId, int emotionId, DateTimeZone timezone)
         {
-            var user = IAccountService.GetUser(userId);
+            var user = IAccountMemoryCache.GetUser(userId);
             var city = ILocationMemoryCache.GetCity(cityId);
             var emotion = IWeatherMemoryCache.GetEmotion(emotionId);
 
@@ -250,7 +250,7 @@ namespace Library.Weather
 
     public interface IWeatherMemoryCache
     {
-        Task MemoryCacheRefreshAsync(MemoryCacheDictionary? dictionary = null, int? id = null);
+        Task MemoryCacheRefreshAsync(WeatherDictionary? dictionary = null, int? id = null);
         Task MemoryCacheTrimAsync();
 
         public static IReadOnlyDictionary<int, WeatherEmotionContract> Emotions => WeatherService._emotions;

@@ -16,6 +16,6 @@ namespace Library.Account.Contract
         public decimal HeightInCentimeters { get; internal set; }
         public DateTimeOffset CreatedOn { get; internal set; }
 
-        public AccountUserGenderContract UserGender => IAccountService.GetUserGender(UserGenderId);
+        public AccountUserGenderContract UserGender => IAccountMemoryCache.UserGenders[UserGenderId];
     }
 }

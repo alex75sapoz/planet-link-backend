@@ -18,7 +18,7 @@ namespace Library.StockMarket.Contract
         public DateTimeOffset CreatedOn { get; internal set; }
 
         public StockMarketQuoteContract Quote => IStockMarketMemoryCache.Quotes[QuoteId];
-        public AccountUserContract User => IAccountService.GetUser(UserId);
+        public AccountUserContract User => IAccountMemoryCache.Users[UserId];
         public StockMarketEmotionContract Emotion => IStockMarketMemoryCache.Emotions[EmotionId];
     }
 }

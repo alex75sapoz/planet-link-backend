@@ -20,7 +20,7 @@ namespace Library.Weather.Contract
         public DateTimeOffset CreatedOn { get; internal set; }
 
         public LocationCityContract City => ILocationMemoryCache.Cities[CityId];
-        public AccountUserContract User => IAccountService.GetUser(UserId);
+        public AccountUserContract User => IAccountMemoryCache.GetUser(UserId);
         public WeatherEmotionContract Emotion => IWeatherMemoryCache.Emotions[EmotionId];
     }
 }
