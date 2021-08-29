@@ -86,7 +86,7 @@ namespace Api.Controller
 
 
         [HttpPost("MemoryCache/Refresh")]
-        [Authorization(Requirement.UserTypeAny), Authorization(Requirement.UserAdministrator)]
+        [Authorization(Requirement.UserAdministrator)]
         public async Task MemoryCacheRefreshAsync(StockMarketDictionary? dictionary = null, int? id = null) =>
             await _service.MemoryCacheRefreshAsync(dictionary, id);
     }
