@@ -24,12 +24,12 @@ namespace Api.Controller
         public async Task<IActionResult> GetStatusAsync() =>
             Ok(await Task.FromResult(new
             {
-                Memory = $"{GC.GetTotalMemory(true) / 1000000m:#.00} MB",
                 IsProduction = _environment.IsProduction(),
                 Server = new
                 {
                     Time = DateTimeOffset.Now,
-                    TimezoneId = DateTimeZoneProviders.Tzdb.GetSystemDefault().Id
+                    TimezoneId = DateTimeZoneProviders.Tzdb.GetSystemDefault().Id,
+                    MemoryAllocated = $"{GC.GetTotalMemory(false) / 1000000m:#.00} MB"
                 },
                 Library = new
                 {

@@ -29,7 +29,7 @@ namespace Api.Controller
             Ok(await _service.CreateProjectAsync(newProject, Timezone));
 
         [HttpPost("MemoryCache/Refresh")]
-        [Authorization(Requirement.UserTypeAny), Authorization(Requirement.UserAdministrator)]
+        [Authorization(Requirement.UserAdministrator)]
         public async Task MemoryCacheRefreshAsync(ProgrammingDictionary? dictionary = null, int? id = null) =>
             await _service.MemoryCacheRefreshAsync(dictionary, id);
     }
