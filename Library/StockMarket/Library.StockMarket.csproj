@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <LangVersion>preview</LangVersion>
-    <AnalysisLevel>preview</AnalysisLevel>
+    <LangVersion>latest</LangVersion>
+    <AnalysisLevel>latest</AnalysisLevel>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
