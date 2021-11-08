@@ -15,7 +15,7 @@ namespace Library.Weather
                 .Where(quoteUserEmotion => quoteUserEmotion.CreatedOn >= from)
                 .ToListAsync();
 
-        public async Task<WeatherCityUserEmotionEntity> GetCityUserEmotionAsync(int cityUserEmotionId) =>
+        public async Task<WeatherCityUserEmotionEntity?> GetCityUserEmotionAsync(int cityUserEmotionId) =>
             await _context.CityUserEmotions
                 .FindAsync(cityUserEmotionId);
 
@@ -23,7 +23,7 @@ namespace Library.Weather
             await _context.Emotions
                 .ToListAsync();
 
-        public async Task<WeatherEmotionEntity> GetEmotionAsync(int emotionId) =>
+        public async Task<WeatherEmotionEntity?> GetEmotionAsync(int emotionId) =>
             await _context.Emotions
                 .FindAsync(emotionId);
     }
@@ -32,7 +32,7 @@ namespace Library.Weather
     {
         Task<List<WeatherCityUserEmotionEntity>> GetCityUserEmotionsAsync(DateTimeOffset from);
         Task<List<WeatherEmotionEntity>> GetEmotionsAsync();
-        Task<WeatherEmotionEntity> GetEmotionAsync(int emotionId);
-        Task<WeatherCityUserEmotionEntity> GetCityUserEmotionAsync(int cityUserEmotionId);
+        Task<WeatherEmotionEntity?> GetEmotionAsync(int emotionId);
+        Task<WeatherCityUserEmotionEntity?> GetCityUserEmotionAsync(int cityUserEmotionId);
     }
 }

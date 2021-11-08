@@ -14,7 +14,7 @@ namespace Library.Location
                 .Include(country => country.SubContinent)
                 .ToListAsync();
 
-        public async Task<LocationCountryEntity> GetCountryAsync(int countryId) =>
+        public async Task<LocationCountryEntity?> GetCountryAsync(int countryId) =>
             await _context.Countries
                 .Include(country => country.Continent)
                 .Include(country => country.SubContinent)
@@ -26,7 +26,7 @@ namespace Library.Location
                 .Include(city => city.Country)
                 .ToListAsync();
 
-        public async Task<LocationCityEntity> GetCityAsync(int cityId) =>
+        public async Task<LocationCityEntity?> GetCityAsync(int cityId) =>
             await _context.Cities
                 .Include(city => city.State)
                 .Include(city => city.Country)
@@ -36,7 +36,7 @@ namespace Library.Location
             await _context.States
                 .ToListAsync();
 
-        public async Task<LocationStateEntity> GetStateAsync(int stateId) =>
+        public async Task<LocationStateEntity?> GetStateAsync(int stateId) =>
             await _context.States
                 .FindAsync(stateId);
     }
@@ -44,10 +44,10 @@ namespace Library.Location
     public interface ILocationRepository
     {
         Task<List<LocationCityEntity>> GetCitiesAsync();
-        Task<LocationCityEntity> GetCityAsync(int cityId);
+        Task<LocationCityEntity?> GetCityAsync(int cityId);
         Task<List<LocationCountryEntity>> GetCountriesAsync();
-        Task<LocationCountryEntity> GetCountryAsync(int countryId);
+        Task<LocationCountryEntity?> GetCountryAsync(int countryId);
         Task<List<LocationStateEntity>> GetStatesAsync();
-        Task<LocationStateEntity> GetStateAsync(int stateId);
+        Task<LocationStateEntity?> GetStateAsync(int stateId);
     }
 }

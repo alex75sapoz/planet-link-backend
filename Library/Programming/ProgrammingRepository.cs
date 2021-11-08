@@ -12,7 +12,7 @@ namespace Library.Programming
             await _context.ProjectTypes
                 .ToListAsync();
 
-        public async Task<ProgrammingProjectTypeEntity> GetProjectTypeAsync(int projectTypeId) =>
+        public async Task<ProgrammingProjectTypeEntity?> GetProjectTypeAsync(int projectTypeId) =>
             await _context.ProjectTypes
                 .FindAsync(projectTypeId);
 
@@ -20,7 +20,7 @@ namespace Library.Programming
             await _context.Jobs
                 .ToListAsync();
 
-        public async Task<ProgrammingJobEntity> GetJobAsync(int jobId) =>
+        public async Task<ProgrammingJobEntity?> GetJobAsync(int jobId) =>
             await _context.Jobs
                 .FindAsync(jobId);
 
@@ -28,7 +28,7 @@ namespace Library.Programming
             await _context.Languages
                 .ToListAsync();
 
-        public async Task<ProgrammingLanguageEntity> GetLanguageAsync(int languageId) =>
+        public async Task<ProgrammingLanguageEntity?> GetLanguageAsync(int languageId) =>
             await _context.Languages
                 .FindAsync(languageId);
 
@@ -36,7 +36,7 @@ namespace Library.Programming
             await _context.TechnologyStacks
                 .ToListAsync();
 
-        public async Task<ProgrammingTechnologyStackEntity> GetTechnologyStackAsync(int technologyStackId) =>
+        public async Task<ProgrammingTechnologyStackEntity?> GetTechnologyStackAsync(int technologyStackId) =>
             await _context.TechnologyStacks
                 .FindAsync(technologyStackId);
 
@@ -48,7 +48,7 @@ namespace Library.Programming
                 .Include(project => project.ProjectLanguages)
                 .ToListAsync();
 
-        public async Task<ProgrammingProjectEntity> GetProjectAsync(int projectId) =>
+        public async Task<ProgrammingProjectEntity?> GetProjectAsync(int projectId) =>
             await _context.Projects
                 .Include(project => project.ProjectType)
                 .Include(project => project.Job)
@@ -60,14 +60,14 @@ namespace Library.Programming
     public interface IProgrammingRepository
     {
         Task<List<ProgrammingJobEntity>> GetJobsAsync();
-        Task<ProgrammingJobEntity> GetJobAsync(int jobId);
+        Task<ProgrammingJobEntity?> GetJobAsync(int jobId);
         Task<List<ProgrammingLanguageEntity>> GetLanguagesAsync();
-        Task<ProgrammingLanguageEntity> GetLanguageAsync(int languageId);
+        Task<ProgrammingLanguageEntity?> GetLanguageAsync(int languageId);
         Task<List<ProgrammingProjectEntity>> GetProjectsAsync();
-        Task<ProgrammingProjectEntity> GetProjectAsync(int projectId);
+        Task<ProgrammingProjectEntity?> GetProjectAsync(int projectId);
         Task<List<ProgrammingProjectTypeEntity>> GetProjectTypesAsync();
-        Task<ProgrammingProjectTypeEntity> GetProjectTypeAsync(int projectTypeId);
+        Task<ProgrammingProjectTypeEntity?> GetProjectTypeAsync(int projectTypeId);
         Task<List<ProgrammingTechnologyStackEntity>> GetTechnologyStacksAsync();
-        Task<ProgrammingTechnologyStackEntity> GetTechnologyStackAsync(int technologyStackId);
+        Task<ProgrammingTechnologyStackEntity?> GetTechnologyStackAsync(int technologyStackId);
     }
 }
